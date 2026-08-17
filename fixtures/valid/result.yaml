@@ -1,0 +1,25 @@
+schemaVersion: 1
+id: result_550e8400-e29b-41d4-a716-446655440003
+taskId: task_550e8400-e29b-41d4-a716-446655440001
+runId: run_550e8400-e29b-41d4-a716-446655440002
+agentId: agent:coder
+
+status: completed
+
+summary: Description of the produced outcome
+
+artifacts:
+  - path: src/example.ts
+    revision: a1b2c3d4e5f6789012345678901234567890abcd
+
+evidence: []
+
+verificationIds: []
+
+unresolvedIssues: []
+
+discoveredConstraints: []
+
+recommendedNextActions: []
+
+createdAt: 2026-01-15T12:00:00.000Z

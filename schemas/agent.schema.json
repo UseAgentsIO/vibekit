@@ -1,0 +1,204 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "agent.schema.json",
+  "title": "VibeKit Agent",
+  "description": "Agent module contract. An Agent is a Module with type agent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "type",
+    "name",
+    "version",
+    "description",
+    "instructions",
+    "model",
+    "components",
+    "capabilities",
+    "inputs",
+    "outputs",
+    "permissions",
+    "delegation",
+    "state",
+    "execution",
+    "verification",
+    "completion",
+    "escalation"
+  ],
+  "properties": {
+    "schemaVersion": { "$ref": "module.schema.json#/definitions/schemaVersion" },
+    "id": { "$ref": "module.schema.json#/definitions/agentId" },
+    "type": { "const": "agent" },
+    "name": { "$ref": "module.schema.json#/definitions/moduleName" },
+    "displayName": { "type": "string", "minLength": 1 },
+    "version": { "$ref": "module.schema.json#/definitions/semver" },
+    "description": { "type": "string", "minLength": 1 },
+    "compatibility": { "$ref": "module.schema.json#/definitions/compatibility" },
+    "source": { "$ref": "module.schema.json#/definitions/source" },
+    "license": { "$ref": "module.schema.json#/definitions/license" },
+    "instructions": { "$ref": "module.schema.json#/definitions/fileTarget" },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "id", "allowProjectOverride", "allowTaskOverride"],
+      "properties": {
+        "provider": { "type": "string", "minLength": 1 },
+        "id": { "type": "string", "minLength": 1 },
+        "allowProjectOverride": { "type": "boolean" },
+        "allowTaskOverride": { "type": "boolean" }
+      }
+    },
+    "components": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "optional", "recommended"],
+      "properties": {
+        "required": { "$ref": "module.schema.json#/definitions/moduleIdList" },
+        "optional": { "$ref": "module.schema.json#/definitions/moduleIdList" },
+        "recommended": { "$ref": "module.schema.json#/definitions/moduleIdList" }
+      }
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requires"],
+      "properties": {
+        "requires": {
+          "type": "array",
+          "items": { "$ref": "module.schema.json#/definitions/capabilityId" }
+        }
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required"],
+      "properties": {
+        "required": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "optional": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required"],
+      "properties": {
+        "required": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "optional": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allow", "deny"],
+      "properties": {
+        "allow": {
+          "type": "array",
+          "items": { "$ref": "module.schema.json#/definitions/permissionGrant" }
+        },
+        "deny": {
+          "type": "array",
+          "items": { "$ref": "module.schema.json#/definitions/permissionGrant" }
+        }
+      }
+    },
+    "delegation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed", "targets", "maxDepth", "maxParallelChildren"],
+      "properties": {
+        "allowed": { "type": "boolean" },
+        "targets": {
+          "type": "array",
+          "items": { "$ref": "module.schema.json#/definitions/bindingName" }
+        },
+        "maxDepth": { "type": "integer", "minimum": 0 },
+        "maxParallelChildren": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["read", "write"],
+      "properties": {
+        "read": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "write": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["isolation", "timeoutMs", "cleanupRequired"],
+      "properties": {
+        "isolation": { "$ref": "module.schema.json#/definitions/isolationMode" },
+        "timeoutMs": { "type": "integer", "minimum": 1 },
+        "cleanupRequired": { "type": "boolean" }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "independentReview"],
+      "properties": {
+        "required": { "$ref": "module.schema.json#/definitions/moduleIdList" },
+        "independentReview": { "type": "boolean" }
+      }
+    },
+    "completion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requires"],
+      "properties": {
+        "requires": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "escalation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["on"],
+      "properties": {
+        "on": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          }
+        }
+      }
+    },
+    "secrets": {
+      "type": "array",
+      "items": { "$ref": "module.schema.json#/definitions/secretReference" }
+    },
+    "files": {
+      "type": "array",
+      "items": { "$ref": "module.schema.json#/definitions/fileInstall" }
+    },
+    "providesCapabilities": {
+      "type": "array",
+      "items": { "$ref": "module.schema.json#/definitions/capabilityId" }
+    }
+  }
+}

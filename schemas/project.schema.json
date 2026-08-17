@@ -1,0 +1,180 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "project.schema.json",
+  "title": "VibeKit Project",
+  "description": "Canonical Project contract at .vibekit/project.yaml.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "name",
+    "root",
+    "pi",
+    "state",
+    "agentBindings",
+    "delegation",
+    "capabilityBindings",
+    "policies",
+    "execution",
+    "authorization",
+    "verification",
+    "sources"
+  ],
+  "properties": {
+    "schemaVersion": { "$ref": "module.schema.json#/definitions/schemaVersion" },
+    "id": { "$ref": "module.schema.json#/definitions/projectId" },
+    "name": { "type": "string", "minLength": 1 },
+    "root": { "$ref": "module.schema.json#/definitions/fileTarget" },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adapter"],
+      "properties": {
+        "adapter": { "type": "string", "minLength": 1 }
+      }
+    },
+    "pi": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["compatibility"],
+      "properties": {
+        "compatibility": { "type": "string", "minLength": 1 }
+      }
+    },
+    "defaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["provider", "id"],
+          "properties": {
+            "provider": { "type": "string", "minLength": 1 },
+            "id": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["backend", "path", "tracking"],
+      "properties": {
+        "backend": { "$ref": "module.schema.json#/definitions/moduleId" },
+        "path": { "$ref": "module.schema.json#/definitions/fileTarget" },
+        "tracking": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "decisions",
+            "tasks",
+            "results",
+            "approvals",
+            "verifications",
+            "events",
+            "runtime"
+          ],
+          "properties": {
+            "decisions": { "$ref": "module.schema.json#/definitions/trackingMode" },
+            "tasks": { "$ref": "module.schema.json#/definitions/trackingMode" },
+            "results": { "$ref": "module.schema.json#/definitions/trackingMode" },
+            "approvals": { "$ref": "module.schema.json#/definitions/trackingMode" },
+            "verifications": { "$ref": "module.schema.json#/definitions/trackingMode" },
+            "events": { "$ref": "module.schema.json#/definitions/trackingMode" },
+            "runtime": { "$ref": "module.schema.json#/definitions/trackingMode" }
+          }
+        }
+      }
+    },
+    "agentBindings": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["definition"],
+        "properties": {
+          "definition": { "$ref": "module.schema.json#/definitions/agentId" }
+        }
+      }
+    },
+    "delegation": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "$ref": "module.schema.json#/definitions/bindingName" }
+      }
+    },
+    "capabilityBindings": {
+      "type": "object",
+      "additionalProperties": { "$ref": "module.schema.json#/definitions/moduleId" }
+    },
+    "policies": {
+      "type": "array",
+      "items": { "$ref": "module.schema.json#/definitions/moduleId" }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxParallelRuns",
+        "defaultIsolation",
+        "mutationIsolation",
+        "defaultTimeoutMs",
+        "maxDelegationDepth"
+      ],
+      "properties": {
+        "maxParallelRuns": { "type": "integer", "minimum": 1 },
+        "defaultIsolation": { "$ref": "module.schema.json#/definitions/isolationMode" },
+        "mutationIsolation": { "$ref": "module.schema.json#/definitions/isolationMode" },
+        "defaultTimeoutMs": { "type": "integer", "minimum": 1 },
+        "maxDelegationDepth": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["default", "actions"],
+      "properties": {
+        "default": { "$ref": "module.schema.json#/definitions/authorizationMode" },
+        "actions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "module.schema.json#/definitions/authorizationMode"
+          }
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["default"],
+      "properties": {
+        "default": { "$ref": "module.schema.json#/definitions/moduleIdList" }
+      }
+    },
+    "sources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonical", "untrusted"],
+      "properties": {
+        "canonical": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "derived": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "untrusted": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

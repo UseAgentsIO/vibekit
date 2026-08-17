@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "component.schema.json",
+  "title": "VibeKit Component",
+  "description": "Installable Component module.yaml contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "type",
+    "name",
+    "version",
+    "description",
+    "compatibility",
+    "source",
+    "license",
+    "providesCapabilities",
+    "requires",
+    "requestsPermissions",
+    "secrets",
+    "files",
+    "configuration"
+  ],
+  "properties": {
+    "schemaVersion": { "$ref": "module.schema.json#/definitions/schemaVersion" },
+    "id": { "$ref": "module.schema.json#/definitions/componentId" },
+    "type": { "$ref": "module.schema.json#/definitions/componentType" },
+    "name": { "$ref": "module.schema.json#/definitions/moduleName" },
+    "displayName": { "type": "string", "minLength": 1 },
+    "version": { "$ref": "module.schema.json#/definitions/semver" },
+    "description": { "type": "string", "minLength": 1 },
+    "compatibility": { "$ref": "module.schema.json#/definitions/compatibility" },
+    "source": { "$ref": "module.schema.json#/definitions/source" },
+    "license": { "$ref": "module.schema.json#/definitions/license" },
+    "providesCapabilities": {
+      "type": "array",
+      "items": { "$ref": "module.schema.json#/definitions/capabilityId" }
+    },
+    "requires": { "$ref": "module.schema.json#/definitions/dependencySet" },
+    "requestsPermissions": {
+      "type": "array",
+      "items": { "$ref": "module.schema.json#/definitions/permissionRequest" }
+    },
+    "secrets": {
+      "type": "array",
+      "items": { "$ref": "module.schema.json#/definitions/secretReference" }
+    },
+    "files": {
+      "type": "array",
+      "items": { "$ref": "module.schema.json#/definitions/fileInstall" }
+    },
+    "configuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target", "schema"],
+      "properties": {
+        "target": { "$ref": "module.schema.json#/definitions/fileTarget" },
+        "schema": { "$ref": "module.schema.json#/definitions/fileTarget" }
+      }
+    },
+    "healthCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "name"],
+      "properties": {
+        "type": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

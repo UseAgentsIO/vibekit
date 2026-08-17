@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry-entry.schema.json",
+  "title": "VibeKit Registry Entry",
+  "description": "Official registry metadata for one Module version.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "name",
+    "version",
+    "description",
+    "publisher",
+    "source",
+    "license",
+    "checksum",
+    "compatibility",
+    "requires",
+    "providesCapabilities",
+    "requestsPermissions",
+    "secrets",
+    "files",
+    "documentation"
+  ],
+  "properties": {
+    "schemaVersion": { "$ref": "module.schema.json#/definitions/schemaVersion" },
+    "id": { "$ref": "module.schema.json#/definitions/moduleId" },
+    "type": { "$ref": "module.schema.json#/definitions/moduleType" },
+    "name": { "$ref": "module.schema.json#/definitions/moduleName" },
+    "displayName": { "type": "string", "minLength": 1 },
+    "version": { "$ref": "module.schema.json#/definitions/semver" },
+    "description": { "type": "string", "minLength": 1 },
+    "publisher": { "type": "string", "minLength": 1 },
+    "source": { "$ref": "module.schema.json#/definitions/source" },
+    "license": { "$ref": "module.schema.json#/definitions/license" },
+    "checksum": { "$ref": "module.schema.json#/definitions/sha256Checksum" },
+    "compatibility": { "$ref": "module.schema.json#/definitions/compatibility" },
+    "requires": { "$ref": "module.schema.json#/definitions/dependencySet" },
+    "providesCapabilities": {
+      "type": "array",
+      "items": { "$ref": "module.schema.json#/definitions/capabilityId" }
+    },
+    "requestsPermissions": {
+      "type": "array",
+      "items": { "$ref": "module.schema.json#/definitions/permissionRequest" }
+    },
+    "secrets": {
+      "type": "array",
+      "items": { "$ref": "module.schema.json#/definitions/secretReference" }
+    },
+    "files": {
+      "type": "array",
+      "items": { "$ref": "module.schema.json#/definitions/fileInstall" }
+    },
+    "documentation": { "type": "string", "minLength": 1 }
+  }
+}

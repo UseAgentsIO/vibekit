@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "installed.schema.json",
+  "title": "VibeKit Installed Manifest",
+  "description": "Aggregate .vibekit/installed.json document.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "modules"],
+  "properties": {
+    "schemaVersion": { "$ref": "module.schema.json#/definitions/schemaVersion" },
+    "modules": {
+      "type": "array",
+      "items": { "$ref": "installed-module.schema.json" }
+    }
+  }
+}

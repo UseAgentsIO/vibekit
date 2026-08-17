@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "result.schema.json",
+  "title": "VibeKit Result",
+  "description": "Result record stored under .vibekit/state/results/.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "taskId",
+    "runId",
+    "agentId",
+    "status",
+    "summary",
+    "artifacts",
+    "evidence",
+    "verificationIds",
+    "unresolvedIssues",
+    "discoveredConstraints",
+    "recommendedNextActions",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": { "$ref": "module.schema.json#/definitions/schemaVersion" },
+    "id": { "$ref": "module.schema.json#/definitions/resultId" },
+    "taskId": { "$ref": "module.schema.json#/definitions/taskId" },
+    "runId": { "$ref": "module.schema.json#/definitions/runId" },
+    "agentId": { "$ref": "module.schema.json#/definitions/agentId" },
+    "status": {
+      "type": "string",
+      "enum": ["completed", "failed"]
+    },
+    "summary": { "type": "string", "minLength": 1 },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "revision"],
+        "properties": {
+          "path": { "$ref": "module.schema.json#/definitions/fileTarget" },
+          "revision": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "module.schema.json#/definitions/evidenceItem" }
+    },
+    "verificationIds": {
+      "type": "array",
+      "items": { "$ref": "module.schema.json#/definitions/verificationId" }
+    },
+    "unresolvedIssues": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "discoveredConstraints": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "recommendedNextActions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "createdAt": { "$ref": "module.schema.json#/definitions/isoDateTime" }
+  }
+}

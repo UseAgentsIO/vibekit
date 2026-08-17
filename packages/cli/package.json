@@ -1,0 +1,7 @@
+{
+  "name": "vibekit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "VibeKit CLI. Command implementation starts in a later phase.",
+  "type": "module"
+}

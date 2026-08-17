@@ -1,0 +1,42 @@
+schemaVersion: 1
+
+id: tool:git hub
+type: tool
+name: github
+displayName: GitHub Tool
+version: 1.0.0
+description: Gives authorized Agents scoped GitHub repository access.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/vibekit/registry"
+  revision: "a1b2c3d4e5f6789012345678901234567890abcd"
+
+license: "MIT"
+
+providesCapabilities:
+  - repository.read
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions:
+  - capability: repository.read
+
+secrets: []
+
+files:
+  - source: payload/index.ts
+    target: .pi/extensions/github/index.ts
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/tools/github.yaml
+  schema: config.schema.json

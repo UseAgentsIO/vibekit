@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "task.schema.json",
+  "title": "VibeKit Task",
+  "description": "Task record stored under .vibekit/state/tasks/.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "projectId",
+    "objective",
+    "context",
+    "constraints",
+    "acceptanceCriteria",
+    "requiredCapabilities",
+    "assignedAgent",
+    "claimedBy",
+    "scope",
+    "dependencies",
+    "priority",
+    "delivery",
+    "authorization",
+    "status",
+    "revision",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "$ref": "module.schema.json#/definitions/schemaVersion" },
+    "id": { "$ref": "module.schema.json#/definitions/taskId" },
+    "projectId": { "$ref": "module.schema.json#/definitions/projectId" },
+    "objective": { "type": "string", "minLength": 1 },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["references"],
+      "properties": {
+        "references": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "acceptanceCriteria": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "requiredCapabilities": {
+      "type": "array",
+      "items": { "$ref": "module.schema.json#/definitions/capabilityId" }
+    },
+    "assignedAgent": {
+      "anyOf": [
+        { "type": "null" },
+        { "$ref": "module.schema.json#/definitions/agentId" }
+      ]
+    },
+    "claimedBy": {
+      "anyOf": [
+        { "type": "null" },
+        { "$ref": "module.schema.json#/definitions/runId" },
+        { "$ref": "module.schema.json#/definitions/claimId" }
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["paths", "resources"],
+      "properties": {
+        "paths": {
+          "type": "array",
+          "items": { "$ref": "module.schema.json#/definitions/pathGlob" }
+        },
+        "resources": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "$ref": "module.schema.json#/definitions/taskId" }
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["low", "normal", "high"]
+    },
+    "delivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode"],
+      "properties": {
+        "mode": { "$ref": "module.schema.json#/definitions/deliveryMode" }
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state"],
+      "properties": {
+        "state": { "$ref": "module.schema.json#/definitions/authorizationMode" }
+      }
+    },
+    "status": { "$ref": "module.schema.json#/definitions/taskStatus" },
+    "revision": { "type": "integer", "minimum": 1 },
+    "createdAt": { "$ref": "module.schema.json#/definitions/isoDateTime" },
+    "updatedAt": { "$ref": "module.schema.json#/definitions/isoDateTime" }
+  }
+}

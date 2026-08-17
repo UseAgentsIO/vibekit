@@ -1,0 +1,37 @@
+schemaVersion: 1
+id: task_550e8400-e29b-41d4-a716-446655440001
+projectId: project:example-app
+
+objective: Bounded required outcome
+
+context:
+  references: []
+
+constraints: []
+
+acceptanceCriteria: []
+
+requiredCapabilities: []
+
+assignedAgent: null
+claimedBy: null
+
+scope:
+  paths: []
+  resources: []
+
+dependencies: []
+
+priority: normal
+
+delivery:
+  mode: proposal
+
+authorization:
+  state: standing
+
+status: open
+revision: 1
+
+createdAt: 2026-01-15T12:00:00.000Z
+updatedAt: 2026-01-15T12:00:00.000Z

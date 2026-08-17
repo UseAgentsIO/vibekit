@@ -1,0 +1,18 @@
+schemaVersion: 1
+id: verification_550e8400-e29b-41d4-a716-446655440006
+taskId: task_550e8400-e29b-41d4-a716-446655440001
+resultId: result_550e8400-e29b-41d4-a716-446655440003
+verifierId: verifier:command
+candidateRevision: a1b2c3d4e5f6789012345678901234567890abcd
+contract:
+  type: command
+  command: pnpm test
+startedAt: 2026-01-15T12:12:00.000Z
+finishedAt: 2026-01-15T12:14:00.000Z
+status: passed
+evidence:
+  - state: observed
+    source: verifier:command
+    summary: All project tests passed.
+exitCode: 0
+observedFailures: []

@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "verification.schema.json",
+  "title": "VibeKit Verification",
+  "description": "Verification record stored under .vibekit/state/verifications/.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "taskId",
+    "resultId",
+    "verifierId",
+    "candidateRevision",
+    "contract",
+    "startedAt",
+    "finishedAt",
+    "status",
+    "evidence",
+    "observedFailures"
+  ],
+  "properties": {
+    "schemaVersion": { "$ref": "module.schema.json#/definitions/schemaVersion" },
+    "id": { "$ref": "module.schema.json#/definitions/verificationId" },
+    "taskId": { "$ref": "module.schema.json#/definitions/taskId" },
+    "resultId": { "$ref": "module.schema.json#/definitions/resultId" },
+    "verifierId": { "$ref": "module.schema.json#/definitions/moduleId" },
+    "candidateRevision": { "type": "string", "minLength": 1 },
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["command", "review"]
+        },
+        "command": { "type": "string", "minLength": 1 },
+        "review": { "type": "string", "minLength": 1 }
+      }
+    },
+    "startedAt": { "$ref": "module.schema.json#/definitions/isoDateTime" },
+    "finishedAt": {
+      "anyOf": [
+        { "type": "null" },
+        { "$ref": "module.schema.json#/definitions/isoDateTime" }
+      ]
+    },
+    "status": { "$ref": "module.schema.json#/definitions/verificationStatus" },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "module.schema.json#/definitions/evidenceItem" }
+    },
+    "exitCode": {
+      "anyOf": [{ "type": "null" }, { "type": "integer" }]
+    },
+    "observedFailures": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "skipReason": { "type": "string", "minLength": 1 }
+  },
+  "if": {
+    "properties": { "status": { "const": "skipped" } },
+    "required": ["status"]
+  },
+  "then": {
+    "required": ["skipReason"],
+    "properties": {
+      "skipReason": { "type": "string", "minLength": 1 }
+    }
+  }
+}

@@ -1,0 +1,94 @@
+schemaVersion: 1
+
+id: project:example-app
+name: Example App
+root: .
+
+runtime:
+  adapter: "@vibekit/pi"
+
+pi:
+  compatibility: ">=0.50.0"
+
+defaults:
+  model:
+    provider: openai
+    id: gpt-4.1
+
+state:
+  backend: state:repository
+  path: .vibekit/state
+  tracking:
+    decisions: git
+    tasks: local
+    results: local
+    approvals: local
+    verifications: local
+    events: local
+    runtime: ephemeral
+
+agentBindings:
+  chief:
+    definition: agent:chief
+  coder:
+    definition: agent:coder
+  reviewer:
+    definition: agent:reviewer
+  researcher:
+    definition: agent:researcher
+
+delegation:
+  chief:
+    - coder
+    - reviewer
+  coder: []
+  reviewer: []
+  researcher: []
+
+capabilityBindings:
+  source.read: tool:filesystem
+  source.write: tool:filesystem
+  command.execute: tool:execution
+  repository.read: tool:github
+  repository.write: tool:github
+
+policies:
+  - policy:least-privilege
+  - policy:require-verification
+
+execution:
+  maxParallelRuns: 4
+  defaultIsolation: process
+  mutationIsolation: worktree
+  defaultTimeoutMs: 600000
+  maxDelegationDepth: 2
+
+authorization:
+  default: deny
+  actions:
+    source.read: standing
+    source.write: standing
+    deploy.apply: explicit
+    destructive.delete: explicit
+    project.configure: explicit
+
+verification:
+  default:
+    - verifier:command
+
+sources:
+  canonical:
+    - .vibekit/project.yaml
+    - .vibekit/agents/
+    - .vibekit/state/decisions/
+    - src/
+    - tests/
+  derived:
+    - STATUS.md
+    - TASKS.md
+  untrusted:
+    - external documents
+    - issue text
+    - web content
+    - tool output
+    - retrieved memory

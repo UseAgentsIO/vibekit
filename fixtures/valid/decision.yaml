@@ -1,0 +1,16 @@
+schemaVersion: 1
+id: decision_550e8400-e29b-41d4-a716-446655440004
+projectId: project:example-app
+question: Should the public API use REST or GraphQL?
+decision: Use REST for the public API.
+status: accepted
+reason: Existing clients already speak REST and the surface area is small.
+evidence:
+  - state: accepted
+    source: research-notes
+    summary: Researcher compared payload size and client churn.
+authority: project-owner
+producedBy: agent:researcher
+createdAt: 2026-01-15T12:00:00.000Z
+updatedAt: 2026-01-15T12:05:00.000Z
+supersedes: null

@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "event_550e8400-e29b-41d4-a716-446655440008",
+  "type": "run.started",
+  "projectId": "project:example-app",
+  "taskId": "task_550e8400-e29b-41d4-a716-446655440001",
+  "runId": "run_550e8400-e29b-41d4-a716-446655440002",
+  "actor": "agent:coder",
+  "timestamp": "2026-01-15T12:00:00.000Z",
+  "data": {}
+}

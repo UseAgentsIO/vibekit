@@ -1,0 +1,376 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "module.schema.json",
+  "title": "VibeKit Module",
+  "description": "Shared fields for installable Components and Agents.",
+  "type": "object",
+  "required": ["schemaVersion", "id", "type", "name", "version", "description"],
+  "properties": {
+    "schemaVersion": { "$ref": "#/definitions/schemaVersion" },
+    "id": { "$ref": "#/definitions/moduleId" },
+    "type": { "$ref": "#/definitions/moduleType" },
+    "name": { "$ref": "#/definitions/moduleName" },
+    "displayName": { "type": "string", "minLength": 1 },
+    "version": { "$ref": "#/definitions/semver" },
+    "description": { "type": "string", "minLength": 1 },
+    "compatibility": { "$ref": "#/definitions/compatibility" },
+    "source": { "$ref": "#/definitions/source" },
+    "license": { "$ref": "#/definitions/license" }
+  },
+  "definitions": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1,
+      "description": "VibeKit document schema version. V1 is 1."
+    },
+    "moduleName": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "moduleType": {
+      "type": "string",
+      "enum": [
+        "provider",
+        "tool",
+        "skill",
+        "interface",
+        "state",
+        "policy",
+        "verifier",
+        "agent"
+      ]
+    },
+    "componentType": {
+      "type": "string",
+      "enum": [
+        "provider",
+        "tool",
+        "skill",
+        "interface",
+        "state",
+        "policy",
+        "verifier"
+      ]
+    },
+    "moduleId": {
+      "type": "string",
+      "pattern": "^(provider|tool|skill|interface|state|policy|verifier|agent):[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "agentId": {
+      "type": "string",
+      "pattern": "^agent:[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "componentId": {
+      "type": "string",
+      "pattern": "^(provider|tool|skill|interface|state|policy|verifier):[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "projectId": {
+      "type": "string",
+      "pattern": "^project:[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "bindingName": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "taskId": {
+      "type": "string",
+      "pattern": "^task_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "runId": {
+      "type": "string",
+      "pattern": "^run_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "resultId": {
+      "type": "string",
+      "pattern": "^result_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "decisionId": {
+      "type": "string",
+      "pattern": "^decision_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "approvalId": {
+      "type": "string",
+      "pattern": "^approval_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "verificationId": {
+      "type": "string",
+      "pattern": "^verification_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "eventId": {
+      "type": "string",
+      "pattern": "^event_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "claimId": {
+      "type": "string",
+      "pattern": "^claim_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$"
+    },
+    "semverRange": {
+      "type": "string",
+      "minLength": 1
+    },
+    "license": {
+      "type": "string",
+      "minLength": 1
+    },
+    "isoDateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "gitSha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,40}$"
+    },
+    "sha256Checksum": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "capabilityId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z][a-z0-9]*)*$"
+    },
+    "fileTarget": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "pattern": "^(?![\\\\/])(?![A-Za-z]:)(?!.*\\.\\.)[^\\u0000\\\\]+$"
+    },
+    "pathGlob": {
+      "type": "string",
+      "minLength": 1
+    },
+    "secretName": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]*$"
+    },
+    "secretSource": {
+      "type": "string",
+      "enum": ["environment"]
+    },
+    "secretReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "source"],
+      "properties": {
+        "name": { "$ref": "#/definitions/secretName" },
+        "source": { "$ref": "#/definitions/secretSource" },
+        "required": { "type": "boolean" }
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["vibekit", "pi"],
+      "properties": {
+        "vibekit": { "$ref": "#/definitions/semverRange" },
+        "pi": { "type": "string", "minLength": 1 },
+        "node": { "type": "string", "minLength": 1 }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision"],
+      "properties": {
+        "repository": { "type": "string", "minLength": 1 },
+        "revision": { "type": "string", "minLength": 1 }
+      }
+    },
+    "moduleIdList": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/moduleId" }
+    },
+    "dependencySet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "optional", "recommended", "conflicts"],
+      "properties": {
+        "required": { "$ref": "#/definitions/moduleIdList" },
+        "optional": { "$ref": "#/definitions/moduleIdList" },
+        "recommended": { "$ref": "#/definitions/moduleIdList" },
+        "conflicts": { "$ref": "#/definitions/moduleIdList" }
+      }
+    },
+    "permissionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capability"],
+      "properties": {
+        "capability": { "$ref": "#/definitions/capabilityId" }
+      }
+    },
+    "fileInstall": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "target", "ownership"],
+      "properties": {
+        "source": { "$ref": "#/definitions/fileTarget" },
+        "target": { "$ref": "#/definitions/fileTarget" },
+        "ownership": { "$ref": "#/definitions/ownershipMode" }
+      }
+    },
+    "ownershipMode": {
+      "type": "string",
+      "enum": ["exclusive", "generated"]
+    },
+    "trackingMode": {
+      "type": "string",
+      "enum": ["git", "local", "ephemeral"]
+    },
+    "authorizationMode": {
+      "type": "string",
+      "enum": ["deny", "standing", "explicit"]
+    },
+    "isolationMode": {
+      "type": "string",
+      "enum": ["process", "worktree"]
+    },
+    "deliveryMode": {
+      "type": "string",
+      "enum": ["proposal", "apply"]
+    },
+    "taskStatus": {
+      "type": "string",
+      "enum": [
+        "open",
+        "claimed",
+        "running",
+        "blocked",
+        "review",
+        "accepted",
+        "failed",
+        "cancelled"
+      ]
+    },
+    "runStatus": {
+      "type": "string",
+      "enum": [
+        "created",
+        "ready",
+        "running",
+        "waiting",
+        "completed",
+        "failed",
+        "cancelled",
+        "timed_out"
+      ]
+    },
+    "decisionStatus": {
+      "type": "string",
+      "enum": ["proposed", "accepted", "rejected", "disputed", "superseded"]
+    },
+    "approvalStatus": {
+      "type": "string",
+      "enum": ["pending", "approved", "rejected", "expired"]
+    },
+    "verificationStatus": {
+      "type": "string",
+      "enum": ["pending", "passed", "failed", "skipped"]
+    },
+    "evidenceState": {
+      "type": "string",
+      "enum": [
+        "observed",
+        "proposed",
+        "accepted",
+        "rejected",
+        "disputed",
+        "superseded",
+        "inferred",
+        "unresolved"
+      ]
+    },
+    "evidenceItem": {
+      "anyOf": [
+        { "type": "string", "minLength": 1 },
+        {
+          "type": "object",
+          "required": ["state"],
+          "additionalProperties": false,
+          "properties": {
+            "state": { "$ref": "#/definitions/evidenceState" },
+            "source": { "type": "string", "minLength": 1 },
+            "summary": { "type": "string" },
+            "uri": { "type": "string", "minLength": 1 }
+          }
+        }
+      ]
+    },
+    "permissionScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "paths": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/pathGlob" }
+        },
+        "commands": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "resources": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "branches": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "permissionGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capability"],
+      "properties": {
+        "capability": { "$ref": "#/definitions/capabilityId" },
+        "scope": { "$ref": "#/definitions/permissionScope" }
+      }
+    },
+    "eventType": {
+      "type": "string",
+      "enum": [
+        "task.created",
+        "task.claimed",
+        "task.started",
+        "task.blocked",
+        "task.completed",
+        "task.failed",
+        "task.cancelled",
+        "run.created",
+        "run.started",
+        "run.progress",
+        "run.waiting",
+        "run.completed",
+        "run.failed",
+        "run.cancelled",
+        "run.timed_out",
+        "result.created",
+        "verification.started",
+        "verification.passed",
+        "verification.failed",
+        "verification.skipped",
+        "approval.requested",
+        "approval.approved",
+        "approval.rejected",
+        "approval.expired",
+        "decision.recorded",
+        "decision.superseded",
+        "artifact.created",
+        "artifact.changed",
+        "policy.changed",
+        "permission.changed",
+        "module.installed",
+        "module.updated",
+        "module.removed"
+      ]
+    }
+  }
+}
