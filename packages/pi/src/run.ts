@@ -1,8 +1,13 @@
+import path from "node:path";
+
 import {
+  createRepositoryState,
   isVibeKitError,
+  type ClaimRecord,
   type DecisionDocument,
   type EventDocument,
   type ProjectDocument,
+  type RepositoryState,
   type ResultDocument,
   type RunState,
   type RuntimeId,
@@ -17,10 +22,27 @@ import {
   resolveEffectiveConfiguration,
   type EffectiveConfiguration,
 } from "./config.js";
+import {
+  createChildTaskDocument,
+  loadDelegationTarget,
+  resolveChildTask,
+  validateDelegation,
+  type DelegationGraphContext,
+  type DelegationRequest,
+  type ValidatedDelegation,
+} from "./delegate.js";
 import { filterEnvironment, type FilteredEnvironment } from "./env.js";
 import { createRunEvent, mapPiSessionEvent, type PiSessionEvent } from "./events.js";
+import { fail } from "./fail.js";
+import { createIdempotencyStore, type IdempotencyRecord, type IdempotencyStore } from "./idempotency.js";
 import { newRuntimeId } from "./ids.js";
+import {
+  planProcessIsolation,
+  requiresProcessIsolation,
+  type ProcessIsolationPlan,
+} from "./isolation.js";
 import type { ModelRef } from "./model.js";
+import { createConcurrencyPool, type ConcurrencyPool, type PoolLease } from "./pool.js";
 import { resolveProjectDocument } from "./project.js";
 import { collectResult } from "./result.js";
 import {
@@ -35,6 +57,15 @@ import {
   assertTaskMatchesProject,
   resolveTaskDocument,
 } from "./task.js";
+import { AGENT_DELEGATE_TOOL, registerDelegateTool } from "./tools.js";
+import {
+  createWorktree,
+  isGitRepository,
+  isMutatingTask,
+  removeWorktree,
+  shouldUseWorktree,
+  type WorktreeRecord,
+} from "./worktree.js";
 
 export interface IsolatedRunInput {
   readonly projectRoot: string;
@@ -55,6 +86,58 @@ export interface IsolatedRunInput {
   readonly now?: Date;
   readonly approvalGranted?: boolean;
   readonly createSession?: CreatePiSession;
+  readonly state?: RepositoryState;
+  readonly pool?: ConcurrencyPool;
+  readonly idempotency?: IdempotencyStore;
+  readonly idempotencyKey?: string;
+  readonly exclusive?: boolean;
+  readonly isolateWorktree?: boolean;
+  readonly isolateProcess?: boolean;
+  readonly depth?: number;
+  readonly ancestorBindings?: readonly string[];
+  readonly activeChildCount?: number;
+}
+
+export interface ManagedRunInput extends IsolatedRunInput {}
+
+export interface ManagedRunOutcome {
+  readonly runId: RuntimeId;
+  readonly status: IsolatedRunOutcome["status"] | "duplicate";
+  readonly duplicate: boolean;
+  readonly events: readonly EventDocument[];
+  readonly result?: ResultDocument;
+  readonly configuration?: EffectiveConfiguration;
+  readonly context?: BoundedContext;
+  readonly environment?: FilteredEnvironment;
+  readonly failure?: StructuredFailure;
+  readonly claim?: ClaimRecord;
+  readonly worktree?: WorktreeRecord;
+  readonly isolationPlan?: ProcessIsolationPlan;
+  readonly existing?: IdempotencyRecord;
+  readonly lease?: PoolLease;
+}
+
+export interface DelegationExecuteInput extends DelegationGraphContext {
+  readonly projectRoot: string;
+  readonly createSession?: CreatePiSession;
+  readonly state?: RepositoryState;
+  readonly pool?: ConcurrencyPool;
+  readonly existingTask?: TaskDocument;
+  readonly env?: NodeJS.ProcessEnv;
+  readonly extraEnv?: Readonly<Record<string, string>>;
+  readonly signal?: AbortSignal;
+  readonly now?: Date;
+  readonly approvalGranted?: boolean;
+  readonly componentSecrets?: readonly SecretReference[];
+  readonly taskModel?: ModelRef;
+  readonly projectAgentModel?: ModelRef;
+}
+
+export interface DelegationOutcome {
+  readonly request: DelegationRequest;
+  readonly validated: ValidatedDelegation;
+  readonly childTask: TaskDocument;
+  readonly child: ManagedRunOutcome;
 }
 
 export interface PreparedRun {
@@ -212,7 +295,10 @@ export async function runIsolated(input: IsolatedRunInput): Promise<IsolatedRunO
     session = await createSession({
       cwd: prepared.configuration.cwd,
       tools: prepared.configuration.tools,
-      systemPrompt: prepared.context.systemPrompt,
+      systemPrompt: systemPromptForTools(
+        prepared.context.systemPrompt,
+        prepared.configuration.tools,
+      ),
       model: prepared.configuration.model,
     });
 
@@ -452,5 +538,255 @@ function toFailure(error: unknown): StructuredFailure {
     message: error instanceof Error ? error.message : "Pi session failed",
   };
 }
+
+const DELEGATE_INVARIANT =
+  "9. Do not register or invoke agent_delegate. Delegation is not available in this Run.";
+const DELEGATE_INVARIANT_ALLOWED =
+  "9. You may invoke agent_delegate only for authorized Project bindings. The child receives a new bounded Task, not this conversation.";
+
+function systemPromptForTools(systemPrompt: string, tools: readonly string[]): string {
+  if (!tools.includes(AGENT_DELEGATE_TOOL)) {
+    return systemPrompt;
+  }
+  return systemPrompt.replace(DELEGATE_INVARIANT, DELEGATE_INVARIANT_ALLOWED);
+}
+
+export async function runManaged(input: ManagedRunInput): Promise<ManagedRunOutcome> {
+  const task = resolveTaskDocument(input.task);
+  const runId = input.runId ?? newRuntimeId("run");
+  const state = input.state;
+  const idempotency = resolveIdempotencyStore(input, state);
+
+  if (input.idempotencyKey !== undefined && idempotency !== undefined) {
+    const begun = idempotency.begin(input.idempotencyKey, task.id, runId);
+    if (!begun.created) {
+      return {
+        runId: begun.record.runId ?? runId,
+        status: "duplicate",
+        duplicate: true,
+        events: [],
+        existing: begun.record,
+      };
+    }
+  }
+
+  const prepared = prepareIsolatedRun({ ...input, task, runId });
+  const tools = registerDelegateTool(
+    prepared.configuration.tools,
+    prepared.agent.document.capabilities.requires,
+  );
+  const mutating = isMutatingTask(task, tools);
+  const useWorktree =
+    input.isolateWorktree === true ||
+    (input.isolateWorktree !== false &&
+      shouldUseWorktree({
+        isolation: prepared.configuration.isolation,
+        mutationIsolation: prepared.project.execution.mutationIsolation,
+        mutating,
+      }) &&
+      isGitRepository(input.projectRoot));
+  const useProcessPlan =
+    input.isolateProcess === true ||
+    (input.isolateProcess !== false &&
+      requiresProcessIsolation({
+        project: prepared.project,
+        isolation: prepared.configuration.isolation,
+        mutating,
+      }));
+
+  const pool =
+    input.pool ??
+    createConcurrencyPool({
+      max: prepared.configuration.maxParallelRuns,
+      directory:
+        state === undefined
+          ? undefined
+          : path.join(state.paths.runtime, "pool"),
+    });
+  const lease = pool.acquire(runId);
+
+  let claim: ClaimRecord | undefined;
+  let worktree: WorktreeRecord | undefined;
+  let worktreeCleanupFailed = false;
+  let outcome: IsolatedRunOutcome | undefined;
+  const isolationPlan = useProcessPlan
+    ? planProcessIsolation({
+        cwd: prepared.configuration.cwd,
+        secrets: prepared.configuration.secrets,
+        source: input.env,
+        extra: input.extraEnv,
+        environment: prepared.environment,
+      })
+    : undefined;
+
+  try {
+    if (state !== undefined) {
+      state.claims.recoverStale();
+      claim = state.claims.create({
+        taskId: task.id,
+        runId,
+        agentId: prepared.agent.document.id,
+        scope: {
+          paths: [...task.scope.paths],
+          resources: [...task.scope.resources],
+        },
+        exclusive: input.exclusive ?? true,
+      });
+    }
+
+    if (useWorktree) {
+      worktree = createWorktree({
+        repoRoot: input.projectRoot,
+        runId,
+      });
+    }
+
+    outcome = await runIsolated({
+      ...input,
+      task,
+      runId,
+      cwd: worktree?.path ?? input.cwd,
+    });
+
+    if (input.idempotencyKey !== undefined) {
+      idempotency?.complete(input.idempotencyKey, runId);
+    }
+  } finally {
+    if (worktree !== undefined) {
+      try {
+        removeWorktree(worktree);
+      } catch {
+        worktreeCleanupFailed = true;
+      }
+    }
+    if (claim !== undefined && state !== undefined) {
+      try {
+        state.claims.release(claim.id);
+      } catch {
+        // Claim may already be expired and recovered.
+      }
+    }
+    pool.release(runId);
+  }
+
+  if (outcome === undefined) {
+    throw fail(
+      "internal_error",
+      "managed_run_incomplete",
+      "Managed Run ended without an outcome",
+      { runId },
+    );
+  }
+
+  if (worktreeCleanupFailed && prepared.configuration.cleanupRequired) {
+    return {
+      ...outcome,
+      status: "failed",
+      duplicate: false,
+      claim,
+      worktree,
+      isolationPlan,
+      lease,
+      failure: {
+        category: "cleanup_failed",
+        code: "cleanup_failed",
+        message: "Required worktree cleanup failed after the Run",
+      },
+    };
+  }
+
+  return {
+    ...outcome,
+    duplicate: false,
+    claim,
+    worktree,
+    isolationPlan,
+    lease,
+  };
+}
+
+export async function executeDelegation(
+  request: DelegationRequest,
+  input: DelegationExecuteInput,
+): Promise<DelegationOutcome> {
+  const validated = validateDelegation(request, input);
+  loadDelegationTarget({
+    projectRoot: input.projectRoot,
+    project: input.project,
+    targetBinding: validated.targetBinding,
+  });
+  const childDraft = resolveChildTask({
+    project: input.project,
+    request,
+    targetDefinition: validated.targetDefinition,
+    parentTask: input.parentTask,
+    existing: input.existingTask,
+    now: input.now,
+  });
+  if (childDraft.created && input.state !== undefined) {
+    input.state.tasks.create(childDraft.task);
+  }
+
+  const child = await runManaged({
+    projectRoot: input.projectRoot,
+    bindingName: validated.targetBinding,
+    task: childDraft.task,
+    project: input.project,
+    state: input.state,
+    pool: input.pool,
+    createSession: input.createSession,
+    env: input.env,
+    extraEnv: input.extraEnv,
+    signal: input.signal,
+    now: input.now,
+    approvalGranted: input.approvalGranted,
+    componentSecrets: input.componentSecrets,
+    taskModel: input.taskModel,
+    projectAgentModel: input.projectAgentModel,
+    depth: validated.childDepth,
+    ancestorBindings: [...(input.ancestorBindings ?? []), input.parentBinding],
+    exclusive: true,
+  });
+
+  return {
+    request,
+    validated,
+    childTask: childDraft.task,
+    child,
+  };
+}
+
+function resolveIdempotencyStore(
+  input: ManagedRunInput,
+  state: RepositoryState | undefined,
+): IdempotencyStore | undefined {
+  if (input.idempotency !== undefined) {
+    return input.idempotency;
+  }
+  if (input.idempotencyKey === undefined) {
+    return undefined;
+  }
+  const directory =
+    state !== undefined
+      ? path.join(state.paths.runtime, "idempotency")
+      : path.join(path.resolve(input.projectRoot), ".vibekit", "runtime", "idempotency");
+  return createIdempotencyStore({ directory });
+}
+
+export function openProjectState(input: {
+  readonly projectRoot: string;
+  readonly project?: ProjectDocument;
+  readonly now?: () => Date;
+}): RepositoryState {
+  const project = resolveProjectDocument(input.projectRoot, input.project);
+  return createRepositoryState({
+    projectRoot: input.projectRoot,
+    statePath: project.state.path,
+    now: input.now,
+  });
+}
+
+export { createChildTaskDocument, validateDelegation };
+
 
 

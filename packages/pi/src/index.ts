@@ -52,9 +52,13 @@ export {
 } from "./model.js";
 
 export {
+  AGENT_DELEGATE_TOOL,
   CAPABILITY_TOOL_MAP,
+  DELEGATE_CAPABILITY,
   MUTATING_TOOLS,
   PI_BUILTIN_TOOLS,
+  hasDelegateCapability,
+  registerDelegateTool,
   toolsForCapability,
   uniqueTools,
   type PiBuiltinTool,
@@ -99,11 +103,78 @@ export {
 } from "./session.js";
 
 export {
+  executeDelegation,
+  openProjectState,
   prepareIsolatedRun,
   runIsolated,
+  runManaged,
+  type DelegationExecuteInput,
+  type DelegationOutcome,
   type IsolatedRunInput,
   type IsolatedRunOutcome,
+  type ManagedRunInput,
+  type ManagedRunOutcome,
   type PreparedRun,
 } from "./run.js";
+
+export {
+  AGENT_DELEGATE_DESCRIPTION,
+  AGENT_DELEGATE_PARAMETERS,
+  agentAllowsDelegation,
+  agentDocumentOf,
+  assertChildTaskAssignable,
+  assertDelegationGraphAcyclic,
+  createAgentDelegateTool,
+  createChildTaskDocument,
+  detectDelegationCycle,
+  effectiveMaxDelegationDepth,
+  loadDelegationTarget,
+  parseDelegationRequest,
+  projectAllowsDelegation,
+  resolveChildTask,
+  taskPermitsDelegation,
+  validateDelegation,
+  type ChildTaskDraft,
+  type DelegationGraphContext,
+  type DelegationRequest,
+  type ValidatedDelegation,
+} from "./delegate.js";
+
+export {
+  createWorktree,
+  isGitRepository,
+  isMutatingTask,
+  listWorktrees,
+  removeWorktree,
+  resolveRepoRoot,
+  shouldUseWorktree,
+  worktreePathFor,
+  type CreateWorktreeInput,
+  type WorktreeRecord,
+} from "./worktree.js";
+
+export {
+  ISOLATED_CHILD_PROTOCOL,
+  planProcessIsolation,
+  requiresProcessIsolation,
+  runIsolatedProcess,
+  spawnIsolatedProcess,
+  type IsolatedChild,
+  type PlanProcessIsolationInput,
+  type ProcessIsolationPlan,
+} from "./isolation.js";
+
+export {
+  createIdempotencyStore,
+  idempotencyFileName,
+  type IdempotencyRecord,
+  type IdempotencyStore,
+} from "./idempotency.js";
+
+export {
+  createConcurrencyPool,
+  type ConcurrencyPool,
+  type PoolLease,
+} from "./pool.js";
 
 export { evaluateVerification, reviewAfterRun, verifyAfterRun } from "./verify-hook.js";
