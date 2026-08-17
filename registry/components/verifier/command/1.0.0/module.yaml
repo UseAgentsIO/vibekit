@@ -1,0 +1,46 @@
+schemaVersion: 1
+
+id: verifier:command
+type: verifier
+name: command
+displayName: Command Verifier
+version: 1.0.0
+description: Runs a declared project command and records the exit status as Verification.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - verification.command
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions:
+  - capability: command.execute
+
+secrets: []
+
+files:
+  - source: payload/verifier.yaml
+    target: .vibekit/components/verifiers/command.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/verifiers/command.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: command
+  name: command

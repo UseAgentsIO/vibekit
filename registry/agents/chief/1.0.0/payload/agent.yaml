@@ -1,0 +1,110 @@
+schemaVersion: 1
+
+id: agent:chief
+type: agent
+name: chief
+displayName: Chief
+version: 1.0.0
+description: Composes Project work by delegating to Project Manager, Coder, Reviewer, and Researcher.
+
+instructions: ./instructions.md
+
+model:
+  provider: inherit
+  id: inherit
+  allowProjectOverride: true
+  allowTaskOverride: false
+
+components:
+  required:
+    - state:repository
+  optional:
+    - tool:github
+  recommended:
+    - agent:project-manager
+    - agent:coder
+    - agent:reviewer
+    - agent:researcher
+    - policy:least-privilege
+    - policy:require-verification
+
+capabilities:
+  requires:
+    - source.read
+    - agent.delegate
+
+inputs:
+  required:
+    - objective
+    - constraints
+  optional:
+    - acceptanceCriteria
+
+outputs:
+  required:
+    - summary
+    - tasks
+    - decisions
+    - unresolvedIssues
+
+permissions:
+  allow:
+    - capability: source.read
+      scope:
+        paths:
+          - "**"
+    - capability: agent.delegate
+      scope:
+        resources:
+          - project-manager
+          - coder
+          - reviewer
+          - researcher
+  deny:
+    - capability: source.write
+    - capability: project.configure
+    - capability: module.install
+    - capability: deploy.apply
+
+delegation:
+  allowed: true
+  targets:
+    - project-manager
+    - coder
+    - reviewer
+    - researcher
+  maxDepth: 2
+  maxParallelChildren: 4
+
+state:
+  read:
+    - project
+    - tasks
+    - decisions
+    - results
+  write:
+    - tasks
+    - decisions
+    - results
+    - events
+
+execution:
+  isolation: process
+  timeoutMs: 600000
+  cleanupRequired: true
+
+verification:
+  required: []
+  independentReview: false
+
+completion:
+  requires:
+    - result-recorded
+    - tasks-recorded
+
+escalation:
+  on:
+    - permission-denied
+    - conflicting-project-state
+    - delegation-failed
+    - missing-acceptance-criteria

@@ -1,0 +1,4 @@
+id: state:repository
+backend: files
+path: .vibekit/state
+description: File-backed Project State. Runtime stores are implemented in a later phase.

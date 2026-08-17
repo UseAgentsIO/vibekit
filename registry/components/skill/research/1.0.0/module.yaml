@@ -1,0 +1,41 @@
+schemaVersion: 1
+
+id: skill:research
+type: skill
+name: research
+displayName: Research
+version: 1.0.0
+description: Skill for cited research, source evaluation, and evidence recording.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - skill.research
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets: []
+
+files:
+  - source: payload/SKILL.md
+    target: .pi/skills/research/SKILL.md
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/skills/research.yaml
+  schema: config.schema.json

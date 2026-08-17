@@ -90,7 +90,6 @@
     },
     "agentBindings": {
       "type": "object",
-      "minProperties": 1,
       "additionalProperties": {
         "type": "object",
         "additionalProperties": false,

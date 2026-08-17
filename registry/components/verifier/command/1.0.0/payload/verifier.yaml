@@ -1,0 +1,3 @@
+id: verifier:command
+type: command
+description: Execute the Project verification command against an exact candidate revision.

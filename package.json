@@ -10,11 +10,13 @@
   },
   "scripts": {
     "test": "vitest run",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "registry:index": "tsx scripts/build-registry-index.ts"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
     "@vibekit/core": "workspace:*",
+    "tsx": "^4.20.5",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
   }

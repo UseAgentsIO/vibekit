@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "modules": [
+    {
+      "id": "agent:chief",
+      "version": "1.0.0",
+      "checksum": "sha256:aff9fa0dff1a6c77904455cdfdba22470f5bc04b4a2e50af181fbe500d62d8c6",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "agents/chief/1.0.0"
+    },
+    {
+      "id": "agent:coder",
+      "version": "1.0.0",
+      "checksum": "sha256:02012db69b927d3b110773a21f36a0bce7338a0d55fb1b8081fabe59db3f5b07",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "agents/coder/1.0.0"
+    },
+    {
+      "id": "agent:project-manager",
+      "version": "1.0.0",
+      "checksum": "sha256:003361b2dfa3cf45a03bbffdd526abc7e71baa7264c4488d615eff4a0d8f0f94",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "agents/project-manager/1.0.0"
+    },
+    {
+      "id": "agent:researcher",
+      "version": "1.0.0",
+      "checksum": "sha256:76177792d5c0ea6a1129657b81dfe2e339d0f54c8a26cd1a1be32b0078be819f",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "agents/researcher/1.0.0"
+    },
+    {
+      "id": "agent:reviewer",
+      "version": "1.0.0",
+      "checksum": "sha256:c4cf0f0f9ffc44462cb7b34e852a266a6563a5149eb9c64a55cf44d843124fb6",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "agents/reviewer/1.0.0"
+    },
+    {
+      "id": "interface:terminal",
+      "version": "1.0.0",
+      "checksum": "sha256:f0172d04f16c024af3756a2375da74b14fa1e7f1056ecaea144db7620566e497",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/interface/terminal/1.0.0"
+    },
+    {
+      "id": "policy:least-privilege",
+      "version": "1.0.0",
+      "checksum": "sha256:c3683db4a9d015fc5e6c2987cf92ab98f613afa104b83df4d8ff4d5847dd9bfb",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/policy/least-privilege/1.0.0"
+    },
+    {
+      "id": "policy:require-verification",
+      "version": "1.0.0",
+      "checksum": "sha256:b9e4a3b62ceeb613ea08bb9da3a5ddd67a09305c5ee794741727175e6ff19f50",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/policy/require-verification/1.0.0"
+    },
+    {
+      "id": "provider:openai",
+      "version": "1.0.0",
+      "checksum": "sha256:356dc379f6927e7d502af9134329b226df2218068cb57ab17f77f89744d33c49",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/openai/1.0.0"
+    },
+    {
+      "id": "skill:research",
+      "version": "1.0.0",
+      "checksum": "sha256:d7464b355faa23a0001ece90efe0d636710a323be3d2b608b6cc70fc75f68c2d",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/skill/research/1.0.0"
+    },
+    {
+      "id": "skill:software-development",
+      "version": "1.0.0",
+      "checksum": "sha256:e54a1f9c09c755e2f0f70ec74bcd2ccfc44d80cb9995c5f2525af0ebaf41ecf1",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/skill/software-development/1.0.0"
+    },
+    {
+      "id": "state:repository",
+      "version": "1.0.0",
+      "checksum": "sha256:3c1f8344ef676063d2da8045744dd769ba3bbc5e0e8a3e7c4ae13bb8b527972b",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/state/repository/1.0.0"
+    },
+    {
+      "id": "tool:execution",
+      "version": "1.0.0",
+      "checksum": "sha256:d612c3c11be9ff956c5b5c5015f6100f198923bb991b69e21fe8bc4fb3066f37",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/tool/execution/1.0.0"
+    },
+    {
+      "id": "tool:filesystem",
+      "version": "1.0.0",
+      "checksum": "sha256:1149fbdd965e7773866340599de70f44d4eae1f97a6bc4918f1e2bfb0dd35b9c",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/tool/filesystem/1.0.0"
+    },
+    {
+      "id": "tool:github",
+      "version": "1.0.0",
+      "checksum": "sha256:17d8db9dd6e7c380167b194aa6787a7a86a57158c4256c2f592305386104cdc0",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/tool/github/1.0.0"
+    },
+    {
+      "id": "verifier:command",
+      "version": "1.0.0",
+      "checksum": "sha256:c6580a8bb5c51f7e74266b2d83d9f6d829154917d4e21c755541587c46182907",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/verifier/command/1.0.0"
+    }
+  ]
+}

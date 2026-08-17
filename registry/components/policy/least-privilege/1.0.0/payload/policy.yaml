@@ -1,0 +1,3 @@
+id: policy:least-privilege
+effect: reduce-authority
+description: Deny undeclared actions. A missing grant is a deny.

@@ -1,0 +1,121 @@
+schemaVersion: 1
+
+id: agent:coder
+type: agent
+name: coder
+displayName: Coder
+version: 1.0.0
+description: Implements bounded software changes and returns evidence.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+instructions: payload/instructions.md
+
+model:
+  provider: inherit
+  id: inherit
+  allowProjectOverride: true
+  allowTaskOverride: false
+
+components:
+  required:
+    - skill:software-development
+    - state:repository
+    - verifier:command
+  optional:
+    - tool:github
+  recommended:
+    - policy:require-verification
+
+capabilities:
+  requires:
+    - source.read
+    - source.write
+    - command.execute
+
+inputs:
+  required:
+    - objective
+    - constraints
+    - acceptanceCriteria
+
+outputs:
+  required:
+    - summary
+    - artifacts
+    - evidence
+    - unresolvedIssues
+
+permissions:
+  allow:
+    - capability: source.read
+      scope:
+        paths:
+          - "**"
+    - capability: source.write
+      scope:
+        paths:
+          - "src/**"
+          - "tests/**"
+    - capability: command.execute
+      scope:
+        commands:
+          - project-verification
+  deny:
+    - capability: project.configure
+    - capability: module.install
+    - capability: deploy.apply
+
+delegation:
+  allowed: false
+  targets: []
+  maxDepth: 0
+  maxParallelChildren: 0
+
+state:
+  read:
+    - project
+    - tasks
+    - decisions
+  write:
+    - results
+    - events
+
+execution:
+  isolation: worktree
+  timeoutMs: 1200000
+  cleanupRequired: true
+
+verification:
+  required:
+    - verifier:command
+  independentReview: false
+
+completion:
+  requires:
+    - result-recorded
+    - required-verification-finished
+
+escalation:
+  on:
+    - permission-denied
+    - conflicting-project-state
+    - missing-acceptance-criteria
+    - verification-failed
+
+files:
+  - source: payload/agent.yaml
+    target: .vibekit/agents/coder/agent.yaml
+    ownership: exclusive
+  - source: payload/instructions.md
+    target: .vibekit/agents/coder/instructions.md
+    ownership: exclusive

@@ -1,0 +1,43 @@
+schemaVersion: 1
+
+id: state:repository
+type: state
+name: repository
+displayName: Repository State
+version: 1.0.0
+description: Stores Project State as files under the Project repository.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - state.repository
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions:
+  - capability: source.read
+  - capability: source.write
+
+secrets: []
+
+files:
+  - source: payload/adapter.yaml
+    target: .vibekit/components/state/repository.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/state/repository.yaml
+  schema: config.schema.json

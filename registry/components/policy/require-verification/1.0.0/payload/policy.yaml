@@ -1,0 +1,3 @@
+id: policy:require-verification
+effect: require-verification
+description: Agent completion is not acceptance. Required Verifiers must finish first.

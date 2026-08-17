@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "tool:execution configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "allow": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

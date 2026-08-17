@@ -1,0 +1,49 @@
+schemaVersion: 1
+
+id: tool:filesystem
+type: tool
+name: filesystem
+displayName: Filesystem Tool
+version: 1.0.0
+description: Gives authorized Agents scoped read and write access to Project files.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - source.read
+  - source.write
+
+requires:
+  required: []
+  optional: []
+  recommended:
+    - policy:least-privilege
+  conflicts: []
+
+requestsPermissions:
+  - capability: source.read
+  - capability: source.write
+
+secrets: []
+
+files:
+  - source: payload/index.ts
+    target: .pi/extensions/filesystem/index.ts
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/tools/filesystem.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-tool
+  name: filesystem

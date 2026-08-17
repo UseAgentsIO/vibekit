@@ -4,6 +4,7 @@ export {
   VibeKitError,
   isFailureCategory,
   isVibeKitError,
+  containsLikelySecret,
   redactSecrets,
 } from "./errors.js";
 export type { FailureCategory, VibeKitErrorOptions } from "./errors.js";
@@ -147,3 +148,97 @@ export {
   isSafeFileTarget,
   validateFileTarget,
 } from "./file-targets.js";
+
+export {
+  INSTALLED_RELATIVE_PATH,
+  OFFICIAL_REGISTRY_SOURCE,
+  PI_EXTENSION_RELATIVE_PATH,
+  PI_RUNTIME_VERSION,
+  PROJECT_RELATIVE_PATH,
+  RUNTIME_GITIGNORE_RULE,
+  STAGING_RELATIVE_PATH,
+  VIBEKIT_DIR,
+  VIBEKIT_VERSION,
+} from "./constants.js";
+
+export {
+  checksumDirectory,
+  listFilesRecursive,
+  sha256Checksum,
+  sha256File,
+  sha256Hex,
+} from "./checksum.js";
+
+export { stringifyYaml } from "./yaml.js";
+
+export {
+  emptyDependencySet,
+  isAgentDocument,
+  isComponentDocument,
+  loadedModuleFromDocument,
+} from "./module.js";
+export type { LoadedModule } from "./module.js";
+
+export { safeResolve, toPosixPath } from "./paths.js";
+
+export {
+  assertModulePayload,
+  defaultRegistryRoot,
+  findModuleDirs,
+  listRegistryModules,
+  loadModuleDocument,
+  loadModuleFromDirectory,
+  loadRegistry,
+  resolveModule,
+} from "./registry.js";
+export type { Registry, RegistryIndex, RegistryIndexEntry } from "./registry.js";
+
+export {
+  detectConflicts,
+  detectCycles,
+  resolveInstallSet,
+  resolveRequiredGraph,
+  topologicalSort,
+} from "./graph.js";
+export type { DependencyGraph, ResolvedInstallSet } from "./graph.js";
+
+export {
+  assertCapabilityResolved,
+  resolveCapability,
+  resolveRequiredCapabilities,
+} from "./capabilities.js";
+export type {
+  CapabilityBindingSource,
+  CapabilityProvider,
+  CapabilityResolution,
+} from "./capabilities.js";
+
+export { collectInstalledOwnership, planFileOwnership } from "./ownership.js";
+export type { OwnershipClaim, PlannedFile } from "./ownership.js";
+
+export {
+  assertSafeInstalledPaths,
+  emptyInstalledManifest,
+  getInstalledModule,
+  installedManifestPath,
+  installedModuleIds,
+  readInstalledManifest,
+  upsertInstalledModule,
+  writeInstalledManifest,
+} from "./installed.js";
+
+export {
+  createDefaultProject,
+  projectDocumentPath,
+  readProjectDocument,
+  writeProjectDocument,
+} from "./project.js";
+
+export { applyInstall, planInstall } from "./install.js";
+export type { InstallPlan, InstallResult, PlanInstallOptions, PlannedPermission } from "./install.js";
+
+export { runDoctor } from "./doctor.js";
+export type { DoctorFinding, DoctorReport, DoctorSeverity } from "./doctor.js";
+
+export { buildRegistryIndex, writeRegistryIndex } from "./registry-index.js";
+export type { RegistryIndexBuildResult } from "./registry-index.js";

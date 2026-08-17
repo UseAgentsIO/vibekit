@@ -1,0 +1,41 @@
+schemaVersion: 1
+
+id: policy:least-privilege
+type: policy
+name: least-privilege
+displayName: Least Privilege
+version: 1.0.0
+description: Deny by default and grant only declared Agent permissions.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - policy.least-privilege
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets: []
+
+files:
+  - source: payload/policy.yaml
+    target: .vibekit/components/policies/least-privilege.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/policies/least-privilege.yaml
+  schema: config.schema.json

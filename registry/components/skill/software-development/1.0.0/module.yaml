@@ -1,0 +1,41 @@
+schemaVersion: 1
+
+id: skill:software-development
+type: skill
+name: software-development
+displayName: Software Development
+version: 1.0.0
+description: Skill for bounded software changes, tests, and evidence.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - skill.software-development
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets: []
+
+files:
+  - source: payload/SKILL.md
+    target: .pi/skills/software-development/SKILL.md
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/skills/software-development.yaml
+  schema: config.schema.json

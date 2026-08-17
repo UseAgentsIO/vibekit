@@ -1,0 +1,119 @@
+schemaVersion: 1
+
+id: agent:reviewer
+type: agent
+name: reviewer
+displayName: Reviewer
+version: 1.0.0
+description: Performs independent review of another Agent's candidate and records verification-focused findings.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+instructions: payload/instructions.md
+
+model:
+  provider: inherit
+  id: inherit
+  allowProjectOverride: true
+  allowTaskOverride: false
+
+components:
+  required:
+    - state:repository
+  optional:
+    - skill:software-development
+    - skill:research
+    - verifier:command
+  recommended:
+    - policy:require-verification
+    - policy:least-privilege
+
+capabilities:
+  requires:
+    - source.read
+
+inputs:
+  required:
+    - objective
+    - candidate
+    - acceptanceCriteria
+  optional:
+    - constraints
+    - producingAgent
+
+outputs:
+  required:
+    - summary
+    - findings
+    - evidence
+    - unresolvedIssues
+
+permissions:
+  allow:
+    - capability: source.read
+      scope:
+        paths:
+          - "**"
+    - capability: command.execute
+      scope:
+        commands:
+          - project-verification
+  deny:
+    - capability: source.write
+    - capability: project.configure
+    - capability: module.install
+    - capability: deploy.apply
+
+delegation:
+  allowed: false
+  targets: []
+  maxDepth: 0
+  maxParallelChildren: 0
+
+state:
+  read:
+    - project
+    - tasks
+    - decisions
+    - results
+  write:
+    - results
+    - events
+
+execution:
+  isolation: process
+  timeoutMs: 600000
+  cleanupRequired: true
+
+verification:
+  required: []
+  independentReview: true
+
+completion:
+  requires:
+    - result-recorded
+    - independent-review-finished
+
+escalation:
+  on:
+    - producing-agent-conflict
+    - missing-candidate
+    - missing-acceptance-criteria
+    - verification-failed
+
+files:
+  - source: payload/agent.yaml
+    target: .vibekit/agents/reviewer/agent.yaml
+    ownership: exclusive
+  - source: payload/instructions.md
+    target: .vibekit/agents/reviewer/instructions.md
+    ownership: exclusive

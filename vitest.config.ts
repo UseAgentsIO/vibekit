@@ -13,6 +13,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@vibekit/core": path.resolve(root, "packages/core/src/index.ts"),
+      vibekit: path.resolve(root, "packages/cli/src/index.ts"),
     },
   },
 });

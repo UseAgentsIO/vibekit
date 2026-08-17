@@ -3,10 +3,14 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "../.tsbuild/tests",
-    "tsBuildInfoFile": "../.tsbuild/tests/tsconfig.tsbuildinfo"
+    "tsBuildInfoFile": "../.tsbuild/tests/tsconfig.tsbuildinfo",
+    "paths": {
+      "vibekit": ["../packages/cli/src/index.ts"]
+    }
   },
   "include": ["./**/*.ts"],
   "references": [
-    { "path": "../packages/core" }
+    { "path": "../packages/core" },
+    { "path": "../packages/cli" }
   ]
 }

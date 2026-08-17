@@ -2,6 +2,23 @@
   "name": "vibekit",
   "version": "0.1.0",
   "private": true,
-  "description": "VibeKit CLI. Command implementation starts in a later phase.",
-  "type": "module"
+  "description": "VibeKit CLI for initializing Projects and installing Modules",
+  "type": "module",
+  "bin": {
+    "vibekit": "./dist/index.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@vibekit/core": "workspace:*"
+  }
 }

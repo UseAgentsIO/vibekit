@@ -42,6 +42,10 @@ export function redactSecrets(text: string): string {
   return redacted;
 }
 
+export function containsLikelySecret(text: string): boolean {
+  return redactSecrets(text) !== text;
+}
+
 export interface VibeKitErrorOptions {
   readonly category: FailureCategory;
   readonly code: string;

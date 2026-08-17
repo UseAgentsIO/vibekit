@@ -1,0 +1,115 @@
+schemaVersion: 1
+
+id: agent:researcher
+type: agent
+name: researcher
+displayName: Researcher
+version: 1.0.0
+description: Researches a question, returns cited evidence, and does not write Project source by default.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+instructions: payload/instructions.md
+
+model:
+  provider: inherit
+  id: inherit
+  allowProjectOverride: true
+  allowTaskOverride: false
+
+components:
+  required:
+    - skill:research
+    - state:repository
+  optional:
+    - tool:github
+  recommended:
+    - policy:least-privilege
+    - policy:require-verification
+
+capabilities:
+  requires:
+    - source.read
+
+inputs:
+  required:
+    - objective
+    - questions
+  optional:
+    - constraints
+    - acceptanceCriteria
+
+outputs:
+  required:
+    - summary
+    - citations
+    - evidence
+    - unresolvedIssues
+
+permissions:
+  allow:
+    - capability: source.read
+      scope:
+        paths:
+          - "**"
+    - capability: repository.read
+    - capability: repository.issue.read
+  deny:
+    - capability: source.write
+    - capability: repository.write
+    - capability: project.configure
+    - capability: module.install
+    - capability: deploy.apply
+
+delegation:
+  allowed: false
+  targets: []
+  maxDepth: 0
+  maxParallelChildren: 0
+
+state:
+  read:
+    - project
+    - tasks
+    - decisions
+  write:
+    - results
+    - events
+
+execution:
+  isolation: process
+  timeoutMs: 900000
+  cleanupRequired: true
+
+verification:
+  required: []
+  independentReview: true
+
+completion:
+  requires:
+    - result-recorded
+    - citations-recorded
+
+escalation:
+  on:
+    - missing-citations
+    - untrusted-source
+    - permission-denied
+    - missing-acceptance-criteria
+
+files:
+  - source: payload/agent.yaml
+    target: .vibekit/agents/researcher/agent.yaml
+    ownership: exclusive
+  - source: payload/instructions.md
+    target: .vibekit/agents/researcher/instructions.md
+    ownership: exclusive

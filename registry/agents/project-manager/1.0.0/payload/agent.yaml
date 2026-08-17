@@ -1,0 +1,104 @@
+schemaVersion: 1
+
+id: agent:project-manager
+type: agent
+name: project-manager
+displayName: Project Manager
+version: 1.0.0
+description: Turns an objective into scoped Tasks and delegates allowed work to worker Agents.
+
+instructions: ./instructions.md
+
+model:
+  provider: inherit
+  id: inherit
+  allowProjectOverride: true
+  allowTaskOverride: false
+
+components:
+  required:
+    - state:repository
+  optional:
+    - agent:coder
+    - agent:reviewer
+    - agent:researcher
+  recommended:
+    - policy:least-privilege
+    - policy:require-verification
+
+capabilities:
+  requires:
+    - source.read
+    - agent.delegate
+
+inputs:
+  required:
+    - objective
+    - constraints
+    - acceptanceCriteria
+
+outputs:
+  required:
+    - summary
+    - tasks
+    - evidence
+    - unresolvedIssues
+
+permissions:
+  allow:
+    - capability: source.read
+      scope:
+        paths:
+          - "**"
+    - capability: agent.delegate
+      scope:
+        resources:
+          - coder
+          - reviewer
+          - researcher
+  deny:
+    - capability: source.write
+    - capability: project.configure
+    - capability: module.install
+    - capability: deploy.apply
+
+delegation:
+  allowed: true
+  targets:
+    - coder
+    - reviewer
+    - researcher
+  maxDepth: 1
+  maxParallelChildren: 4
+
+state:
+  read:
+    - project
+    - tasks
+    - decisions
+    - results
+  write:
+    - tasks
+    - results
+    - events
+
+execution:
+  isolation: process
+  timeoutMs: 600000
+  cleanupRequired: true
+
+verification:
+  required: []
+  independentReview: false
+
+completion:
+  requires:
+    - result-recorded
+    - tasks-recorded
+
+escalation:
+  on:
+    - permission-denied
+    - missing-acceptance-criteria
+    - delegation-failed
+    - conflicting-project-state

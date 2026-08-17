@@ -1,0 +1,45 @@
+schemaVersion: 1
+
+id: interface:terminal
+type: interface
+name: terminal
+displayName: Terminal Interface
+version: 1.0.0
+description: Translates human terminal input and output into Project Tasks, progress, and Results. Does not own Project State.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - interface.terminal
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets: []
+
+files:
+  - source: payload/interface.yaml
+    target: .vibekit/components/interfaces/terminal.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/interfaces/terminal.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-interface
+  name: terminal

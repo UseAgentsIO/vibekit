@@ -1,0 +1,41 @@
+schemaVersion: 1
+
+id: policy:require-verification
+type: policy
+name: require-verification
+displayName: Require Verification
+version: 1.0.0
+description: Require declared Verifiers before a Result can become accepted.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - policy.require-verification
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets: []
+
+files:
+  - source: payload/policy.yaml
+    target: .vibekit/components/policies/require-verification.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/policies/require-verification.yaml
+  schema: config.schema.json
