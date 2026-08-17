@@ -49,16 +49,23 @@ const compiled = new Map<DocumentKind, ValidateFunction>();
 
 export function getSchemasDirectory(): string {
   const here = path.dirname(fileURLToPath(import.meta.url));
-  const candidate = path.resolve(here, "../../../schemas");
-  if (!fs.existsSync(path.join(candidate, "module.schema.json"))) {
+  const candidates = [
+    path.resolve(here, "../schemas"),
+    path.resolve(here, "../../schemas"),
+    path.resolve(here, "../../../schemas"),
+  ];
+  const found = candidates.find((candidate) =>
+    fs.existsSync(path.join(candidate, "module.schema.json")),
+  );
+  if (!found) {
     throw new VibeKitError({
       category: "internal_error",
       code: "schemas_not_found",
       message: "Unable to locate the VibeKit JSON Schema directory",
-      details: { candidate },
+      details: { candidates },
     });
   }
-  return candidate;
+  return found;
 }
 
 export function isDocumentKind(value: string): value is DocumentKind {

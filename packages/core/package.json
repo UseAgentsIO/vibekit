@@ -1,9 +1,22 @@
 {
   "name": "@vibekit/core",
   "version": "0.1.0",
-  "private": true,
-  "description": "VibeKit schemas, IDs, validation, and shared contracts",
+  "description": "VibeKit schemas, IDs, validation, install, and Project State",
   "type": "module",
+  "license": "UNLICENSED",
+  "author": "UseAgentsIO",
+  "homepage": "https://github.com/UseAgentsIO/vibekit#readme",
+  "bugs": {
+    "url": "https://github.com/UseAgentsIO/vibekit/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UseAgentsIO/vibekit.git",
+    "directory": "packages/core"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -13,8 +26,12 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "schemas"
   ],
+  "scripts": {
+    "prepublishOnly": "node ../../scripts/prepare-publish.mjs core && tsc -b"
+  },
   "dependencies": {
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",

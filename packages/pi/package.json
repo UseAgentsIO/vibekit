@@ -1,9 +1,22 @@
 {
   "name": "@vibekit/pi",
   "version": "0.1.0",
-  "private": true,
   "description": "VibeKit Pi runtime adapter",
   "type": "module",
+  "license": "UNLICENSED",
+  "author": "UseAgentsIO",
+  "homepage": "https://github.com/UseAgentsIO/vibekit#readme",
+  "bugs": {
+    "url": "https://github.com/UseAgentsIO/vibekit/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UseAgentsIO/vibekit.git",
+    "directory": "packages/pi"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -15,6 +28,9 @@
   "files": [
     "dist"
   ],
+  "scripts": {
+    "prepublishOnly": "tsc -b"
+  },
   "dependencies": {
     "@vibekit/core": "workspace:*",
     "yaml": "^2.8.1"

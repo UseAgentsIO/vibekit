@@ -1,9 +1,22 @@
 {
-  "name": "vibekit",
+  "name": "@vibekit/cli",
   "version": "0.1.0",
-  "private": true,
   "description": "VibeKit CLI for initializing Projects and installing Modules",
   "type": "module",
+  "license": "UNLICENSED",
+  "author": "UseAgentsIO",
+  "homepage": "https://github.com/UseAgentsIO/vibekit#readme",
+  "bugs": {
+    "url": "https://github.com/UseAgentsIO/vibekit/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UseAgentsIO/vibekit.git",
+    "directory": "packages/cli"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "vibekit": "./dist/index.js"
   },
@@ -16,8 +29,12 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "registry"
   ],
+  "scripts": {
+    "prepublishOnly": "node ../../scripts/prepare-publish.mjs cli && tsc -b"
+  },
   "dependencies": {
     "@vibekit/core": "workspace:*"
   }

@@ -38,16 +38,24 @@ export function defaultRegistryRoot(): string {
     return path.resolve(fromEnv);
   }
   const here = path.dirname(fileURLToPath(import.meta.url));
-  const candidate = path.resolve(here, "../../../registry");
-  if (fs.existsSync(path.join(candidate, "index.json"))) {
-    return candidate;
+  const candidates = [
+    path.resolve(here, "../registry"),
+    path.resolve(here, "../../registry"),
+    path.resolve(here, "../../../registry"),
+    path.resolve(here, "../../../../registry"),
+  ];
+  const found = candidates.find((candidate) =>
+    fs.existsSync(path.join(candidate, "index.json")),
+  );
+  if (!found) {
+    throw new VibeKitError({
+      category: "unavailable",
+      code: "registry_not_found",
+      message: "Unable to locate the official VibeKit registry",
+      details: { candidates },
+    });
   }
-  throw new VibeKitError({
-    category: "unavailable",
-    code: "registry_not_found",
-    message: "Unable to locate the official VibeKit registry",
-    details: { candidate },
-  });
+  return found;
 }
 
 export function loadRegistry(root: string): Registry {

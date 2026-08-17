@@ -11,7 +11,8 @@
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc -b",
-    "registry:index": "tsx scripts/build-registry-index.ts"
+    "registry:index": "tsx scripts/build-registry-index.ts",
+    "publish:packages": "pnpm --filter @vibekit/core publish --access public --no-git-checks && pnpm --filter @vibekit/pi publish --access public --no-git-checks && pnpm --filter @vibekit/cli publish --access public --no-git-checks"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",

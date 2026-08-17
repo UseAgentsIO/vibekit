@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { defaultRegistryRoot, loadRegistry, type Registry } from "@vibekit/core";
 
@@ -8,8 +9,15 @@ export function resolveProjectDir(dir?: string): string {
 }
 
 export function resolveRegistry(registryFlag?: string): Registry {
-  const root = registryFlag ? path.resolve(registryFlag) : defaultRegistryRoot();
-  return loadRegistry(root);
+  if (registryFlag) {
+    return loadRegistry(path.resolve(registryFlag));
+  }
+  const here = path.dirname(fileURLToPath(import.meta.url));
+  const bundled = [
+    path.resolve(here, "../registry"),
+    path.resolve(here, "../../registry"),
+  ].find((candidate) => fs.existsSync(path.join(candidate, "index.json")));
+  return loadRegistry(bundled ?? defaultRegistryRoot());
 }
 
 export function isPiProject(dir: string): boolean {

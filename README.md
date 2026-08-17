@@ -4,7 +4,7 @@
 
 VibeKit is a thin composition layer over Pi. It owns contracts, installation, the official registry, Project State, permissions, and verification. Pi owns the model, the session, providers, Skills, extensions, and the tool-calling loop. VibeKit does not fork Pi and does not replace Pi’s Agent loop.
 
-> Working name. Package names (`vibekit`, `@vibekit/core`, `@vibekit/pi`) and the public license are not final. Packages are **not published to npm** yet — use this repository.
+> Working product name. The unscoped npm name `vibekit` is taken by an unrelated project, so the CLI publishes as **`@vibekit/cli`** (bin still `vibekit`). License is currently `UNLICENSED`.
 
 [Specification](docs/spec/V1-Implementation-Specification.md) · [Source](https://github.com/UseAgentsIO/vibekit)
 
@@ -32,28 +32,36 @@ V1 is being implemented against a locked architecture. What works in this tree t
 - [pnpm](https://pnpm.io/) **11** (this repo pins `packageManager`)
 - A [Pi](https://pi.dev/) project, or let `vibekit init` create a minimal `.pi/` fixture
 
-## Install from source
+## Install
+
+```bash
+npm install -g --ignore-scripts @vibekit/cli
+vibekit --help
+```
+
+Or without a global install:
+
+```bash
+npx --yes @vibekit/cli --help
+npx --yes @vibekit/cli init ./my-app
+```
+
+Libraries:
+
+```bash
+npm install @vibekit/core @vibekit/pi
+```
+
+The official registry ships inside `@vibekit/cli`. Override it with `--registry <path>` or `VIBEKIT_REGISTRY`.
+
+### From this repository
 
 ```bash
 git clone https://github.com/UseAgentsIO/vibekit.git
 cd vibekit
 pnpm install
-```
-
-The CLI is the `vibekit` workspace package. Until it is published:
-
-```bash
-# from the repo root
 pnpm exec tsx packages/cli/src/index.ts --help
-
-# or after a build
-pnpm typecheck
-node packages/cli/dist/index.js --help
 ```
-
-The rest of this README writes `vibekit` for the command. Prefix it with `pnpm exec tsx packages/cli/src/index.ts` while developing from this checkout.
-
-The official registry is the in-repo `registry/` directory. Override it with `--registry <path>` or `VIBEKIT_REGISTRY`.
 
 ## Quick start
 
