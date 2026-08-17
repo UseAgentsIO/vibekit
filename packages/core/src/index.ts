@@ -242,3 +242,90 @@ export type { DoctorFinding, DoctorReport, DoctorSeverity } from "./doctor.js";
 
 export { buildRegistryIndex, writeRegistryIndex } from "./registry-index.js";
 export type { RegistryIndexBuildResult } from "./registry-index.js";
+
+export {
+  diffInstalledModule,
+  statusForDecision,
+} from "./diff.js";
+export type { FileDiff, FileDiffStatus, ModuleDiff } from "./diff.js";
+
+export {
+  GENERATED_CONFIG_RELATIVE_PATH,
+  analyzeInstalledModule,
+  applyStagedChanges,
+  applyUpdate,
+  assertCompatibleModule,
+  buildGeneratedDocument,
+  currentEnvironment,
+  decideThreeWay,
+  defaultConfigFor,
+  findNewestCompatible,
+  isGeneratedPath,
+  planUpdate,
+  rebuildGeneratedConfiguration,
+  tryResolveModule,
+} from "./update.js";
+export type {
+  AnalyzedFile,
+  AnalyzedFileKind,
+  PlanUpdateOptions,
+  PlannedUpdateWrite,
+  ThreeWayDecision,
+  UpdatePlan,
+  UpdateResult,
+} from "./update.js";
+
+export { applyRemove, planRemove } from "./remove.js";
+export type {
+  KeptModule,
+  PlanRemoveOptions,
+  RemovePlan,
+  RemoveResult,
+} from "./remove.js";
+
+export {
+  DEFAULT_CLAIM_LEASE_MS,
+  DEFAULT_LOCK_LEASE_MS,
+  DEFAULT_RUNTIME_RELATIVE_PATH,
+  DEFAULT_STATE_RELATIVE_PATH,
+  DEFAULT_STATE_TRACKING,
+  DOCUMENT_STORE_KINDS,
+  LockManager,
+  RepositoryState,
+  STATE_BACKEND_ID,
+  STATE_RECORD_KINDS,
+  applyTrackingLayout,
+  atomicWriteFile,
+  classifyTracking,
+  cleanupPartialWrites,
+  contentHash,
+  createClaimStore,
+  createDocumentStore,
+  createEventLog,
+  createRepositoryState,
+  directoryForKind,
+  normalizeTracking,
+  resolveStatePaths,
+  serializeJson,
+} from "./state/index.js";
+export type {
+  AtomicWriteOptions,
+  ClaimRecord,
+  ClaimStore,
+  CreateClaimInput,
+  DocumentByKind,
+  DocumentStore,
+  DocumentStoreKind,
+  EventFilter,
+  EventLog,
+  LockRecord,
+  MutationScope,
+  RenewClaimOptions,
+  RepositoryStateOptions,
+  StatePaths,
+  StateRecordKind,
+  StoredRecord,
+  TrackingKind,
+  TrackingLayout,
+  WriteOptions,
+} from "./state/index.js";
