@@ -105,3 +105,5 @@ export {
   type IsolatedRunOutcome,
   type PreparedRun,
 } from "./run.js";
+
+export { evaluateVerification, reviewAfterRun, verifyAfterRun } from "./verify-hook.js";

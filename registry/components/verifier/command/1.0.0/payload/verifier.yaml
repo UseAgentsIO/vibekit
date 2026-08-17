@@ -1,3 +1,10 @@
 id: verifier:command
 type: command
 description: Execute the Project verification command against an exact candidate revision.
+records:
+  - exitCode
+  - evidence
+  - candidateRevision
+doesNotSatisfy:
+  - independentReview
+notes: Agent completion is not Verification. A later revision change invalidates the record.

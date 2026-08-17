@@ -329,3 +329,78 @@ export type {
   TrackingLayout,
   WriteOptions,
 } from "./state/index.js";
+
+export {
+  COMMAND_VERIFIER_CONFIG_RELATIVE_PATH,
+  COMMAND_VERIFIER_ID,
+  REQUIRE_VERIFICATION_POLICY,
+  appendGovernanceEvent,
+  assertIndependentReviewer,
+  computeCandidateRevision,
+  createVerificationDocument,
+  evaluateVerification,
+  executeCommandVerifier,
+  governanceError,
+  isVerificationCurrent,
+  loadCommandVerifierConfig,
+  recordIndependentReview,
+  resolveRequiredVerifiers,
+  runCommandVerification,
+  verificationCoversRevision,
+} from "./verify.js";
+export type {
+  CommandVerifierConfig,
+  CommandVerifierRequest,
+  CommandVerifierResponse,
+  EvaluateVerificationInput,
+  IndependentReviewInput,
+  RunCommandVerificationInput,
+  RunCommandVerificationResult,
+  VerificationEvaluation,
+} from "./verify.js";
+
+export {
+  DEFAULT_APPLY_ACTION,
+  SELF_MODIFY_ACTION,
+  approvalMatches,
+  assertApprovalAuthorized,
+  assertNotSelfApproval,
+  decideApproval,
+  evaluateApprovalGate,
+  findMatchingApproval,
+  isApprovalExpired,
+  requestApproval,
+  resolveAuthorizationMode,
+  scopesMatch,
+} from "./approval-gate.js";
+export type {
+  ApprovalMatchInput,
+  AuthorizationDecision,
+  DecideApprovalInput,
+  EvaluateApprovalGateInput,
+  RequestApprovalInput,
+} from "./approval-gate.js";
+
+export {
+  acceptCandidate,
+  createProposal,
+  defaultApplyScope,
+  defaultApplyTarget,
+  evaluateReadiness,
+} from "./proposal.js";
+export type {
+  AcceptCandidateInput,
+  AcceptCandidateResult,
+  CandidateProposal,
+  GovernanceDecision,
+  GovernanceInput,
+} from "./proposal.js";
+
+export {
+  applyAcceptedResult,
+  applySelfModification,
+  assertSelfModificationUnchanged,
+  hashSelfModificationBase,
+  hashSelfModificationPayload,
+} from "./apply.js";
+export type { ApplyInput, ApplyOutcome, SelfModificationProposal } from "./apply.js";
