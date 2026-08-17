@@ -1,12 +1,102 @@
-node_modules
-dist
-.tsbuild
+# Dependencies and build output
+node_modules/
+dist/
+.tsbuild/
 *.tsbuildinfo
-coverage
-.vitest
+.turbo/
+.cache/
+.parcel-cache/
+.eslintcache
+
+# Test / coverage
+coverage/
+.nyc_output/
+.vitest/
+*.lcov
+
+# Logs and scratch
 *.log
-.DS_Store
+logs/
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Environment and local overrides — never commit real values
 .env
 .env.*
-.idea
-.vscode
+!.env.example
+!.env.sample
+!.env.template
+*.local
+*.local.*
+
+# Secrets, keys, and credentials
+.secrets
+.secrets.*
+secrets.json
+secrets.yaml
+secrets.yml
+*.pem
+*.key
+*.p12
+*.pfx
+*.ppk
+id_rsa
+id_rsa.*
+id_dsa
+id_dsa.*
+id_ecdsa
+id_ecdsa.*
+id_ed25519
+id_ed25519.*
+*.keystore
+*.jks
+credentials.json
+*-credentials.json
+*service-account*.json
+auth.json
+.netrc
+.npmrc
+.pypirc
+.yarnrc
+.yarnrc.yml
+
+# Cloud / provider local auth
+.aws/
+.gcloud/
+.azure/
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# OS junk
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Editor / IDE personal settings
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.history/
+
+# Local agent / tooling sessions (personal context)
+.claude/
+.codex/
+.cursor/
+.grok/
+.agents/
+CLAUDE.local.md
+AGENTS.local.md
+
+# VibeKit / Pi local runtime — not source, may contain personal run data
+.vibekit/runtime/
+.vibekit/state/events/
+.pi/sessions/
