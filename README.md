@@ -4,13 +4,13 @@
 
 VibeKit is a thin composition layer over Pi. It owns contracts, installation, the official registry, Project State, permissions, and verification. Pi owns the model, the session, providers, Skills, extensions, and the tool-calling loop. VibeKit does not fork Pi and does not replace Pi’s Agent loop.
 
-> Working product name. The unscoped npm name `vibekit` is taken by an unrelated project, so the CLI publishes as **`@useagentsio/cli`** (bin still `vibekit`). License is currently `UNLICENSED`.
+> Working product name. The unscoped npm name `vibekit` is taken by an unrelated project. Published packages use the **`@useagentsio`** scope. The CLI binary is still `vibekit`. License is `UNLICENSED`.
 
-[Specification](docs/spec/V1-Implementation-Specification.md) · [Source](https://github.com/UseAgentsIO/vibekit)
+[Specification](docs/spec/V1-Implementation-Specification.md) · [Source](https://github.com/UseAgentsIO/vibekit) · [npm](https://www.npmjs.com/org/useagentsio)
 
 ## Status
 
-V1 is being implemented against a locked architecture. What works in this tree today:
+V1 phases 1–8 are implemented in this repository. Slack (Phase 9) is deferred.
 
 | Area | State |
 | --- | --- |
@@ -18,13 +18,21 @@ V1 is being implemented against a locked architecture. What works in this tree t
 | Official registry + `init` / `add` / `list` / `doctor` | Done |
 | `diff` / `update` / `remove` (three-way, no silent overwrite) | Done |
 | Project State (`state:repository`) | Done |
-| `@useagentsio/pi` isolated Run (mocked/injected session in tests) | Skeleton |
-| Delegation, worktrees, claims | In progress |
-| Deterministic verification + propose → apply | In progress |
-| Official Agent catalog | Drafts installable as Modules |
+| `@useagentsio/pi` isolated Run | Done (inject `createSession` in tests; live Pi is optional) |
+| Delegation, worktrees, claims, idempotency | Done |
+| Deterministic verification + propose → apply | Done |
+| Official Agent catalog + Chief → worker → review e2e | Done |
 | Slack Interface | Deferred (Phase 9) |
 
-`pnpm test` and `pnpm typecheck` are the local gates.
+Published now:
+
+| Package | Version |
+| --- | --- |
+| [`@useagentsio/core`](https://www.npmjs.com/package/@useagentsio/core) | 0.1.0 |
+| [`@useagentsio/pi`](https://www.npmjs.com/package/@useagentsio/pi) | 0.1.0 |
+| [`@useagentsio/cli`](https://www.npmjs.com/package/@useagentsio/cli) | **0.1.1** (use this; 0.1.0 does not run as a global bin) |
+
+`pnpm test` and `pnpm typecheck` are the local gates (207 tests).
 
 ## Requirements
 
@@ -34,16 +42,18 @@ V1 is being implemented against a locked architecture. What works in this tree t
 
 ## Install
 
+Install the CLI globally (pin **0.1.1** — `0.1.0` exits without running when invoked as `vibekit`):
+
 ```bash
-npm install -g --ignore-scripts @useagentsio/cli
+npm install -g --ignore-scripts @useagentsio/cli@0.1.1
 vibekit --help
 ```
 
 Or without a global install:
 
 ```bash
-npx --yes @useagentsio/cli --help
-npx --yes @useagentsio/cli init ./my-app
+npx --yes @useagentsio/cli@0.1.1 --help
+npx --yes @useagentsio/cli@0.1.1 init ./my-app
 ```
 
 Libraries:
@@ -191,7 +201,7 @@ Tracked by default: `project.yaml`, `installed.json`, Agent definitions, Policie
 
 | Path | Package | Role |
 | --- | --- | --- |
-| `packages/cli` | `vibekit` | User-facing CLI |
+| `packages/cli` | `@useagentsio/cli` | User-facing CLI (`vibekit` bin) |
 | `packages/core` | `@useagentsio/core` | Schemas, IDs, graph, install, ownership, State |
 | `packages/pi` | `@useagentsio/pi` | Resolve a Project into an isolated Pi Run |
 | `schemas/` | — | JSON Schema source of truth |
@@ -199,7 +209,7 @@ Tracked by default: `project.yaml`, `installed.json`, Agent definitions, Policie
 | `docs/spec/` | — | Locked V1 specification |
 | `docs/patterns/` | — | Docs-only composition patterns |
 | `fixtures/` | — | Valid and invalid contract examples |
-| `tests/` | — | Schema, CLI, registry, composition, state, runtime |
+| `tests/` | — | Schema, CLI, registry, composition, state, runtime, e2e |
 
 Library usage (TypeScript):
 
@@ -259,7 +269,7 @@ There is no `orchestrator` type, no `subagent` type, and no “Blocks.” Delega
 5. Pi runtime adapter
 6. Delegation and concurrency
 7. Verification and application
-8. Official Agent catalog (install + `doctor` e2e)
+8. Official Agent catalog (install + `doctor` + Chief → worker → review e2e)
 9. Slack Interface (deferred)
 
 Lean V1 vs deferred work is listed in the [specification](docs/spec/V1-Implementation-Specification.md) (§37). Out of V1: marketplace, third-party registries, graphical builder, DB/remote state, automatic merge of conflicting user edits.
@@ -283,7 +293,7 @@ Module authors: follow existing `registry/**/module.yaml` entries. Registry chec
 
 ## License
 
-No public license is attached yet. The architecture document leaves license and commercial terms outside the implementation lock. Do not republish packages or registry payloads until a license is chosen. All rights reserved until then.
+Published packages are `UNLICENSED`. The architecture document leaves the public license outside the implementation lock. All rights reserved until a license is chosen.
 
 ## Links
 

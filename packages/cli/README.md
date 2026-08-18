@@ -1,12 +1,13 @@
-# vibekit
+# @useagentsio/cli
 
-CLI for initializing Projects, installing Modules, and validating composition.
-
-From the monorepo root (packages are not on npm yet):
+CLI for initializing Projects, installing Modules, and validating composition. The binary name is `vibekit`.
 
 ```bash
-pnpm exec tsx packages/cli/src/index.ts --help
+npm install -g --ignore-scripts @useagentsio/cli@0.1.1
+vibekit --help
 ```
+
+Install **0.1.1 or later**. `0.1.0` does not run when invoked through the global `vibekit` shim.
 
 ```text
 vibekit init [dir] [--yes] [--registry <path>]
