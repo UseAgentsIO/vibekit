@@ -67,6 +67,8 @@
         "type": { "type": "string", "minLength": 1 },
         "name": { "type": "string", "minLength": 1 }
       }
-    }
+    },
+    "runtime": { "$ref": "module.schema.json#/definitions/moduleRuntime" },
+    "packages": { "$ref": "module.schema.json#/definitions/modulePackages" }
   }
 }

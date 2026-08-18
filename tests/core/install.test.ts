@@ -16,7 +16,7 @@ import { runCli } from "vibekit";
 import { buildTempRegistry, makeTempDir } from "../helpers.js";
 
 describe("atomic install rollback", () => {
-  it("removes files written before a later apply failure", () => {
+  it("removes files written before a later apply failure", async () => {
     const registryRoot = buildTempRegistry([
       {
         type: "policy",
@@ -44,7 +44,7 @@ describe("atomic install rollback", () => {
       "two\n",
     );
     const dir = makeTempDir("vibekit-rollback-");
-    expect(runCli(["init", dir, "--registry", registryRoot]).exitCode).toBe(0);
+    expect((await runCli(["init", dir, "--registry", registryRoot])).exitCode).toBe(0);
     const registry = loadRegistry(registryRoot);
     const plan = planInstall({
       projectRoot: dir,

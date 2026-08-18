@@ -4,11 +4,11 @@ import { runCli } from "vibekit";
 import { officialRegistryDir, makeTempDir } from "../helpers.js";
 
 describe("list", () => {
-  it("shows separate installed, configured, available, and verified statuses", () => {
+  it("shows separate installed, configured, available, and verified statuses", async () => {
     const dir = makeTempDir("vibekit-list-");
-    expect(runCli(["init", dir, "--registry", officialRegistryDir]).exitCode).toBe(0);
+    expect((await runCli(["init", dir, "--registry", officialRegistryDir])).exitCode).toBe(0);
     expect(
-      runCli([
+      (await runCli([
         "add",
         "policy",
         "least-privilege",
@@ -17,10 +17,10 @@ describe("list", () => {
         dir,
         "--registry",
         officialRegistryDir,
-      ]).exitCode,
+      ])).exitCode,
     ).toBe(0);
 
-    const result = runCli(["list", "--dir", dir, "--registry", officialRegistryDir]);
+    const result = await runCli(["list", "--dir", dir, "--registry", officialRegistryDir]);
     expect(result.exitCode, result.stderr).toBe(0);
     expect(result.stdout).toMatch(/INSTALLED/);
     expect(result.stdout).toMatch(/CONFIGURED/);

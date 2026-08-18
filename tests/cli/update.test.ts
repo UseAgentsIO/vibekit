@@ -18,7 +18,7 @@ function publishVersion(registryRoot: string, options: SyntheticComponentOptions
 }
 
 describe("acceptance 8-9: update", () => {
-  it("updates an unchanged Module automatically", () => {
+  it("updates an unchanged Module automatically", async () => {
     const registry = buildTempRegistry([
       {
         type: "policy",
@@ -28,9 +28,9 @@ describe("acceptance 8-9: update", () => {
       },
     ]);
     const dir = makeTempDir("vibekit-update-");
-    expect(runCli(["init", dir, "--registry", registry]).exitCode).toBe(0);
+    expect((await runCli(["init", dir, "--registry", registry])).exitCode).toBe(0);
     expect(
-      runCli(["add", "policy", "sample", "--yes", "--dir", dir, "--registry", registry]).exitCode,
+      (await runCli(["add", "policy", "sample", "--yes", "--dir", dir, "--registry", registry])).exitCode,
     ).toBe(0);
 
     const target = path.join(dir, ".vibekit/components/policy/sample.txt");
@@ -43,7 +43,7 @@ describe("acceptance 8-9: update", () => {
       payload: "v2\n",
     });
 
-    const result = runCli([
+    const result = await runCli([
       "update",
       "policy:sample",
       "--yes",
@@ -64,7 +64,7 @@ describe("acceptance 8-9: update", () => {
     expect(fs.existsSync(path.join(dir, ".vibekit/runtime/generated/config.yaml"))).toBe(true);
   });
 
-  it("stops the entire Module update when local and upstream both changed", () => {
+  it("stops the entire Module update when local and upstream both changed", async () => {
     const registry = buildTempRegistry([
       {
         type: "policy",
@@ -90,9 +90,9 @@ describe("acceptance 8-9: update", () => {
     writeRegistryIndex(registry);
 
     const dir = makeTempDir("vibekit-update-conflict-");
-    expect(runCli(["init", dir, "--registry", registry]).exitCode).toBe(0);
+    expect((await runCli(["init", dir, "--registry", registry])).exitCode).toBe(0);
     expect(
-      runCli(["add", "policy", "multi", "--yes", "--dir", dir, "--registry", registry]).exitCode,
+      (await runCli(["add", "policy", "multi", "--yes", "--dir", dir, "--registry", registry])).exitCode,
     ).toBe(0);
 
     const one = path.join(dir, ".vibekit/components/policies/one.txt");
@@ -122,7 +122,7 @@ describe("acceptance 8-9: update", () => {
     fs.writeFileSync(path.join(registry, "components/policy/multi/1.1.0/payload/two.txt"), "two-v2\n");
     writeRegistryIndex(registry);
 
-    const result = runCli([
+    const result = await runCli([
       "update",
       "policy:multi",
       "--yes",
@@ -139,7 +139,7 @@ describe("acceptance 8-9: update", () => {
     expect(fs.readFileSync(path.join(dir, ".vibekit/installed.json"), "utf8")).toBe(installedBefore);
   });
 
-  it("refuses an incompatible requested version", () => {
+  it("refuses an incompatible requested version", async () => {
     const registry = buildTempRegistry([
       {
         type: "policy",
@@ -149,9 +149,9 @@ describe("acceptance 8-9: update", () => {
       },
     ]);
     const dir = makeTempDir("vibekit-update-compat-");
-    expect(runCli(["init", dir, "--registry", registry]).exitCode).toBe(0);
+    expect((await runCli(["init", dir, "--registry", registry])).exitCode).toBe(0);
     expect(
-      runCli(["add", "policy", "sample", "--yes", "--dir", dir, "--registry", registry]).exitCode,
+      (await runCli(["add", "policy", "sample", "--yes", "--dir", dir, "--registry", registry])).exitCode,
     ).toBe(0);
 
     const versionDir = writeSyntheticComponent(registry, {
@@ -168,7 +168,7 @@ describe("acceptance 8-9: update", () => {
     fs.writeFileSync(modulePath, text, "utf8");
     writeRegistryIndex(registry);
 
-    const implicit = runCli([
+    const implicit = await runCli([
       "update",
       "policy:sample",
       "--yes",
@@ -180,7 +180,7 @@ describe("acceptance 8-9: update", () => {
     expect(implicit.exitCode, implicit.stderr + implicit.stdout).toBe(0);
     expect(implicit.stdout).toMatch(/Already current: policy:sample@1\.0\.0/);
 
-    const explicit = runCli([
+    const explicit = await runCli([
       "update",
       "policy:sample@2.0.0",
       "--yes",

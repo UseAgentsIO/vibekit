@@ -6,13 +6,19 @@
     "tsBuildInfoFile": "../.tsbuild/tests/tsconfig.tsbuildinfo",
     "paths": {
       "vibekit": ["../packages/cli/src/index.ts"],
-      "@useagentsio/pi": ["../packages/pi/src/index.ts"]
+      "@useagentsio/pi": ["../packages/pi/src/index.ts"],
+      "@useagentsio/interface-sdk": ["../packages/interface-sdk/src/index.ts"],
+      "@useagentsio/interface-terminal": ["../packages/interface-terminal/src/index.ts"],
+      "@useagentsio/host": ["../packages/host/src/index.ts"]
     }
   },
   "include": ["./**/*.ts"],
   "references": [
     { "path": "../packages/core" },
     { "path": "../packages/cli" },
-    { "path": "../packages/pi" }
+    { "path": "../packages/pi" },
+    { "path": "../packages/interface-sdk" },
+    { "path": "../packages/interface-terminal" },
+    { "path": "../packages/host" }
   ]
 }

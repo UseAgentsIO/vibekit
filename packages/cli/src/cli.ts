@@ -2,11 +2,16 @@ import { VibeKitError, isVibeKitError } from "@useagentsio/core";
 
 import { parseCliArgs } from "./args.js";
 import { runAdd } from "./commands/add.js";
+import { runCreate } from "./commands/create.js";
 import { runDiff } from "./commands/diff.js";
 import { runDoctorCommand } from "./commands/doctor.js";
 import { runInit } from "./commands/init.js";
 import { runList } from "./commands/list.js";
+import { runMigrate } from "./commands/migrate.js";
+import { runMsg } from "./commands/msg.js";
 import { runRemove } from "./commands/remove.js";
+import { runStart } from "./commands/start.js";
+import { runStatus } from "./commands/status.js";
 import { runUpdate } from "./commands/update.js";
 import {
   cliVersion,
@@ -33,7 +38,7 @@ function writeHelp(out: OutputBuffer, commandName: string | undefined): number {
   return 0;
 }
 
-export function runCli(argv: string[]): CliResult {
+export async function runCli(argv: string[]): Promise<CliResult> {
   const out = new OutputBuffer();
   try {
     const parsed = parseCliArgs(argv);
@@ -56,6 +61,21 @@ export function runCli(argv: string[]): CliResult {
 
     let exitCode = 0;
     switch (parsed.command) {
+      case "create":
+        exitCode = runCreate(parsed.positionals, parsed.flags, out);
+        break;
+      case "msg":
+        exitCode = await runMsg(parsed.positionals, parsed.flags, out);
+        break;
+      case "start":
+        exitCode = await runStart(parsed.positionals, parsed.flags, out);
+        break;
+      case "status":
+        exitCode = runStatus(parsed.positionals, parsed.flags, out);
+        break;
+      case "migrate":
+        exitCode = runMigrate(parsed.positionals, parsed.flags, out);
+        break;
       case "init":
         exitCode = runInit(parsed.positionals, parsed.flags, out);
         break;

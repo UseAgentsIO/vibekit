@@ -33,6 +33,59 @@ const READ_OPTIONS: CommandHelp["options"] = [
 
 export const COMMANDS: readonly CommandHelp[] = [
   {
+    name: "create",
+    usage: "create [options] [dir]",
+    summary: "create a runnable Agent Project",
+    description:
+      "Writes a schemaVersion 2 Project, installs the selected Agent, and configures a terminal Interface. Message the Agent with `vibekit msg`.",
+    arguments: [{ name: "dir", text: "folder to create (default: current directory)" }],
+    options: [
+      { flags: "--agent <name>", text: "starter Agent (default: chief)" },
+      { flags: "--provider <name>", text: "provider id (default: openai)" },
+      { flags: "--model <id>", text: "model id" },
+      { flags: "--interface <name>", text: "Interface (default: terminal)" },
+      { flags: "-y, --yes", text: "skip confirmation prompts" },
+      { flags: "--dir <path>", text: "project directory" },
+      { flags: "--registry <path>", text: "registry to read from" },
+      { flags: "-h, --help", text: "display help for command" },
+    ],
+    examples: [
+      "$ vibekit create my-agent --agent chief --provider openai --interface terminal --yes",
+    ],
+  },
+  {
+    name: "msg",
+    usage: "msg [options] <text>",
+    summary: "send one message through the Host to the configured provider",
+    description:
+      "Starts the Host in-process, sends one turn on the local CLI conversation, prints the response, and stops. Does not launch the Pi TUI.",
+    arguments: [{ name: "text", text: "message to send" }],
+    options: READ_OPTIONS,
+    examples: ["$ vibekit msg \"Hello\""],
+  },
+  {
+    name: "start",
+    usage: "start [options]",
+    summary: "start the Host in the foreground with the terminal Interface",
+    description: "Development path. The Host stays alive until you exit.",
+    options: READ_OPTIONS,
+    examples: ["$ vibekit start"],
+  },
+  {
+    name: "status",
+    usage: "status [options]",
+    summary: "show Project, Interface, and Host status",
+    options: READ_OPTIONS,
+    examples: ["$ vibekit status"],
+  },
+  {
+    name: "migrate",
+    usage: "migrate [options]",
+    summary: "upgrade a schemaVersion 1 Project to Host-aware schemaVersion 2",
+    options: COMMAND_OPTIONS,
+    examples: ["$ vibekit migrate --yes"],
+  },
+  {
     name: "init",
     usage: "init [options] [dir]",
     summary: "create a VibeKit Project in an existing Pi app, or a new folder",
@@ -178,7 +231,7 @@ export function formatRootHelp(): string {
   return [
     "Usage: vibekit [options] [command]",
     "",
-    "compose Agents and Components into a Pi project",
+    "run an Agent Host; compose Agents and Components",
     "",
     section(
       "Options",

@@ -59,7 +59,7 @@
     {
       "id": "interface:terminal",
       "version": "1.0.0",
-      "checksum": "sha256:f0172d04f16c024af3756a2375da74b14fa1e7f1056ecaea144db7620566e497",
+      "checksum": "sha256:3cb09445fe462699e111344601847c5ce66fb523d79938450a8685981567d363",
       "compatibility": {
         "vibekit": "^1.0.0",
         "pi": ">=0.50.0",
@@ -180,7 +180,7 @@
     {
       "id": "tool:execution",
       "version": "1.0.0",
-      "checksum": "sha256:d612c3c11be9ff956c5b5c5015f6100f198923bb991b69e21fe8bc4fb3066f37",
+      "checksum": "sha256:68ae7b6bad80702b0bd59d91609bd7268e9e281cb66200049502e3c251ce4de5",
       "compatibility": {
         "vibekit": "^1.0.0",
         "pi": ">=0.50.0",
@@ -191,7 +191,7 @@
     {
       "id": "tool:filesystem",
       "version": "1.0.0",
-      "checksum": "sha256:1149fbdd965e7773866340599de70f44d4eae1f97a6bc4918f1e2bfb0dd35b9c",
+      "checksum": "sha256:1886fdc4b76c1a520ff52b0e4caeeb17c3bcc95f9909427d666b06b96b58ad2a",
       "compatibility": {
         "vibekit": "^1.0.0",
         "pi": ">=0.50.0",
@@ -202,7 +202,7 @@
     {
       "id": "tool:github",
       "version": "1.0.0",
-      "checksum": "sha256:17d8db9dd6e7c380167b194aa6787a7a86a57158c4256c2f592305386104cdc0",
+      "checksum": "sha256:f8f7abd257c74408dec000c1b193356b4e62f441addf2b9824198d173dbdd8cb",
       "compatibility": {
         "vibekit": "^1.0.0",
         "pi": ">=0.50.0",

@@ -1,0 +1,34 @@
+{
+  "name": "@useagentsio/interface-sdk",
+  "version": "0.1.0",
+  "description": "Host↔Interface contract for VibeKit Agents",
+  "type": "module",
+  "license": "UNLICENSED",
+  "author": "UseAgentsIO",
+  "homepage": "https://github.com/UseAgentsIO/vibekit#readme",
+  "bugs": {
+    "url": "https://github.com/UseAgentsIO/vibekit/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UseAgentsIO/vibekit.git",
+    "directory": "packages/interface-sdk"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "prepublishOnly": "tsc -b"
+  }
+}

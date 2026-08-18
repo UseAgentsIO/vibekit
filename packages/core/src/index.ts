@@ -46,10 +46,13 @@ export type {
 
 export {
   CURRENT_SCHEMA_VERSION,
+  PROJECT_SCHEMA_VERSION,
+  SUPPORTED_PROJECT_SCHEMA_VERSIONS,
   assertSchemaVersion,
+  isProjectSchemaVersion,
   isSchemaVersion,
 } from "./schema-version.js";
-export type { SchemaVersion } from "./schema-version.js";
+export type { ProjectSchemaVersion, SchemaVersion } from "./schema-version.js";
 
 export {
   DOCUMENT_KINDS,
@@ -64,6 +67,7 @@ export type {
   CompatibilityDeclaration,
   ComponentDocument,
   ConfigurationContract,
+  ConversationDocument,
   DecisionDocument,
   DeliveryMode,
   DependencySet,
@@ -74,11 +78,15 @@ export type {
   EvidenceObject,
   FileInstall,
   HealthCheck,
+  HostConfig,
   InstalledFileRecord,
   InstalledManifestDocument,
   InstalledModuleDocument,
+  InterfaceBinding,
   IsolationMode,
   ModuleDocument,
+  ModulePackages,
+  ModuleRuntime,
   OwnershipMode,
   PermissionGrant,
   PermissionRequest,
@@ -90,6 +98,7 @@ export type {
   ResultArtifact,
   ResultDocument,
   ResultStatus,
+  RuntimeKind,
   SecretReference,
   SecretSource,
   SourceRef,

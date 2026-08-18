@@ -22,7 +22,7 @@
     "sources"
   ],
   "properties": {
-    "schemaVersion": { "$ref": "module.schema.json#/definitions/schemaVersion" },
+    "schemaVersion": { "type": "integer", "enum": [1, 2] },
     "id": { "$ref": "module.schema.json#/definitions/projectId" },
     "name": { "type": "string", "minLength": 1 },
     "root": { "$ref": "module.schema.json#/definitions/fileTarget" },
@@ -31,7 +31,39 @@
       "additionalProperties": false,
       "required": ["adapter"],
       "properties": {
-        "adapter": { "type": "string", "minLength": 1 }
+        "adapter": { "type": "string", "minLength": 1 },
+        "host": { "type": "string", "minLength": 1 }
+      }
+    },
+    "defaultAgent": { "$ref": "module.schema.json#/definitions/bindingName" },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "retainedConversations",
+        "maxParallelConversations",
+        "sameConversationPolicy",
+        "shutdownGraceMs"
+      ],
+      "properties": {
+        "retainedConversations": { "type": "integer", "minimum": 1 },
+        "maxParallelConversations": { "type": "integer", "minimum": 1 },
+        "sameConversationPolicy": { "type": "string", "enum": ["serialize"] },
+        "shutdownGraceMs": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "interfaceBindings": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["definition", "enabled", "defaultAgent"],
+        "properties": {
+          "definition": { "$ref": "module.schema.json#/definitions/moduleId" },
+          "enabled": { "type": "boolean" },
+          "defaultAgent": { "$ref": "module.schema.json#/definitions/bindingName" },
+          "config": { "$ref": "module.schema.json#/definitions/fileTarget" }
+        }
       }
     },
     "pi": {
@@ -77,6 +109,7 @@
             "runtime"
           ],
           "properties": {
+            "conversations": { "$ref": "module.schema.json#/definitions/trackingMode" },
             "decisions": { "$ref": "module.schema.json#/definitions/trackingMode" },
             "tasks": { "$ref": "module.schema.json#/definitions/trackingMode" },
             "results": { "$ref": "module.schema.json#/definitions/trackingMode" },

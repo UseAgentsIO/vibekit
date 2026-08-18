@@ -1,6 +1,6 @@
 {
   "name": "@useagentsio/cli",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "VibeKit CLI for initializing Projects and installing Modules",
   "type": "module",
   "license": "UNLICENSED",
@@ -36,6 +36,10 @@
     "prepublishOnly": "node ../../scripts/prepare-publish.mjs cli && tsc -b"
   },
   "dependencies": {
-    "@useagentsio/core": "workspace:*"
+    "@useagentsio/core": "workspace:*",
+    "@useagentsio/host": "workspace:*",
+    "@useagentsio/interface-sdk": "workspace:*",
+    "@useagentsio/interface-terminal": "workspace:*",
+    "@useagentsio/pi": "workspace:*"
   }
 }

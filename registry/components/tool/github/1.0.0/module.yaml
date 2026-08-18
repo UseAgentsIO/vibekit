@@ -5,7 +5,7 @@ type: tool
 name: github
 displayName: GitHub Tool
 version: 1.0.0
-description: Gives authorized Agents scoped GitHub repository access.
+description: Declares GitHub capability grants and a GITHUB_TOKEN reference. Not an executable Tool in this drop.
 
 compatibility:
   vibekit: "^1.0.0"
@@ -55,3 +55,7 @@ configuration:
 healthCheck:
   type: pi-tool
   name: github
+
+runtime:
+  kind: config-only
+  available: false

@@ -1,0 +1,17 @@
+schemaVersion: 1
+id: conversation_550e8400-e29b-41d4-a716-446655440010
+projectId: project:example-app
+interfaceBinding: terminal
+accountId: user-example
+external:
+  conversationId: slack-C01234567
+  threadId: "1234567890.123456"
+conversationKey: terminal:user-example:slack-C01234567
+agentBinding: chief
+sessionPath: .vibekit/state/sessions/conversation_550e8400-e29b-41d4-a716-446655440010.jsonl
+status: active
+title: Example conversation
+lastEventId: event_550e8400-e29b-41d4-a716-446655440008
+createdAt: 2026-01-15T12:00:00.000Z
+lastUsedAt: 2026-01-15T12:05:00.000Z
+revision: 1

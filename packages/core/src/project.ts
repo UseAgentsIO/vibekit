@@ -4,6 +4,7 @@ import path from "node:path";
 import { PROJECT_RELATIVE_PATH } from "./constants.js";
 import { VibeKitError } from "./errors.js";
 import { formatProjectId } from "./ids.js";
+import { PROJECT_SCHEMA_VERSION } from "./schema-version.js";
 import type { ProjectDocument } from "./types.js";
 import { parseAndValidateYaml, validateDocument } from "./validate.js";
 import { stringifyYaml } from "./yaml.js";
@@ -54,15 +55,25 @@ export function writeProjectDocument(projectRoot: string, project: ProjectDocume
 export function createDefaultProject(options: {
   slug: string;
   name: string;
+  defaultAgent?: string;
 }): ProjectDocument {
   return {
-    schemaVersion: 1,
+    schemaVersion: PROJECT_SCHEMA_VERSION,
     id: formatProjectId(options.slug),
     name: options.name,
     root: ".",
     runtime: {
       adapter: "@useagentsio/pi",
+      host: "@useagentsio/host",
     },
+    ...(options.defaultAgent !== undefined ? { defaultAgent: options.defaultAgent } : {}),
+    host: {
+      retainedConversations: 20,
+      maxParallelConversations: 4,
+      sameConversationPolicy: "serialize",
+      shutdownGraceMs: 30000,
+    },
+    interfaceBindings: {},
     pi: {
       compatibility: ">=0.50.0",
     },
@@ -76,6 +87,7 @@ export function createDefaultProject(options: {
       backend: "state:repository",
       path: ".vibekit/state",
       tracking: {
+        conversations: "local",
         decisions: "git",
         tasks: "local",
         results: "local",

@@ -7,10 +7,10 @@ import { runCli } from "vibekit";
 import { officialRegistryDir, makeTempDir } from "../helpers.js";
 
 describe("acceptance 7: diff detects local Agent edits", () => {
-  it("reports local edits and does not modify the Project", () => {
+  it("reports local edits and does not modify the Project", async () => {
     const dir = makeTempDir("vibekit-diff-");
-    expect(runCli(["init", dir, "--registry", officialRegistryDir]).exitCode).toBe(0);
-    const added = runCli([
+    expect((await runCli(["init", dir, "--registry", officialRegistryDir])).exitCode).toBe(0);
+    const added = await runCli([
       "add",
       "agent",
       "coder",
@@ -28,7 +28,7 @@ describe("acceptance 7: diff detects local Agent edits", () => {
     const beforeProject = fs.readFileSync(path.join(dir, ".vibekit/project.yaml"), "utf8");
     fs.writeFileSync(instructions, `${beforeInstructions}\nlocal agent edit\n`, "utf8");
 
-    const result = runCli(["diff", "agent:coder", "--dir", dir, "--registry", officialRegistryDir]);
+    const result = await runCli(["diff", "agent:coder", "--dir", dir, "--registry", officialRegistryDir]);
     expect(result.exitCode, result.stderr + result.stdout).toBe(0);
     expect(result.stdout).toContain("agent:coder");
     expect(result.stdout).toContain(".vibekit/agents/coder/instructions.md");
@@ -42,11 +42,11 @@ describe("acceptance 7: diff detects local Agent edits", () => {
     expect(fs.existsSync(path.join(dir, ".vibekit/runtime/generated/config.yaml"))).toBe(false);
   });
 
-  it("accepts the split type name form", () => {
+  it("accepts the split type name form", async () => {
     const dir = makeTempDir("vibekit-diff-split-");
-    expect(runCli(["init", dir, "--registry", officialRegistryDir]).exitCode).toBe(0);
+    expect((await runCli(["init", dir, "--registry", officialRegistryDir])).exitCode).toBe(0);
     expect(
-      runCli([
+      (await runCli([
         "add",
         "policy",
         "least-privilege",
@@ -55,10 +55,10 @@ describe("acceptance 7: diff detects local Agent edits", () => {
         dir,
         "--registry",
         officialRegistryDir,
-      ]).exitCode,
+      ])).exitCode,
     ).toBe(0);
 
-    const result = runCli([
+    const result = await runCli([
       "diff",
       "policy",
       "least-privilege",

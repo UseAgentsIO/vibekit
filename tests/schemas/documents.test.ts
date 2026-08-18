@@ -13,6 +13,8 @@ const validCases: ReadonlyArray<readonly [string, DocumentKind]> = [
   ["component-tool-github.yaml", "component"],
   ["agent-coder.yaml", "agent"],
   ["project.yaml", "project"],
+  ["project-v2.yaml", "project"],
+  ["conversation.yaml", "conversation"],
   ["task.yaml", "task"],
   ["result.yaml", "result"],
   ["decision.yaml", "decision"],

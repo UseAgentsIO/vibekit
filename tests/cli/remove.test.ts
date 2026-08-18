@@ -7,7 +7,7 @@ import { runCli } from "vibekit";
 import { buildTempRegistry, makeTempDir } from "../helpers.js";
 
 describe("acceptance 10-11: remove", () => {
-  it("does not delete a modified file", () => {
+  it("does not delete a modified file", async () => {
     const registry = buildTempRegistry([
       {
         type: "policy",
@@ -16,16 +16,16 @@ describe("acceptance 10-11: remove", () => {
       },
     ]);
     const dir = makeTempDir("vibekit-remove-mod-");
-    expect(runCli(["init", dir, "--registry", registry]).exitCode).toBe(0);
+    expect((await runCli(["init", dir, "--registry", registry])).exitCode).toBe(0);
     expect(
-      runCli(["add", "policy", "sample", "--yes", "--dir", dir, "--registry", registry]).exitCode,
+      (await runCli(["add", "policy", "sample", "--yes", "--dir", dir, "--registry", registry])).exitCode,
     ).toBe(0);
 
     const target = path.join(dir, ".vibekit/components/policy/sample.txt");
     fs.writeFileSync(target, "user changed this\n", "utf8");
     const installedBefore = fs.readFileSync(path.join(dir, ".vibekit/installed.json"), "utf8");
 
-    const result = runCli([
+    const result = await runCli([
       "remove",
       "policy:sample",
       "--yes",
@@ -42,7 +42,7 @@ describe("acceptance 10-11: remove", () => {
     expect(fs.readFileSync(path.join(dir, ".vibekit/installed.json"), "utf8")).toBe(installedBefore);
   });
 
-  it("does not remove a dependency still used by another Module", () => {
+  it("does not remove a dependency still used by another Module", async () => {
     const registry = buildTempRegistry([
       {
         type: "policy",
@@ -63,15 +63,15 @@ describe("acceptance 10-11: remove", () => {
       },
     ]);
     const dir = makeTempDir("vibekit-remove-shared-");
-    expect(runCli(["init", dir, "--registry", registry]).exitCode).toBe(0);
+    expect((await runCli(["init", dir, "--registry", registry])).exitCode).toBe(0);
     expect(
-      runCli(["add", "policy", "alpha", "--yes", "--dir", dir, "--registry", registry]).exitCode,
+      (await runCli(["add", "policy", "alpha", "--yes", "--dir", dir, "--registry", registry])).exitCode,
     ).toBe(0);
     expect(
-      runCli(["add", "policy", "beta", "--yes", "--dir", dir, "--registry", registry]).exitCode,
+      (await runCli(["add", "policy", "beta", "--yes", "--dir", dir, "--registry", registry])).exitCode,
     ).toBe(0);
 
-    const result = runCli([
+    const result = await runCli([
       "remove",
       "policy:alpha",
       "--yes",
@@ -96,7 +96,7 @@ describe("acceptance 10-11: remove", () => {
     expect(ids).not.toContain("policy:alpha");
   });
 
-  it("removes unchanged exclusive files", () => {
+  it("removes unchanged exclusive files", async () => {
     const registry = buildTempRegistry([
       {
         type: "policy",
@@ -105,12 +105,12 @@ describe("acceptance 10-11: remove", () => {
       },
     ]);
     const dir = makeTempDir("vibekit-remove-clean-");
-    expect(runCli(["init", dir, "--registry", registry]).exitCode).toBe(0);
+    expect((await runCli(["init", dir, "--registry", registry])).exitCode).toBe(0);
     expect(
-      runCli(["add", "policy", "sample", "--yes", "--dir", dir, "--registry", registry]).exitCode,
+      (await runCli(["add", "policy", "sample", "--yes", "--dir", dir, "--registry", registry])).exitCode,
     ).toBe(0);
 
-    const result = runCli([
+    const result = await runCli([
       "remove",
       "policy:sample",
       "--yes",

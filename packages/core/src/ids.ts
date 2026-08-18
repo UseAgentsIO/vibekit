@@ -24,6 +24,7 @@ export const RUNTIME_ID_KINDS = [
   "verification",
   "event",
   "claim",
+  "conversation",
 ] as const;
 
 export type RuntimeIdKind = (typeof RUNTIME_ID_KINDS)[number];

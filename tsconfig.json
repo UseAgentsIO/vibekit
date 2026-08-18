@@ -4,6 +4,9 @@
     { "path": "./packages/core" },
     { "path": "./packages/cli" },
     { "path": "./packages/pi" },
+    { "path": "./packages/interface-sdk" },
+    { "path": "./packages/interface-terminal" },
+    { "path": "./packages/host" },
     { "path": "./tests" }
   ]
 }

@@ -1,11 +1,15 @@
 # VibeKit runtime and libraries
 
-Use `@useagentsio/core` for schemas, IDs, Project State, installation contracts, verification, and proposal/apply decisions. Use `@useagentsio/pi` to resolve a Project and Agent into an isolated Pi Run.
+The running product is the Agent Host (`@useagentsio/host`, binary `vibekit-host`). Users talk to a Project with `vibekit create`, `vibekit msg`, and `vibekit start`. Pi is embedded inside the Host. Do not launch the Pi TUI and do not treat `init` / `add` / `doctor` as the finished product.
+
+Slack and Telegram are planned Interfaces. They are not in this drop.
+
+Use `@useagentsio/core` for schemas, IDs, Project State, installation contracts, verification, and proposal/apply decisions. Use `@useagentsio/pi` as the embedded adapter that resolves a Project and Agent into an isolated worker Run. Use `@useagentsio/interface-sdk` when attaching an Interface. The Host persists conversations and State; the adapter does not.
 
 Install the libraries with:
 
 ```bash
-npm install @useagentsio/core @useagentsio/pi
+npm install @useagentsio/core @useagentsio/pi @useagentsio/host @useagentsio/interface-sdk
 ```
 
 ## Validate documents
@@ -53,9 +57,9 @@ const outcome = await runManaged({
 });
 ```
 
-Use `runIsolated` when the caller will manage persistence, claims, concurrency, and idempotency itself. Use `prepareIsolatedRun` to inspect the resolved Project, Agent, Task, effective configuration, bounded context, filtered environment, and Run ID without starting Pi. Inject `createSession` in tests; omit it for the default Pi coding-agent session.
+Use `runIsolated` when the caller will manage persistence, claims, concurrency, and idempotency itself. Use `prepareIsolatedRun` to inspect the resolved Project, Agent, Task, effective configuration, bounded context, filtered environment, and Run ID without starting Pi. Inject `createSession` in unit tests. The Host omits it and embeds the default Pi coding-agent session. Mocked sessions are a test seam, not a product mode.
 
-The runtime returns Events and a Result. `runIsolated` does not persist them. `runManaged` can use repository State, claims, concurrency, idempotency, worktree isolation, and process isolation around the Run.
+The adapter returns Events and a Result. `runIsolated` does not persist them. The Host persists State and owns persistent conversation sessions. `runManaged` can use repository State, claims, concurrency, idempotency, worktree isolation, and process isolation around a worker Run.
 
 ## Shape the Task correctly
 

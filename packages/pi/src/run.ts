@@ -48,6 +48,7 @@ import { collectResult } from "./result.js";
 import {
   createPiAgentSession,
   type CreatePiSession,
+  type PiCustomTool,
   type PiSession,
 } from "./session.js";
 import {
@@ -96,6 +97,9 @@ export interface IsolatedRunInput {
   readonly depth?: number;
   readonly ancestorBindings?: readonly string[];
   readonly activeChildCount?: number;
+  readonly customTools?: readonly PiCustomTool[];
+  readonly onTextDelta?: (text: string) => void | Promise<void>;
+  readonly allowNetwork?: boolean;
 }
 
 export interface ManagedRunInput extends IsolatedRunInput {}
@@ -295,11 +299,14 @@ export async function runIsolated(input: IsolatedRunInput): Promise<IsolatedRunO
     session = await createSession({
       cwd: prepared.configuration.cwd,
       tools: prepared.configuration.tools,
+      customTools: input.customTools,
       systemPrompt: systemPromptForTools(
         prepared.context.systemPrompt,
         prepared.configuration.tools,
       ),
       model: prepared.configuration.model,
+      allowNetwork: input.allowNetwork,
+      onTextDelta: input.onTextDelta,
     });
 
     if (stopReason === "cancel" || input.signal?.aborted) {
@@ -678,6 +685,8 @@ export async function runManaged(input: ManagedRunInput): Promise<ManagedRunOutc
     );
   }
 
+  persistManagedOutcome(state, task, outcome);
+
   if (worktreeCleanupFailed && prepared.configuration.cleanupRequired) {
     return {
       ...outcome,
@@ -754,6 +763,25 @@ export async function executeDelegation(
     childTask: childDraft.task,
     child,
   };
+}
+
+function persistManagedOutcome(
+  state: RepositoryState | undefined,
+  task: TaskDocument,
+  outcome: IsolatedRunOutcome,
+): void {
+  if (state === undefined) {
+    return;
+  }
+  if (state.tasks.tryGet(task.id) === undefined) {
+    state.tasks.create(task);
+  }
+  for (const event of outcome.events) {
+    state.events.append(event);
+  }
+  if (typeof state.results.create === "function" && state.results.tryGet(outcome.result.id) === undefined) {
+    state.results.create(outcome.result);
+  }
 }
 
 function resolveIdempotencyStore(

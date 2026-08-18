@@ -1,6 +1,6 @@
 {
   "name": "@useagentsio/pi",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "VibeKit Pi runtime adapter",
   "type": "module",
   "license": "UNLICENSED",
@@ -32,6 +32,7 @@
     "prepublishOnly": "tsc -b"
   },
   "dependencies": {
+    "@earendil-works/pi-coding-agent": "0.84.2",
     "@useagentsio/core": "workspace:*",
     "yaml": "^2.8.1"
   }

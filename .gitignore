@@ -86,6 +86,7 @@ $RECYCLE.BIN/
 *.swo
 *~
 .history/
+repomix-output.xml
 
 # Local sandbox for CLI verification (never commit)
 .developer/

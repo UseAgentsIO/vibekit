@@ -12,7 +12,7 @@
     "test": "vitest run",
     "typecheck": "tsc -b",
     "registry:index": "tsx scripts/build-registry-index.ts",
-    "publish:packages": "pnpm --filter @useagentsio/core publish --access public --no-git-checks && pnpm --filter @useagentsio/pi publish --access public --no-git-checks && pnpm --filter @useagentsio/cli publish --access public --no-git-checks"
+    "publish:packages": "pnpm --filter @useagentsio/core publish --access public --no-git-checks && pnpm --filter @useagentsio/interface-sdk publish --access public --no-git-checks && pnpm --filter @useagentsio/pi publish --access public --no-git-checks && pnpm --filter @useagentsio/interface-terminal publish --access public --no-git-checks && pnpm --filter @useagentsio/host publish --access public --no-git-checks && pnpm --filter @useagentsio/cli publish --access public --no-git-checks"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",

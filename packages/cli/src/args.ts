@@ -8,6 +8,13 @@ export interface GlobalFlags {
   readonly dir?: string;
   readonly help: boolean;
   readonly version: boolean;
+  readonly agent?: string;
+  readonly provider?: string;
+  readonly model?: string;
+  readonly interface?: string;
+  readonly service: boolean;
+  readonly live: boolean;
+  readonly skipInstall: boolean;
 }
 
 export interface ParsedCli {
@@ -29,6 +36,13 @@ export function parseCliArgs(argv: string[]): ParsedCli {
         dir: { type: "string" },
         help: { type: "boolean", short: "h", default: false },
         version: { type: "boolean", short: "v", default: false },
+        agent: { type: "string" },
+        provider: { type: "string" },
+        model: { type: "string" },
+        interface: { type: "string" },
+        service: { type: "boolean", default: false },
+        live: { type: "boolean", default: false },
+        "skip-install": { type: "boolean", default: false },
       },
     });
   } catch (error) {
@@ -49,6 +63,13 @@ export function parseCliArgs(argv: string[]): ParsedCli {
       dir: parsed.values.dir,
       help: parsed.values.help === true,
       version: parsed.values.version === true,
+      agent: parsed.values.agent,
+      provider: parsed.values.provider,
+      model: parsed.values.model,
+      interface: parsed.values.interface,
+      service: parsed.values.service === true,
+      live: parsed.values.live === true,
+      skipInstall: parsed.values["skip-install"] === true,
     },
   };
 }

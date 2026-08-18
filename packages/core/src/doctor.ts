@@ -71,7 +71,7 @@ export function runDoctor(options: {
     findings.push(toFinding(error, "installed_schema"));
   }
 
-  if (project && project.schemaVersion !== 1) {
+  if (project && project.schemaVersion !== 1 && project.schemaVersion !== 2) {
     findings.push({
       severity: "error",
       code: "schema_version",

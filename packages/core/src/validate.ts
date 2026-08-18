@@ -42,6 +42,7 @@ const SCHEMA_FILES: Record<Exclude<DocumentKind, "secret">, string> = {
   approval: "approval.schema.json",
   verification: "verification.schema.json",
   event: "event.schema.json",
+  conversation: "conversation.schema.json",
 };
 
 let cachedAjv: AjvInstance | undefined;

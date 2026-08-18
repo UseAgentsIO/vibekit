@@ -8,21 +8,15 @@ import { runCli } from "vibekit";
 import { makeTempDir, officialRegistryDir } from "../helpers.js";
 
 describe("acceptance 1: init", () => {
-  it("creates a valid Project in a clean fixture", () => {
+  it("creates a valid Project in a clean fixture", async () => {
     const dir = makeTempDir("vibekit-init-");
-    const result = runCli(["init", dir, "--registry", officialRegistryDir]);
+    const result = await runCli(["init", dir, "--registry", officialRegistryDir]);
     expect(result.stderr, result.stderr).toBe("");
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toMatch(/Initialized VibeKit Project/);
     expect(result.stdout).toMatch(/Created:/);
 
-    expect(fs.existsSync(path.join(dir, ".pi/settings.json"))).toBe(true);
-    expect(fs.existsSync(path.join(dir, ".pi/extensions"))).toBe(true);
-    expect(fs.existsSync(path.join(dir, ".pi/skills"))).toBe(true);
-    expect(fs.existsSync(path.join(dir, ".pi/extensions/vibekit/index.ts"))).toBe(true);
-    expect(fs.readFileSync(path.join(dir, ".pi/extensions/vibekit/index.ts"), "utf8")).toContain(
-      "export default function",
-    );
+    expect(fs.existsSync(path.join(dir, ".pi/extensions/vibekit/index.ts"))).toBe(false);
     expect(fs.existsSync(path.join(dir, ".vibekit/project.yaml"))).toBe(true);
     expect(fs.existsSync(path.join(dir, ".vibekit/installed.json"))).toBe(true);
     expect(fs.readFileSync(path.join(dir, ".gitignore"), "utf8")).toContain(".vibekit/runtime/");
@@ -34,6 +28,8 @@ describe("acceptance 1: init", () => {
     expect(project.errors, JSON.stringify(project.errors)).toEqual([]);
     expect(project.valid).toBe(true);
     expect(project.data?.agentBindings).toEqual({});
+    expect(project.data?.schemaVersion).toBe(2);
+    expect(project.data?.runtime?.host).toBe("@useagentsio/host");
 
     const installed = parseAndValidateJson(
       "installed",

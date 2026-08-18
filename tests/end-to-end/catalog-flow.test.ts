@@ -42,13 +42,13 @@ afterEach(() => {
 
 describe("official catalog Chief → coder → reviewer", () => {
   it("runs a mocked composition through verification and the proposal path", async () => {
-    const dir = initCatalogProject();
-    addOfficial(dir, "agent", "chief");
-    addOfficial(dir, "agent", "coder");
-    addOfficial(dir, "agent", "reviewer");
-    addOfficial(dir, "policy", "require-verification");
+    const dir = await initCatalogProject();
+    await addOfficial(dir, "agent", "chief");
+    await addOfficial(dir, "agent", "coder");
+    await addOfficial(dir, "agent", "reviewer");
+    await addOfficial(dir, "policy", "require-verification");
 
-    const project = bindComposition(dir);
+    const project = await bindComposition(dir);
     const state = openProjectState({ projectRoot: dir, project });
     const task = state.tasks.create(chiefTask(project.id)).document;
     const createSession = mockCreateSession();
@@ -97,7 +97,9 @@ describe("official catalog Chief → coder → reviewer", () => {
     expect(coder.child.result?.agentId).toBe("agent:coder");
     expect(coder.child.configuration?.tools).not.toContain("agent_delegate");
     expect(coder.child.result?.artifacts[0]?.path).toBe("src/greeting.ts");
-    const coderResult = state.results.create(coder.child.result!).document;
+    const coderResult =
+      state.results.tryGet(coder.child.result!.id)?.document ??
+      state.results.create(coder.child.result!).document;
 
     const command = runCommandVerification({
       state,
@@ -204,16 +206,16 @@ describe("official catalog Chief → coder → reviewer", () => {
   });
 });
 
-function initCatalogProject(): string {
+async function initCatalogProject(): Promise<string> {
   const dir = makeTempDir("vibekit-catalog-flow-");
   temps.push(dir);
-  const result = runCli(["init", dir, "--registry", officialRegistryDir]);
+  const result = await runCli(["init", dir, "--registry", officialRegistryDir]);
   expect(result.exitCode, result.stderr).toBe(0);
   return dir;
 }
 
-function addOfficial(dir: string, type: "agent" | "policy", name: string): void {
-  const result = runCli([
+async function addOfficial(dir: string, type: "agent" | "policy", name: string): Promise<void> {
+  const result = await runCli([
     "add",
     type,
     name,
@@ -226,7 +228,7 @@ function addOfficial(dir: string, type: "agent" | "policy", name: string): void 
   expect(result.exitCode, result.stderr + result.stdout).toBe(0);
 }
 
-function bindComposition(dir: string): ProjectDocument {
+async function bindComposition(dir: string): Promise<ProjectDocument> {
   const project = readProjectDocument(dir);
   const next: ProjectDocument = {
     ...project,
@@ -249,7 +251,7 @@ function bindComposition(dir: string): ProjectDocument {
     },
   };
   writeProjectDocument(dir, next);
-  const doctor = runCli(["doctor", "--dir", dir, "--registry", officialRegistryDir]);
+  const doctor = await runCli(["doctor", "--dir", dir, "--registry", officialRegistryDir]);
   expect(doctor.exitCode, doctor.stderr + doctor.stdout).toBe(0);
   return readProjectDocument(dir);
 }

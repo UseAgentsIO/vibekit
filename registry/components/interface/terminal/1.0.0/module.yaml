@@ -43,3 +43,13 @@ configuration:
 healthCheck:
   type: pi-interface
   name: terminal
+
+runtime:
+  kind: interface
+  package: "@useagentsio/interface-terminal"
+  export: createTerminalInterface
+  lifecycle: singleton
+
+packages:
+  dependencies:
+    "@useagentsio/interface-terminal": "^0.1.0"

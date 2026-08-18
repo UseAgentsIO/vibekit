@@ -7,7 +7,7 @@ import type {
 } from "./lifecycles.js";
 import type { FailureCategory } from "./errors.js";
 import type { ModuleId, ModuleType, ProjectId, RuntimeId } from "./ids.js";
-import type { SchemaVersion } from "./schema-version.js";
+import type { ProjectSchemaVersion, SchemaVersion } from "./schema-version.js";
 
 export type IsolationMode = "process" | "worktree";
 export type AuthorizationMode = "deny" | "standing" | "explicit";
@@ -110,6 +110,8 @@ export interface ComponentDocument extends ModuleDocument {
   readonly files: readonly FileInstall[];
   readonly configuration: ConfigurationContract;
   readonly healthCheck?: HealthCheck;
+  readonly runtime?: ModuleRuntime;
+  readonly packages?: ModulePackages;
 }
 
 export interface AgentModelConfig {
@@ -175,7 +177,50 @@ export interface AgentDocument extends ModuleDocument {
   readonly providesCapabilities?: readonly string[];
 }
 
+export type RuntimeKind = "interface" | "pi-builtin" | "pi-extension" | "package" | "config-only";
+export interface ModuleRuntime {
+  readonly kind: RuntimeKind;
+  readonly package?: string;
+  readonly export?: string;
+  readonly lifecycle?: "singleton";
+  readonly tools?: readonly string[];
+  readonly available?: boolean;
+}
+export interface ModulePackages {
+  readonly dependencies?: Readonly<Record<string, string>>;
+}
+export interface HostConfig {
+  readonly retainedConversations: number;
+  readonly maxParallelConversations: number;
+  readonly sameConversationPolicy: "serialize";
+  readonly shutdownGraceMs: number;
+}
+export interface InterfaceBinding {
+  readonly definition: ModuleId;
+  readonly enabled: boolean;
+  readonly defaultAgent: string;
+  readonly config?: string;
+}
+export interface ConversationDocument {
+  readonly schemaVersion: SchemaVersion;
+  readonly id: RuntimeId;
+  readonly projectId: ProjectId;
+  readonly interfaceBinding: string;
+  readonly accountId: string;
+  readonly external: { readonly conversationId: string; readonly threadId?: string };
+  readonly conversationKey: string;
+  readonly agentBinding: string;
+  readonly sessionPath: string;
+  readonly status: "active" | "idle" | "closed";
+  readonly title?: string;
+  readonly lastEventId?: string;
+  readonly createdAt: string;
+  readonly lastUsedAt: string;
+  readonly revision: number;
+}
+
 export interface ProjectTracking {
+  readonly conversations?: TrackingMode;
   readonly decisions: TrackingMode;
   readonly tasks: TrackingMode;
   readonly results: TrackingMode;
@@ -190,13 +235,17 @@ export interface AgentBinding {
 }
 
 export interface ProjectDocument {
-  readonly schemaVersion: SchemaVersion;
+  readonly schemaVersion: ProjectSchemaVersion;
   readonly id: ProjectId;
   readonly name: string;
   readonly root: string;
   readonly runtime?: {
     readonly adapter: string;
+    readonly host?: string;
   };
+  readonly defaultAgent?: string;
+  readonly host?: HostConfig;
+  readonly interfaceBindings?: Readonly<Record<string, InterfaceBinding>>;
   readonly pi: {
     readonly compatibility: string;
   };
@@ -425,6 +474,7 @@ export type DocumentKind =
   | "approval"
   | "verification"
   | "event"
+  | "conversation"
   | "secret";
 
 export interface DocumentTypeMap {
@@ -441,6 +491,7 @@ export interface DocumentTypeMap {
   approval: ApprovalDocument;
   verification: VerificationDocument;
   event: EventDocument;
+  conversation: ConversationDocument;
   secret: SecretReference;
 }
 
@@ -458,6 +509,7 @@ export const DOCUMENT_KINDS: readonly DocumentKind[] = [
   "approval",
   "verification",
   "event",
+  "conversation",
   "secret",
 ];
 

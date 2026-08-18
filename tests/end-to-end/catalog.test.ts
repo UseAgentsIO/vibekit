@@ -32,9 +32,9 @@ afterEach(() => {
 });
 
 describe("official catalog install", () => {
-  it.each(OFFICIAL_AGENTS)("adds agent %s with --yes and passes doctor", (name) => {
-    const dir = initProject();
-    const added = addAgent(dir, name);
+  it.each(OFFICIAL_AGENTS)("adds agent %s with --yes and passes doctor", async (name) => {
+    const dir = await initProject();
+    const added = await addAgent(dir, name);
     expect(added.exitCode, added.stderr + added.stdout).toBe(0);
     expect(added.stdout).toContain(`agent:${name}@1.0.0`);
     expect(fs.existsSync(path.join(dir, `.vibekit/agents/${name}/agent.yaml`))).toBe(true);
@@ -46,15 +46,15 @@ describe("official catalog install", () => {
     );
     expect(agent.valid, JSON.stringify(agent.errors)).toBe(true);
 
-    const doctor = runCli(["doctor", "--dir", dir, "--registry", officialRegistryDir]);
+    const doctor = await runCli(["doctor", "--dir", dir, "--registry", officialRegistryDir]);
     expect(doctor.exitCode, doctor.stderr + doctor.stdout).toBe(0);
     expect(doctor.stdout).toMatch(/doctor: ok/);
   });
 
-  it("installs every official Agent into one Project and passes doctor", () => {
-    const dir = initProject();
+  it("installs every official Agent into one Project and passes doctor", async () => {
+    const dir = await initProject();
     for (const name of OFFICIAL_AGENTS) {
-      const added = addAgent(dir, name);
+      const added = await addAgent(dir, name);
       expect(added.exitCode, added.stderr + added.stdout).toBe(0);
     }
 
@@ -71,25 +71,25 @@ describe("official catalog install", () => {
       expect.arrayContaining(OFFICIAL_AGENTS.map((name) => `agent:${name}`)),
     );
 
-    const doctor = runCli(["doctor", "--dir", dir, "--registry", officialRegistryDir]);
+    const doctor = await runCli(["doctor", "--dir", dir, "--registry", officialRegistryDir]);
     expect(doctor.exitCode, doctor.stderr + doctor.stdout).toBe(0);
     expect(doctor.stdout).toMatch(/doctor: ok/);
   });
 
-  it("keeps installed Agent files locally editable", () => {
-    const dir = initProject();
-    expect(addAgent(dir, "coder").exitCode).toBe(0);
+  it("keeps installed Agent files locally editable", async () => {
+    const dir = await initProject();
+    expect((await addAgent(dir, "coder")).exitCode).toBe(0);
     const instructions = path.join(dir, ".vibekit/agents/coder/instructions.md");
     const original = fs.readFileSync(instructions, "utf8");
     fs.writeFileSync(instructions, `${original}\n# local edit\n`, "utf8");
     expect(fs.readFileSync(instructions, "utf8")).toContain("# local edit");
 
-    const doctor = runCli(["doctor", "--dir", dir, "--registry", officialRegistryDir]);
+    const doctor = await runCli(["doctor", "--dir", dir, "--registry", officialRegistryDir]);
     expect(doctor.exitCode, doctor.stderr + doctor.stdout).toBe(0);
     expect(doctor.stdout).toContain("installed_hash_mismatch");
   });
 
-  it("matches catalog IDs to registry/index.json", () => {
+  it("matches catalog IDs to registry/index.json", async () => {
     const built = buildRegistryIndex(officialRegistryDir);
     const builtIds = built.index.modules.map((entry) => entry.id).sort();
     const published = JSON.parse(
@@ -103,15 +103,15 @@ describe("official catalog install", () => {
   });
 });
 
-function initProject(): string {
+async function initProject(): Promise<string> {
   const dir = makeTempDir("vibekit-catalog-");
   temps.push(dir);
-  const result = runCli(["init", dir, "--registry", officialRegistryDir]);
+  const result = await runCli(["init", dir, "--registry", officialRegistryDir]);
   expect(result.exitCode, result.stderr).toBe(0);
   return dir;
 }
 
-function addAgent(dir: string, name: string) {
+async function addAgent(dir: string, name: string) {
   return runCli([
     "add",
     "agent",

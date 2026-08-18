@@ -45,3 +45,7 @@ configuration:
 healthCheck:
   type: pi-tool
   name: execution
+
+runtime:
+  kind: pi-builtin
+  tools: [bash]

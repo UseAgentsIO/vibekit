@@ -47,3 +47,7 @@ configuration:
 healthCheck:
   type: pi-tool
   name: filesystem
+
+runtime:
+  kind: pi-builtin
+  tools: [read, grep, find, ls, write, edit]

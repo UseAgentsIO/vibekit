@@ -8,7 +8,7 @@ import { makeTempDir, writeSyntheticComponent } from "../helpers.js";
 import { runCli } from "vibekit";
 
 describe("acceptance 6: unsafe file targets", () => {
-  it("rejects path traversal targets when building a registry index", () => {
+  it("rejects path traversal targets when building a registry index", async () => {
     const root = makeTempDir("vibekit-unsafe-");
     writeSyntheticComponent(root, {
       type: "policy",
@@ -30,7 +30,7 @@ describe("acceptance 6: unsafe file targets", () => {
     }
   });
 
-  it("rejects absolute targets when building a registry index", () => {
+  it("rejects absolute targets when building a registry index", async () => {
     const root = makeTempDir("vibekit-abs-");
     writeSyntheticComponent(root, {
       type: "policy",
@@ -46,9 +46,9 @@ describe("acceptance 6: unsafe file targets", () => {
     expect(() => buildRegistryIndex(root)).toThrow(VibeKitError);
   });
 
-  it("rejects unsafe targets during add", () => {
+  it("rejects unsafe targets during add", async () => {
     const project = makeTempDir("vibekit-proj-");
-    expect(runCli(["init", project]).exitCode).toBe(0);
+    expect((await runCli(["init", project])).exitCode).toBe(0);
     const registry = makeTempDir("vibekit-reg-");
     writeSyntheticComponent(registry, {
       type: "policy",
@@ -83,7 +83,7 @@ describe("acceptance 6: unsafe file targets", () => {
       )}\n`,
       "utf8",
     );
-    const result = runCli([
+    const result = await runCli([
       "add",
       "policy",
       "escape",

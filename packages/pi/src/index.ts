@@ -96,11 +96,26 @@ export {
 } from "./result.js";
 
 export {
+  assistantTextDelta,
   createPiAgentSession,
   type CreatePiSession,
   type CreatePiSessionOptions,
+  type PiCustomTool,
   type PiSession,
 } from "./session.js";
+
+export {
+  closeConversationSession,
+  createPersistentConversationSession,
+  openPersistentConversationSession,
+  runConversationTurn,
+  type ConversationTurnInput,
+  type ConversationTurnResult,
+  type CreatePersistentSessionManager,
+  type CreatePersistentSessionManagerInput,
+  type PersistentConversationSessionOptions,
+  type PersistentSession,
+} from "./conversation.js";
 
 export {
   executeDelegation,

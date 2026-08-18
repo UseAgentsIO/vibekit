@@ -8,7 +8,7 @@ import { runCli } from "vibekit";
 import { buildTempRegistry, makeTempDir } from "../helpers.js";
 
 describe("acceptance 5: exclusive ownership", () => {
-  it("rejects two Modules claiming the same exclusive file", () => {
+  it("rejects two Modules claiming the same exclusive file", async () => {
     expect(() =>
       planFileOwnership(
         [
@@ -30,7 +30,7 @@ describe("acceptance 5: exclusive ownership", () => {
     ).toThrow(/duplicate_exclusive_ownership|both claim/);
   });
 
-  it("rejects add when an installed Module already owns the target", () => {
+  it("rejects add when an installed Module already owns the target", async () => {
     const registry = buildTempRegistry([
       {
         type: "policy",
@@ -58,8 +58,8 @@ describe("acceptance 5: exclusive ownership", () => {
       },
     ]);
     const dir = makeTempDir("vibekit-own-");
-    expect(runCli(["init", dir, "--registry", registry]).exitCode).toBe(0);
-    const first = runCli([
+    expect((await runCli(["init", dir, "--registry", registry])).exitCode).toBe(0);
+    const first = await runCli([
       "add",
       "policy",
       "one",
@@ -70,7 +70,7 @@ describe("acceptance 5: exclusive ownership", () => {
       registry,
     ]);
     expect(first.exitCode, first.stderr + first.stdout).toBe(0);
-    const second = runCli([
+    const second = await runCli([
       "add",
       "policy",
       "two",

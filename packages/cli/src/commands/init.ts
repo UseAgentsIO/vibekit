@@ -16,17 +16,12 @@ import type { GlobalFlags } from "../args.js";
 import type { OutputBuffer } from "../output.js";
 import {
   detectPackageManager,
-  isPiProject,
   isWorkspaceRoot,
   resolveProjectDir,
   resolveRegistry,
   slugify,
 } from "../paths.js";
 import { printDoctor } from "./doctor.js";
-
-const PI_EXTENSION_SOURCE = `/** VibeKit Project extension. Pi requires a factory; this one is intentionally empty. */
-export default function vibekit(_pi: unknown): void {}
-`;
 
 export function runInit(
   positionals: readonly string[],
@@ -45,31 +40,6 @@ export function runInit(
       code: "project_exists",
       message: `A VibeKit Project already exists in ${target}`,
     });
-  }
-
-  if (!isPiProject(target)) {
-    writeNewFile(path.join(target, ".pi/settings.json"), `${JSON.stringify({
-      extensions: ["./extensions/vibekit"],
-    }, null, 2)}\n`, created);
-    fs.mkdirSync(path.join(target, ".pi/extensions"), { recursive: true });
-    fs.mkdirSync(path.join(target, ".pi/skills"), { recursive: true });
-    created.push(".pi/extensions/");
-    created.push(".pi/skills/");
-  }
-
-  const extensionDir = path.join(target, ".pi/extensions/vibekit");
-  if (!fs.existsSync(path.join(extensionDir, "index.ts"))) {
-    fs.mkdirSync(extensionDir, { recursive: true });
-    writeNewFile(
-      path.join(extensionDir, "index.ts"),
-      PI_EXTENSION_SOURCE,
-      created,
-    );
-    writeNewFile(
-      path.join(extensionDir, "package.json"),
-      `${JSON.stringify({ name: "vibekit-pi-extension", private: true, type: "module" }, null, 2)}\n`,
-      created,
-    );
   }
 
   const name = path.basename(target);

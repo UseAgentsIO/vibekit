@@ -1,0 +1,142 @@
+import fs from "node:fs";
+import path from "node:path";
+
+import { createDefaultProject, writeInstalledManifest, writeProjectDocument, emptyInstalledManifest } from "@useagentsio/core";
+import { conversationKeyOf } from "@useagentsio/interface-sdk";
+import { VibeKitHost } from "@useagentsio/host";
+import { describe, expect, it } from "vitest";
+
+import { makeTempDir } from "../helpers.js";
+
+function writeProject(dir: string) {
+  const project = {
+    ...createDefaultProject({ slug: "demo", name: "Demo", defaultAgent: "chief" }),
+    agentBindings: { chief: { definition: "agent:chief" as const } },
+    interfaceBindings: {
+      "terminal-main": {
+        definition: "interface:terminal" as const,
+        enabled: false,
+        defaultAgent: "chief",
+      },
+    },
+  };
+  writeProjectDocument(dir, project);
+  writeInstalledManifest(dir, emptyInstalledManifest());
+  return project;
+}
+
+describe("VibeKitHost", () => {
+  it("submits a message and returns output from an injected turn", async () => {
+    const dir = makeTempDir("vibekit-host-");
+    writeProject(dir);
+    const host = await VibeKitHost.start({
+      projectRoot: dir,
+      startInterfaces: false,
+      runTurn: async (request) => ({
+        task: {
+          schemaVersion: 1,
+          id: "task_550e8400-e29b-41d4-a716-446655440099",
+          projectId: request.project.id,
+          objective: request.message.text,
+          context: { references: [] },
+          constraints: [],
+          acceptanceCriteria: [],
+          requiredCapabilities: [],
+          assignedAgent: "agent:chief",
+          claimedBy: null,
+          scope: { paths: [], resources: [] },
+          dependencies: [],
+          priority: "normal",
+          delivery: { mode: "apply" },
+          authorization: { state: "standing" },
+          status: "open",
+          revision: 1,
+          createdAt: request.message.timestamp,
+          updatedAt: request.message.timestamp,
+        },
+        runId: "run_550e8400-e29b-41d4-a716-446655440099",
+        text: `echo:${request.message.text}`,
+        cancelled: false,
+        events: [],
+        sessionPath: request.conversation.sessionPath,
+      }),
+    });
+
+    const conversationKey = conversationKeyOf({
+      interfaceBinding: "terminal-main",
+      accountId: "local",
+      conversationId: "cli",
+    });
+    const first = await host.submit({
+      eventId: "evt-1",
+      interfaceBinding: "terminal-main",
+      accountId: "local",
+      conversationId: "cli",
+      conversationKey,
+      sender: { id: "local", trusted: true },
+      text: "hello",
+      attachments: [],
+      timestamp: "2026-08-17T12:00:00.000Z",
+    });
+    expect(first.duplicate).toBe(false);
+    expect(first.text).toBe("echo:hello");
+
+    const dup = await host.submit({
+      eventId: "evt-1",
+      interfaceBinding: "terminal-main",
+      accountId: "local",
+      conversationId: "cli",
+      conversationKey,
+      sender: { id: "local", trusted: true },
+      text: "hello again",
+      attachments: [],
+      timestamp: "2026-08-17T12:00:01.000Z",
+    });
+    expect(dup.duplicate).toBe(true);
+
+    const conversations = fs.readdirSync(path.join(dir, ".vibekit/state/conversations"));
+    expect(conversations.some((name) => name.endsWith(".yaml"))).toBe(true);
+    await host.stop();
+  });
+
+  it("refuses a second Host lock on the same Project", async () => {
+    const dir = makeTempDir("vibekit-host-lock-");
+    writeProject(dir);
+    const first = await VibeKitHost.start({
+      projectRoot: dir,
+      startInterfaces: false,
+      runTurn: async (request) => ({
+        task: {
+          schemaVersion: 1,
+          id: "task_550e8400-e29b-41d4-a716-446655440098",
+          projectId: request.project.id,
+          objective: "x",
+          context: { references: [] },
+          constraints: [],
+          acceptanceCriteria: [],
+          requiredCapabilities: [],
+          assignedAgent: null,
+          claimedBy: null,
+          scope: { paths: [], resources: [] },
+          dependencies: [],
+          priority: "normal",
+          delivery: { mode: "apply" },
+          authorization: { state: "standing" },
+          status: "open",
+          revision: 1,
+          createdAt: request.message.timestamp,
+          updatedAt: request.message.timestamp,
+        },
+        runId: "run_550e8400-e29b-41d4-a716-446655440098",
+        text: "ok",
+        cancelled: false,
+        events: [],
+        sessionPath: request.conversation.sessionPath,
+      }),
+    });
+    await expect(
+      VibeKitHost.start({ projectRoot: dir, startInterfaces: false }),
+    ).rejects.toMatchObject({ code: "host_already_running" });
+    await first.stop();
+  });
+});

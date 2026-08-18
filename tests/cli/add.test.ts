@@ -7,17 +7,17 @@ import { describe, expect, it } from "vitest";
 import { runCli } from "vibekit";
 import { buildTempRegistry, makeTempDir, officialRegistryDir } from "../helpers.js";
 
-function initProject(): string {
+async function initProject(): Promise<string> {
   const dir = makeTempDir("vibekit-add-");
-  const result = runCli(["init", dir, "--registry", officialRegistryDir]);
+  const result = await runCli(["init", dir, "--registry", officialRegistryDir]);
   expect(result.exitCode, result.stderr).toBe(0);
   return dir;
 }
 
 describe("acceptance 2-4: add", () => {
-  it("installs one Component and records ownership", () => {
-    const dir = initProject();
-    const result = runCli([
+  it("installs one Component and records ownership", async () => {
+    const dir = await initProject();
+    const result = await runCli([
       "add",
       "policy",
       "least-privilege",
@@ -50,9 +50,9 @@ describe("acceptance 2-4: add", () => {
     expect(project.data?.policies).toContain("policy:least-privilege");
   });
 
-  it("adds agent coder and installs required dependencies", () => {
-    const dir = initProject();
-    const result = runCli([
+  it("adds agent coder and installs required dependencies", async () => {
+    const dir = await initProject();
+    const result = await runCli([
       "add",
       "agent",
       "coder",
@@ -87,9 +87,9 @@ describe("acceptance 2-4: add", () => {
     expect(ids).not.toContain("tool:github");
   });
 
-  it("shows requested permissions before applying changes", () => {
-    const dir = initProject();
-    const result = runCli([
+  it("shows requested permissions before applying changes", async () => {
+    const dir = await initProject();
+    const result = await runCli([
       "add",
       "tool",
       "filesystem",
@@ -108,9 +108,9 @@ describe("acceptance 2-4: add", () => {
     expect(result.stdout).toContain("source.write");
   });
 
-  it("rolls back when installation fails", () => {
-    const dir = initProject();
-    const first = runCli([
+  it("rolls back when installation fails", async () => {
+    const dir = await initProject();
+    const first = await runCli([
       "add",
       "policy",
       "least-privilege",
@@ -134,7 +134,7 @@ describe("acceptance 2-4: add", () => {
       ],
       { allowMissingDeps: true },
     );
-    const failed = runCli([
+    const failed = await runCli([
       "add",
       "policy",
       "missing-dep",
