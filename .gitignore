@@ -87,6 +87,9 @@ $RECYCLE.BIN/
 *~
 .history/
 
+# Local sandbox for CLI verification (never commit)
+.developer/
+
 # Local agent / tooling sessions (personal context)
 .claude/
 .codex/
