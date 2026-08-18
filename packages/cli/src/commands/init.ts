@@ -24,6 +24,10 @@ import {
 } from "../paths.js";
 import { printDoctor } from "./doctor.js";
 
+const PI_EXTENSION_SOURCE = `/** VibeKit Project extension. Pi requires a factory; this one is intentionally empty. */
+export default function vibekit(_pi: unknown): void {}
+`;
+
 export function runInit(
   positionals: readonly string[],
   flags: GlobalFlags,
@@ -58,7 +62,7 @@ export function runInit(
     fs.mkdirSync(extensionDir, { recursive: true });
     writeNewFile(
       path.join(extensionDir, "index.ts"),
-      `/** VibeKit Pi extension stub. The runtime adapter is implemented in a later phase. */\nexport default { name: "vibekit" };\n`,
+      PI_EXTENSION_SOURCE,
       created,
     );
     writeNewFile(

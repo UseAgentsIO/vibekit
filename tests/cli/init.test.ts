@@ -20,6 +20,9 @@ describe("acceptance 1: init", () => {
     expect(fs.existsSync(path.join(dir, ".pi/extensions"))).toBe(true);
     expect(fs.existsSync(path.join(dir, ".pi/skills"))).toBe(true);
     expect(fs.existsSync(path.join(dir, ".pi/extensions/vibekit/index.ts"))).toBe(true);
+    expect(fs.readFileSync(path.join(dir, ".pi/extensions/vibekit/index.ts"), "utf8")).toContain(
+      "export default function",
+    );
     expect(fs.existsSync(path.join(dir, ".vibekit/project.yaml"))).toBe(true);
     expect(fs.existsSync(path.join(dir, ".vibekit/installed.json"))).toBe(true);
     expect(fs.readFileSync(path.join(dir, ".gitignore"), "utf8")).toContain(".vibekit/runtime/");
