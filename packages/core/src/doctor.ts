@@ -12,7 +12,7 @@ import { readProjectDocument } from "./project.js";
 import { loadRegistry, resolveModule, type Registry } from "./registry.js";
 import type { InstalledManifestDocument, ProjectDocument } from "./types.js";
 import { validateFileTarget } from "./file-targets.js";
-import { validateDocument } from "./validate.js";
+import { parseAndValidateYaml, validateDocument } from "./validate.js";
 
 export type DoctorSeverity = "error" | "warning";
 
@@ -93,6 +93,8 @@ export function runDoctor(options: {
   }
 
   if (manifest && project) {
+    checkAgentReferences(project, manifest, findings);
+    checkDelegationGraph(project, findings);
     const registry = options.registry ?? tryLoadRegistry();
     if (registry) {
       checkDependencies(manifest, registry, findings);
@@ -179,6 +181,10 @@ function checkInstalledFiles(
             message: `Installed file ${file.path} for ${module.id} is missing`,
             path: file.path,
           });
+          continue;
+        }
+        if (isInstalledAgentDocument(module.id, file.path)) {
+          checkAgentDocument(abs, file.path, findings);
         }
       } catch (error) {
         findings.push(toFinding(error, "file_target_invalid"));
@@ -263,6 +269,108 @@ function checkDependencies(
       });
     }
   }
+}
+
+function checkAgentReferences(
+  project: ProjectDocument,
+  manifest: InstalledManifestDocument,
+  findings: DoctorFinding[],
+): void {
+  const installed = new Set(manifest.modules.map((module) => module.id));
+  for (const [binding, spec] of Object.entries(project.agentBindings)) {
+    if (!installed.has(spec.definition)) {
+      findings.push({
+        severity: "error",
+        code: "agent_binding_missing",
+        message: `Agent binding "${binding}" references ${spec.definition}, which is not installed`,
+      });
+    }
+    const allowed = project.delegation[binding];
+    if (allowed === undefined) {
+      findings.push({
+        severity: "warning",
+        code: "delegation_binding_missing",
+        message: `Agent binding "${binding}" has no Project delegation entry`,
+      });
+    }
+  }
+}
+
+function checkDelegationGraph(project: ProjectDocument, findings: DoctorFinding[]): void {
+  const edges = new Map<string, string[]>();
+  for (const [binding, targets] of Object.entries(project.delegation)) {
+    edges.set(binding, [...targets]);
+    if (project.agentBindings[binding] === undefined) {
+      findings.push({
+        severity: "error",
+        code: "delegation_binding_unknown",
+        message: `Delegation graph references unknown binding "${binding}"`,
+      });
+    }
+    for (const target of targets) {
+      if (project.agentBindings[target] === undefined) {
+        findings.push({
+          severity: "error",
+          code: "delegation_target_missing",
+          message: `Delegation ${binding} → ${target} has no Agent binding`,
+        });
+      }
+    }
+  }
+  for (const cycle of detectStringCycles(edges)) {
+    findings.push({
+      severity: "error",
+      code: "delegation_cycle",
+      message: `Delegation cycle: ${cycle.join(" -> ")}`,
+    });
+  }
+}
+
+function detectStringCycles(edges: ReadonlyMap<string, readonly string[]>): string[][] {
+  const visiting = new Set<string>();
+  const visited = new Set<string>();
+  const cycles: string[][] = [];
+
+  function visit(node: string, stack: string[]): void {
+    if (visited.has(node)) {
+      return;
+    }
+    if (visiting.has(node)) {
+      const start = stack.indexOf(node);
+      cycles.push(start >= 0 ? [...stack.slice(start), node] : [...stack, node]);
+      return;
+    }
+    visiting.add(node);
+    stack.push(node);
+    for (const next of edges.get(node) ?? []) {
+      visit(next, stack);
+    }
+    stack.pop();
+    visiting.delete(node);
+    visited.add(node);
+  }
+
+  for (const node of edges.keys()) {
+    visit(node, []);
+  }
+  return cycles;
+}
+
+function isInstalledAgentDocument(moduleId: string, filePath: string): boolean {
+  return moduleId.startsWith("agent:") && /(^|\/)agent\.yaml$/.test(filePath.replaceAll("\\", "/"));
+}
+
+function checkAgentDocument(abs: string, relative: string, findings: DoctorFinding[]): void {
+  const validated = parseAndValidateYaml("agent", fs.readFileSync(abs, "utf8"));
+  if (validated.valid) {
+    return;
+  }
+  findings.push({
+    severity: "error",
+    code: "agent_schema",
+    message: validated.errors[0]?.message ?? "Installed Agent document is invalid",
+    path: relative,
+  });
 }
 
 function tryLoadRegistry(): Registry | undefined {

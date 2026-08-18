@@ -66,6 +66,12 @@ export function createDefaultProject(options: {
     pi: {
       compatibility: ">=0.50.0",
     },
+    defaults: {
+      model: {
+        provider: "openai",
+        id: "gpt-4.1",
+      },
+    },
     state: {
       backend: "state:repository",
       path: ".vibekit/state",

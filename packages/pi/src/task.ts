@@ -83,6 +83,12 @@ function taskHasInput(task: TaskDocument, field: string): boolean {
       return task.context !== undefined;
     case "scope":
       return task.scope !== undefined;
+    case "candidate":
+      return task.context.references.some((reference) => reference.trim().length > 0);
+    case "questions":
+      return task.objective.trim().length > 0 || task.context.references.length > 0;
+    case "producingAgent":
+      return task.context.references.some((reference) => /producing|agent:/.test(reference));
     default: {
       const record = task as unknown as Record<string, unknown>;
       const value = record[field];
