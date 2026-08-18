@@ -10,6 +10,7 @@ describe("cli help", () => {
     expect(result.stdout).toContain("run an Agent Host; compose Agents and Components");
     expect(result.stdout).toContain("Options:");
     expect(result.stdout).toContain("-v, --version");
+    expect(result.stdout).toContain("-d, --defaults");
     expect(result.stdout).toContain("Commands:");
     expect(result.stdout).toContain("init [options] [dir]");
     expect(result.stdout).toContain("add [options] <type> <name>");

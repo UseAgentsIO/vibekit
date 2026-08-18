@@ -81,7 +81,7 @@ export async function runCli(argv: string[]): Promise<CliResult> {
         exitCode = runMigrate(parsed.positionals, parsed.flags, out);
         break;
       case "init":
-        exitCode = runInit(parsed.positionals, parsed.flags, out);
+        exitCode = await runInit(parsed.positionals, parsed.flags, out);
         break;
       case "add":
         exitCode = runAdd(parsed.positionals, parsed.flags, out);

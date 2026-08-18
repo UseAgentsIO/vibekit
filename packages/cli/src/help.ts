@@ -12,6 +12,7 @@ export interface CommandHelp {
 
 const GLOBAL_OPTIONS: CommandHelp["options"] = [
   { flags: "-y, --yes", text: "skip confirmation prompts" },
+  { flags: "-d, --defaults", text: "use defaults and skip the setup wizard" },
   { flags: "--dir <path>", text: "project directory (default: current directory)" },
   { flags: "--registry <path>", text: "registry to read from (default: official)" },
   { flags: "-v, --version", text: "print the version number" },
@@ -107,18 +108,23 @@ export const COMMANDS: readonly CommandHelp[] = [
   {
     name: "init",
     usage: "init [options] [dir]",
-    summary: "create a VibeKit Project in an existing Pi app, or a new folder",
+    summary: "initialize a Project and walk through setup",
     description:
-      "Writes .vibekit/project.yaml and installed.json. If the folder is not a Pi project yet, also creates a small .pi/ tree. Does not install an Agent unless you add one next.",
+      "Writes .vibekit/project.yaml and installed.json, then asks which provider, Agent, Interface, Skill, Policy, and Tool to add. Each step can be skipped. Pass --defaults to skip setup, like shadcn init -d.",
     arguments: [
       { name: "dir", text: "folder to initialize (default: current directory)" },
     ],
     options: [
-      { flags: "-y, --yes", text: "reserved for future prompts; safe to pass" },
+      { flags: "-d, --defaults", text: "skip the setup wizard and use an empty Project" },
+      { flags: "-y, --yes", text: "same as --defaults" },
       { flags: "--registry <path>", text: "registry to read from (default: official)" },
       { flags: "-h, --help", text: "display help for command" },
     ],
-    examples: ["$ vibekit init", "$ vibekit init ./my-app"],
+    examples: [
+      "$ vibekit init",
+      "$ vibekit init ./my-app",
+      "$ vibekit init --defaults",
+    ],
   },
   {
     name: "add",

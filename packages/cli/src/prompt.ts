@@ -75,3 +75,19 @@ export async function pickChoice<T>(
     say(`Not a valid choice: ${raw}`);
   }
 }
+
+export async function pickOrSkip<T>(
+  title: string,
+  choices: ReadonlyArray<Choice<T>>,
+): Promise<T | undefined> {
+  type Result = { readonly skipped: true } | { readonly skipped: false; readonly value: T };
+  const picked = await pickChoice<Result>(title, [
+    ...choices.map((choice) => ({
+      label: choice.label,
+      id: choice.id,
+      value: { skipped: false as const, value: choice.value },
+    })),
+    { label: "Skip", id: "skip", value: { skipped: true as const } },
+  ]);
+  return picked.skipped ? undefined : picked.value;
+}

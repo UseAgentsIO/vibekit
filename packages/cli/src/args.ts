@@ -15,6 +15,7 @@ export interface GlobalFlags {
   readonly service: boolean;
   readonly live: boolean;
   readonly skipInstall: boolean;
+  readonly defaults: boolean;
 }
 
 export interface ParsedCli {
@@ -43,6 +44,7 @@ export function parseCliArgs(argv: string[]): ParsedCli {
         service: { type: "boolean", default: false },
         live: { type: "boolean", default: false },
         "skip-install": { type: "boolean", default: false },
+        defaults: { type: "boolean", short: "d", default: false },
       },
     });
   } catch (error) {
@@ -70,6 +72,7 @@ export function parseCliArgs(argv: string[]): ParsedCli {
       service: parsed.values.service === true,
       live: parsed.values.live === true,
       skipInstall: parsed.values["skip-install"] === true,
+      defaults: parsed.values.defaults === true,
     },
   };
 }

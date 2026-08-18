@@ -39,4 +39,18 @@ describe("acceptance 1: init", () => {
     expect(installed.data?.modules).toEqual([]);
     expect(result.stdout).toMatch(/doctor: ok/);
   });
+
+  it("skips the setup wizard with --defaults", async () => {
+    const dir = makeTempDir("vibekit-init-defaults-");
+    const result = await runCli(["init", dir, "--defaults", "--registry", officialRegistryDir]);
+    expect(result.exitCode, result.stderr).toBe(0);
+    expect(result.stdout).toMatch(/Skipped setup/);
+    const project = parseAndValidateYaml(
+      "project",
+      fs.readFileSync(path.join(dir, ".vibekit/project.yaml"), "utf8"),
+    );
+    expect(project.valid).toBe(true);
+    expect(project.data?.agentBindings).toEqual({});
+    expect(project.data?.defaults?.model).toBeUndefined();
+  });
 });
