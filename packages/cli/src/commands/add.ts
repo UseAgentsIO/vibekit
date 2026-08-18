@@ -29,7 +29,7 @@ export function runAdd(
     throw new VibeKitError({
       category: "invalid_input",
       code: "cli_args_invalid",
-      message: "Usage: vibekit add <type> <name>",
+      message: "Missing <type> and <name>.\n\nSee `vibekit add --help`.",
     });
   }
   if (!isModuleType(typeName)) {

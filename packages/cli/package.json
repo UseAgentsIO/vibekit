@@ -1,6 +1,6 @@
 {
   "name": "@useagentsio/cli",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "VibeKit CLI for initializing Projects and installing Modules",
   "type": "module",
   "license": "UNLICENSED",

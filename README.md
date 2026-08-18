@@ -30,7 +30,7 @@ Published now:
 | --- | --- |
 | [`@useagentsio/core`](https://www.npmjs.com/package/@useagentsio/core) | 0.1.0 |
 | [`@useagentsio/pi`](https://www.npmjs.com/package/@useagentsio/pi) | 0.1.0 |
-| [`@useagentsio/cli`](https://www.npmjs.com/package/@useagentsio/cli) | **0.1.1** (use this; 0.1.0 does not run as a global bin) |
+| [`@useagentsio/cli`](https://www.npmjs.com/package/@useagentsio/cli) | **0.1.2** (use this; 0.1.0 does not run as a global bin) |
 
 `pnpm test` and `pnpm typecheck` are the local gates (207 tests).
 
@@ -42,18 +42,18 @@ Published now:
 
 ## Install
 
-Install the CLI globally (pin **0.1.1** — `0.1.0` exits without running when invoked as `vibekit`):
+Install the CLI globally (pin **0.1.2** for per-command help; `0.1.0` does not run as a global bin):
 
 ```bash
-npm install -g --ignore-scripts @useagentsio/cli@0.1.1
+npm install -g --ignore-scripts @useagentsio/cli@0.1.2
 vibekit --help
 ```
 
 Or without a global install:
 
 ```bash
-npx --yes @useagentsio/cli@0.1.1 --help
-npx --yes @useagentsio/cli@0.1.1 init ./my-app
+npx --yes @useagentsio/cli@0.1.2 --help
+npx --yes @useagentsio/cli@0.1.2 init ./my-app
 ```
 
 Libraries:
@@ -94,13 +94,13 @@ vibekit doctor --dir ./my-app
 ## CLI
 
 ```text
-vibekit init [dir] [--yes] [--registry <path>]
-vibekit add <type> <name> [--yes] [--registry <path>] [--dir <path>]
-vibekit list [--registry <path>] [--dir <path>]
-vibekit diff <type:name> [--registry <path>] [--dir <path>]
-vibekit update <type:name> [--yes] [--registry <path>] [--dir <path>]
-vibekit remove <type:name> [--yes] [--registry <path>] [--dir <path>]
-vibekit doctor [--registry <path>] [--dir <path>]
+Usage: vibekit [options] [command]
+
+compose Agents and Components into a Pi project
+
+vibekit --help
+vibekit add --help
+vibekit help doctor
 ```
 
 Selectors accept `type name`, `type:name`, and `type:name@version`.
@@ -159,7 +159,6 @@ Installing an Agent copies `agent.yaml` and `instructions.md` into `.vibekit/age
 | --- | --- |
 | `provider:openai` | Provider (API key `OPENAI_API_KEY`) |
 | `provider:openai-codex` | Provider (Pi `/login` OAuth) |
-| `provider:opencode` | Provider (OpenCode Zen, `OPENCODE_API_KEY`) |
 | `provider:opencode-go` | Provider (OpenCode Go, `OPENCODE_API_KEY`) |
 | `provider:xai` | Provider (Pi `/login` OAuth, optional `XAI_API_KEY`) |
 | `provider:openrouter` | Provider (`OPENROUTER_API_KEY`) |

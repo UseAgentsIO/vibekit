@@ -70,7 +70,7 @@ export function parseModuleSelector(
     throw new VibeKitError({
       category: "invalid_input",
       code: "cli_args_invalid",
-      message: `Usage: vibekit ${command} <type:name>`,
+      message: `Missing <module>.\n\nSee \`vibekit ${command} --help\`.`,
     });
   }
 

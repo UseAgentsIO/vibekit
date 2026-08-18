@@ -112,17 +112,6 @@
       "path": "components/provider/openai-codex/1.0.0"
     },
     {
-      "id": "provider:opencode",
-      "version": "1.0.0",
-      "checksum": "sha256:4186660f84027ba1799a78428eca4a8789737cbcdc222b8558f4a8690c1336b4",
-      "compatibility": {
-        "vibekit": "^1.0.0",
-        "pi": ">=0.50.0",
-        "node": ">=20"
-      },
-      "path": "components/provider/opencode/1.0.0"
-    },
-    {
       "id": "provider:opencode-go",
       "version": "1.0.0",
       "checksum": "sha256:c932ebb08d2d9289bf3f4ebe50df734be0aff4d051f0bfcfab02ae64ea8526cb",

@@ -21,7 +21,6 @@ const officialIds = [
   "policy:require-verification",
   "provider:openai",
   "provider:openai-codex",
-  "provider:opencode",
   "provider:opencode-go",
   "provider:openrouter",
   "provider:xai",

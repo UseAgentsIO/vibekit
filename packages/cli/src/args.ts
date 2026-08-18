@@ -7,6 +7,7 @@ export interface GlobalFlags {
   readonly registry?: string;
   readonly dir?: string;
   readonly help: boolean;
+  readonly version: boolean;
 }
 
 export interface ParsedCli {
@@ -27,6 +28,7 @@ export function parseCliArgs(argv: string[]): ParsedCli {
         registry: { type: "string" },
         dir: { type: "string" },
         help: { type: "boolean", short: "h", default: false },
+        version: { type: "boolean", short: "v", default: false },
       },
     });
   } catch (error) {
@@ -46,13 +48,7 @@ export function parseCliArgs(argv: string[]): ParsedCli {
       registry: parsed.values.registry,
       dir: parsed.values.dir,
       help: parsed.values.help === true,
+      version: parsed.values.version === true,
     },
   };
 }
-
-export const USAGE = `Usage:
-  vibekit init [dir] [--yes] [--registry <path>]
-  vibekit add <type> <name> [--yes] [--registry <path>] [--dir <path>]
-  vibekit list [--registry <path>] [--dir <path>]
-  vibekit doctor [--registry <path>] [--dir <path>]
-`;
