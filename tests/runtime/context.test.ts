@@ -1,5 +1,5 @@
-import { parseAndValidateYaml, type DecisionDocument } from "@vibekit/core";
-import { VIBEKIT_RUNTIME_INVARIANTS, prepareIsolatedRun } from "@vibekit/pi";
+import { parseAndValidateYaml, type DecisionDocument } from "@useagentsio/core";
+import { VIBEKIT_RUNTIME_INVARIANTS, prepareIsolatedRun } from "@useagentsio/pi";
 import { describe, expect, it } from "vitest";
 
 import { readFixture } from "../helpers.js";

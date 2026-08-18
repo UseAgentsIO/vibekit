@@ -5,7 +5,7 @@ import {
   validateDocument,
   type DocumentKind,
   type DocumentTypeMap,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 
 import { configurationInvalid } from "./fail.js";
 

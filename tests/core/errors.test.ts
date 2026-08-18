@@ -5,7 +5,7 @@ import {
   VibeKitError,
   isFailureCategory,
   redactSecrets,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 
 describe("VibeKitError", () => {
   it("exposes every spec §32 category", () => {

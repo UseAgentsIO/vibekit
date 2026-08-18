@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { defaultRegistryRoot, loadRegistry, type Registry } from "@vibekit/core";
+import { defaultRegistryRoot, loadRegistry, type Registry } from "@useagentsio/core";
 
 export function resolveProjectDir(dir?: string): string {
   return path.resolve(dir ?? process.cwd());

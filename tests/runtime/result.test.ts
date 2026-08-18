@@ -1,5 +1,5 @@
-import { validateDocument } from "@vibekit/core";
-import { collectResult, extractResultPayload } from "@vibekit/pi";
+import { validateDocument } from "@useagentsio/core";
+import { collectResult, extractResultPayload } from "@useagentsio/pi";
 import { describe, expect, it } from "vitest";
 
 describe("Result collection", () => {

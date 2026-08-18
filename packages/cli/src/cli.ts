@@ -1,4 +1,4 @@
-import { VibeKitError, isVibeKitError } from "@vibekit/core";
+import { VibeKitError, isVibeKitError } from "@useagentsio/core";
 
 import { USAGE, parseCliArgs } from "./args.js";
 import { runAdd } from "./commands/add.js";

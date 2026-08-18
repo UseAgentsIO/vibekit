@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import type { AgentDocument, ProjectDocument } from "@vibekit/core";
+import type { AgentDocument, ProjectDocument } from "@useagentsio/core";
 
 import { configurationInvalid } from "./fail.js";
 import { readBoolean, readObject, readString, readYamlObject } from "./yaml-fragment.js";

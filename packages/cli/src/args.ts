@@ -1,6 +1,6 @@
 import { parseArgs } from "node:util";
 
-import { VibeKitError } from "@vibekit/core";
+import { VibeKitError } from "@useagentsio/core";
 
 export interface GlobalFlags {
   readonly yes: boolean;

@@ -30,7 +30,7 @@ Also covered: incompatible requested versions are refused; unchanged exclusive f
 
 ## Files created or updated
 
-### `@vibekit/core`
+### `@useagentsio/core`
 
 - `packages/core/src/diff.ts` — compare installed registry version, current user files, and newest compatible registry version
 - `packages/core/src/update.ts` — three-way plan/apply, compatibility, generated config rebuild, transactional staging

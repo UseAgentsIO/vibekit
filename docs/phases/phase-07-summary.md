@@ -1,6 +1,6 @@
 # Phase 7 summary — Verification and application
 
-Phase 7 implements verification, proposal/apply delivery, and Approval gates under `@vibekit/core`. Filesystem State stores remain the source of truth. Agent completion is not Verification, acceptance, or apply.
+Phase 7 implements verification, proposal/apply delivery, and Approval gates under `@useagentsio/core`. Filesystem State stores remain the source of truth. Agent completion is not Verification, acceptance, or apply.
 
 ## Test results
 
@@ -32,7 +32,7 @@ Acceptance tests 31–39 (spec §36):
 
 ## Files created or updated
 
-### `@vibekit/core`
+### `@useagentsio/core`
 
 - `packages/core/src/verify.ts` — candidate revision, command Verifier, independent-review contract, verification evaluation
 - `packages/core/src/approval-gate.ts` — authorization mode, exact Approval matching, request/decide
@@ -40,7 +40,7 @@ Acceptance tests 31–39 (spec §36):
 - `packages/core/src/apply.ts` — apply-only-when-authorized, atomic writes, self-modification hashes
 - `packages/core/src/index.ts` — append-only Phase 7 exports
 
-### `@vibekit/pi`
+### `@useagentsio/pi`
 
 - `packages/pi/src/verify-hook.ts` — thin wrapper that calls core (does not start Pi)
 - `packages/pi/src/index.ts` — append `verifyAfterRun` / `reviewAfterRun` / `evaluateVerification`

@@ -13,7 +13,7 @@ import {
   type CreatePiSession,
   type PiSession,
   type PiSessionEvent,
-} from "@vibekit/pi";
+} from "@useagentsio/pi";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { writeRuntimeFixture } from "./helpers.js";

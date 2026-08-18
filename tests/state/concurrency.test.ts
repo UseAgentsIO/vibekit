@@ -1,4 +1,4 @@
-import { VibeKitError } from "@vibekit/core";
+import { VibeKitError } from "@useagentsio/core";
 import { describe, expect, it } from "vitest";
 
 import { createRepositoryState } from "../../packages/core/src/state/index.js";

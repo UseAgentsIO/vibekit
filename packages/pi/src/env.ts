@@ -1,4 +1,4 @@
-import type { SecretReference } from "@vibekit/core";
+import type { SecretReference } from "@useagentsio/core";
 
 import { configurationInvalid } from "./fail.js";
 

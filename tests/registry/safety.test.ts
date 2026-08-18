@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { VibeKitError, buildRegistryIndex } from "@vibekit/core";
+import { VibeKitError, buildRegistryIndex } from "@useagentsio/core";
 import { describe, expect, it } from "vitest";
 
 import { makeTempDir, writeSyntheticComponent } from "../helpers.js";

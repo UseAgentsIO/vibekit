@@ -1,6 +1,6 @@
 import fs from "node:fs";
 
-import { formatRuntimeId } from "@vibekit/core";
+import { formatRuntimeId } from "@useagentsio/core";
 import type {
   ApprovalDocument,
   DecisionDocument,
@@ -8,7 +8,7 @@ import type {
   ResultDocument,
   TaskDocument,
   VerificationDocument,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 import { afterEach } from "vitest";
 
 import { makeTempDir } from "../helpers.js";

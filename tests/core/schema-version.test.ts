@@ -4,7 +4,7 @@ import {
   CURRENT_SCHEMA_VERSION,
   VibeKitError,
   assertSchemaVersion,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 
 describe("schemaVersion", () => {
   it("accepts the current integer version", () => {

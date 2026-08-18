@@ -13,8 +13,8 @@ import {
   recordIndependentReview,
   runCommandVerification,
   VibeKitError,
-} from "@vibekit/core";
-import { evaluateVerification as hookEvaluate, verifyAfterRun } from "@vibekit/pi";
+} from "@useagentsio/core";
+import { evaluateVerification as hookEvaluate, verifyAfterRun } from "@useagentsio/pi";
 import { describe, expect, it } from "vitest";
 
 import {

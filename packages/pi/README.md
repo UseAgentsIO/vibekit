@@ -1,11 +1,11 @@
-# @vibekit/pi
+# @useagentsio/pi
 
 Pi runtime adapter for VibeKit Agents.
 
 VibeKit owns contracts around the Run. Pi owns the model/tool loop. This package loads Project and Agent documents, resolves effective configuration, assembles bounded context, filters the child environment, and starts an isolated Pi session.
 
 ```ts
-import { prepareIsolatedRun, runIsolated } from "@vibekit/pi";
+import { prepareIsolatedRun, runIsolated } from "@useagentsio/pi";
 
 const prepared = prepareIsolatedRun({
   projectRoot,

@@ -1,5 +1,5 @@
-import { VibeKitError } from "@vibekit/core";
-import { REQUIRED_RUNTIME_ENV, filterEnvironment, prepareIsolatedRun } from "@vibekit/pi";
+import { VibeKitError } from "@useagentsio/core";
+import { REQUIRED_RUNTIME_ENV, filterEnvironment, prepareIsolatedRun } from "@useagentsio/pi";
 import { describe, expect, it } from "vitest";
 
 import { writeRuntimeFixture } from "./helpers.js";

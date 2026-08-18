@@ -1,7 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { writeRegistryIndex } from "@vibekit/core";
+import { writeRegistryIndex } from "@useagentsio/core";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const registryRoot = path.resolve(here, "../registry");

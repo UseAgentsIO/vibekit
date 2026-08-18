@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { formatRuntimeId } from "@vibekit/core";
+import { formatRuntimeId } from "@useagentsio/core";
 import { describe, expect, it } from "vitest";
 
 import { createRepositoryState } from "../../packages/core/src/state/index.js";

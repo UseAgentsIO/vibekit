@@ -1,10 +1,10 @@
-import { validateDocument } from "@vibekit/core";
+import { validateDocument } from "@useagentsio/core";
 import {
   runIsolated,
   type CreatePiSession,
   type PiSession,
   type PiSessionEvent,
-} from "@vibekit/pi";
+} from "@useagentsio/pi";
 import { describe, expect, it } from "vitest";
 
 import { writeRuntimeFixture } from "./helpers.js";

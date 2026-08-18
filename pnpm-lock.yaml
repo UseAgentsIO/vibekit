@@ -11,10 +11,10 @@ importers:
       '@types/node':
         specifier: ^24.3.0
         version: 24.13.3
-      '@vibekit/core':
+      '@useagentsio/core':
         specifier: workspace:*
         version: link:packages/core
-      '@vibekit/pi':
+      '@useagentsio/pi':
         specifier: workspace:*
         version: link:packages/pi
       tsx:
@@ -29,7 +29,7 @@ importers:
 
   packages/cli:
     dependencies:
-      '@vibekit/core':
+      '@useagentsio/core':
         specifier: workspace:*
         version: link:../core
 
@@ -54,7 +54,7 @@ importers:
 
   packages/pi:
     dependencies:
-      '@vibekit/core':
+      '@useagentsio/core':
         specifier: workspace:*
         version: link:../core
       yaml:

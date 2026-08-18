@@ -14,7 +14,7 @@ import {
   type ProjectDocument,
   type SecretReference,
   type TaskDocument,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 
 import { configurationInvalid, fail } from "./fail.js";
 import {
@@ -30,7 +30,7 @@ export const VIBEKIT_DEFAULT_TIMEOUT_MS = 600_000;
 export const VIBEKIT_DEFAULT_ISOLATION: IsolationMode = "process";
 export const VIBEKIT_DEFAULT_MAX_PARALLEL_RUNS = 4;
 export const VIBEKIT_DEFAULT_MAX_DELEGATION_DEPTH = 2;
-export const VIBEKIT_DEFAULT_ADAPTER = "@vibekit/pi";
+export const VIBEKIT_DEFAULT_ADAPTER = "@useagentsio/pi";
 
 export interface EffectivePermissions {
   readonly allow: readonly PermissionGrant[];

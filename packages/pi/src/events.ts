@@ -5,7 +5,7 @@ import {
   type EventDocument,
   type ProjectId,
   type RuntimeId,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 
 import { configurationInvalid } from "./fail.js";
 import { newRuntimeId } from "./ids.js";

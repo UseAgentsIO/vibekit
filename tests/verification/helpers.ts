@@ -12,7 +12,7 @@ import {
   type RepositoryState,
   type ResultDocument,
   type TaskDocument,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 
 import { approvalDoc, resultDoc, taskDoc, tempProject } from "../state/helpers.js";
 

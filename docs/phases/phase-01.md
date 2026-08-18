@@ -24,9 +24,9 @@
 Monorepo under `vibekit/`:
 
 ```
-packages/core/          @vibekit/core
+packages/core/          @useagentsio/core
 packages/cli/           vibekit (stub only)
-packages/pi/            @vibekit/pi (stub only)
+packages/pi/            @useagentsio/pi (stub only)
 schemas/*.schema.json
 tests/schemas/
 examples/ (fixtures from spec YAML/JSON)
@@ -46,7 +46,7 @@ JSON Schemas required:
 - `verification.schema.json`
 - `event.schema.json`
 
-## `@vibekit/core` public surface (Phase 1)
+## `@useagentsio/core` public surface (Phase 1)
 - typed ID parse/format/validate (`type:name`, runtime prefixes)
 - `schemaVersion` integer, reject unsupported
 - load + validate YAML/JSON documents

@@ -2,7 +2,7 @@ import {
   VibeKitError,
   assertCapabilityResolved,
   resolveCapability,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 import { describe, expect, it } from "vitest";
 
 describe("acceptance 15-16: capability resolution", () => {

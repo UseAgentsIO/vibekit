@@ -1,6 +1,6 @@
 import { spawn, type ChildProcess } from "node:child_process";
 
-import type { IsolationMode, ProjectDocument, SecretReference } from "@vibekit/core";
+import type { IsolationMode, ProjectDocument, SecretReference } from "@useagentsio/core";
 
 import {
   filterEnvironment,

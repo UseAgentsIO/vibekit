@@ -1,7 +1,7 @@
 # AGENTS.md
 
 ## Project Overview
-VibeKit Agents V1: composition, contracts, installation, registry, and validation on top of Pi. Pi owns the model/tool loop. This monorepo implements `vibekit` (CLI), `@vibekit/core`, `@vibekit/pi`, and the official registry.
+VibeKit Agents V1: composition, contracts, installation, registry, and validation on top of Pi. Pi owns the model/tool loop. This monorepo implements `vibekit` (CLI), `@useagentsio/core`, `@useagentsio/pi`, and the official registry.
 
 Normative spec: `docs/spec/V1-Implementation-Specification.md`. Phase briefs: `docs/phases/`.
 

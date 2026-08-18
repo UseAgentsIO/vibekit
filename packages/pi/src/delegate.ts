@@ -6,7 +6,7 @@ import {
   type ProjectDocument,
   type RuntimeId,
   type TaskDocument,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 
 import { loadAgentDocument, type LoadedAgent } from "./agent.js";
 import { fail } from "./fail.js";

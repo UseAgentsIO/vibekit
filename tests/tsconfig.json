@@ -6,7 +6,7 @@
     "tsBuildInfoFile": "../.tsbuild/tests/tsconfig.tsbuildinfo",
     "paths": {
       "vibekit": ["../packages/cli/src/index.ts"],
-      "@vibekit/pi": ["../packages/pi/src/index.ts"]
+      "@useagentsio/pi": ["../packages/pi/src/index.ts"]
     }
   },
   "include": ["./**/*.ts"],

@@ -4,7 +4,7 @@ Catalog and Pattern documentation only. CLI install wiring, `doctor` e2e, runtim
 
 ## Validation
 
-One-off `@vibekit/core` `parseAndValidateYaml` against every new `module.yaml` and every `payload/agent.yaml`. File targets, payload presence, secret-reference scan, and required-dependency presence also passed.
+One-off `@useagentsio/core` `parseAndValidateYaml` against every new `module.yaml` and every `payload/agent.yaml`. File targets, payload presence, secret-reference scan, and required-dependency presence also passed.
 
 In-memory `buildRegistryIndex` (no write) resolved 16 official modules, including Phase 2 entries:
 

@@ -1,4 +1,4 @@
-import { runDoctor, type DoctorReport } from "@vibekit/core";
+import { runDoctor, type DoctorReport } from "@useagentsio/core";
 
 import type { GlobalFlags } from "../args.js";
 import type { OutputBuffer } from "../output.js";

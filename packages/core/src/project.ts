@@ -61,7 +61,7 @@ export function createDefaultProject(options: {
     name: options.name,
     root: ".",
     runtime: {
-      adapter: "@vibekit/pi",
+      adapter: "@useagentsio/pi",
     },
     pi: {
       compatibility: ">=0.50.0",

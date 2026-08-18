@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { emptyInstalledManifest, planFileOwnership } from "@vibekit/core";
+import { emptyInstalledManifest, planFileOwnership } from "@useagentsio/core";
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "vibekit";

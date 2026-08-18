@@ -1,6 +1,6 @@
 # Phase 4 summary — Project State
 
-Phase 4 implements the `state:repository` adapter under `packages/core/src/state/`. Filesystem records are the source of truth. `@vibekit/core`’s `index.ts` is owned by Phase 2 and is not updated; tests import the adapter from `packages/core/src/state/index.ts`.
+Phase 4 implements the `state:repository` adapter under `packages/core/src/state/`. Filesystem records are the source of truth. `@useagentsio/core`’s `index.ts` is owned by Phase 2 and is not updated; tests import the adapter from `packages/core/src/state/index.ts`.
 
 ## Test results
 

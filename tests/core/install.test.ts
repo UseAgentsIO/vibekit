@@ -8,7 +8,7 @@ import {
   planInstall,
   readInstalledManifest,
   readProjectDocument,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "vibekit";

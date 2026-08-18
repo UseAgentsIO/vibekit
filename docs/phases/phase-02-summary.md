@@ -55,7 +55,7 @@ Acceptance tests covered (spec §36, as far as Phase 2 allows):
 - `README.md`
 - `scripts/build-registry-index.ts`
 
-### `@vibekit/core`
+### `@useagentsio/core`
 
 - `packages/core/src/constants.ts`
 - `packages/core/src/checksum.ts`

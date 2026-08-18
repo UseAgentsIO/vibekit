@@ -7,7 +7,7 @@ import type {
   ProjectDocument,
   RuntimeId,
   TaskDocument,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 
 import { fail } from "./fail.js";
 import { MUTATING_TOOLS } from "./tools.js";

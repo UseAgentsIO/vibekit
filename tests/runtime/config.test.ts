@@ -1,9 +1,9 @@
-import { VibeKitError } from "@vibekit/core";
+import { VibeKitError } from "@useagentsio/core";
 import {
   prepareIsolatedRun,
   resolveEffectiveConfiguration,
   resolveModel,
-} from "@vibekit/pi";
+} from "@useagentsio/pi";
 import { describe, expect, it } from "vitest";
 
 import { writeRuntimeFixture } from "./helpers.js";

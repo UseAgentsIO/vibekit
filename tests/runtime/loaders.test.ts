@@ -1,8 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { VibeKitError, stringifyYaml } from "@vibekit/core";
-import { loadAgentDocument, loadProjectDocument, loadTaskDocument } from "@vibekit/pi";
+import { VibeKitError, stringifyYaml } from "@useagentsio/core";
+import { loadAgentDocument, loadProjectDocument, loadTaskDocument } from "@useagentsio/pi";
 import { describe, expect, it } from "vitest";
 
 import { makeTempDir } from "../helpers.js";

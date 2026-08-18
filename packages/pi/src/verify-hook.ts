@@ -4,7 +4,7 @@ import {
   runCommandVerification,
   type IndependentReviewInput,
   type RunCommandVerificationInput,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 
 /** Persist command Verification for a completed Run Result. Does not start Pi. */
 export function verifyAfterRun(input: RunCommandVerificationInput) {

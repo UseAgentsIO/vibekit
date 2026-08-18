@@ -1,5 +1,5 @@
-import { validateDocument } from "@vibekit/core";
-import { createRunEvent, mapPiSessionEvent, redactEventData } from "@vibekit/pi";
+import { validateDocument } from "@useagentsio/core";
+import { createRunEvent, mapPiSessionEvent, redactEventData } from "@useagentsio/pi";
 import { describe, expect, it } from "vitest";
 
 describe("Run Events", () => {

@@ -12,7 +12,7 @@ Pi is `@earendil-works/pi-coding-agent` (renamed from `@mariozechner/pi-coding-a
 import { createAgentSession, ModelRuntime, SessionManager } from "@earendil-works/pi-coding-agent";
 ```
 
-Useful options for `@vibekit/pi`:
+Useful options for `@useagentsio/pi`:
 - `cwd` — isolated worktree path for coding Runs
 - `tools` / `excludeTools` / `customTools` — grant only authorized Tools
 - `resourceLoader` — inject Skills, extensions, system prompt

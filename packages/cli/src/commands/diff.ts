@@ -6,7 +6,7 @@ import {
   parseModuleId,
   readInstalledManifest,
   type ModuleId,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 
 import type { GlobalFlags } from "../args.js";
 import type { OutputBuffer } from "../output.js";

@@ -5,7 +5,7 @@ import {
   assertFileTarget,
   isSafeFileTarget,
   validateFileTarget,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 
 describe("file targets", () => {
   it.each([

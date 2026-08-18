@@ -4,7 +4,7 @@ import {
   VibeKitError,
   assertTransition,
   canTransition,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 
 describe("lifecycle transitions", () => {
   it("allows documented task transitions", () => {

@@ -4,7 +4,7 @@
 
 VibeKit is a thin composition layer over Pi. It owns contracts, installation, the official registry, Project State, permissions, and verification. Pi owns the model, the session, providers, Skills, extensions, and the tool-calling loop. VibeKit does not fork Pi and does not replace Pi’s Agent loop.
 
-> Working product name. The unscoped npm name `vibekit` is taken by an unrelated project, so the CLI publishes as **`@vibekit/cli`** (bin still `vibekit`). License is currently `UNLICENSED`.
+> Working product name. The unscoped npm name `vibekit` is taken by an unrelated project, so the CLI publishes as **`@useagentsio/cli`** (bin still `vibekit`). License is currently `UNLICENSED`.
 
 [Specification](docs/spec/V1-Implementation-Specification.md) · [Source](https://github.com/UseAgentsIO/vibekit)
 
@@ -18,7 +18,7 @@ V1 is being implemented against a locked architecture. What works in this tree t
 | Official registry + `init` / `add` / `list` / `doctor` | Done |
 | `diff` / `update` / `remove` (three-way, no silent overwrite) | Done |
 | Project State (`state:repository`) | Done |
-| `@vibekit/pi` isolated Run (mocked/injected session in tests) | Skeleton |
+| `@useagentsio/pi` isolated Run (mocked/injected session in tests) | Skeleton |
 | Delegation, worktrees, claims | In progress |
 | Deterministic verification + propose → apply | In progress |
 | Official Agent catalog | Drafts installable as Modules |
@@ -35,24 +35,24 @@ V1 is being implemented against a locked architecture. What works in this tree t
 ## Install
 
 ```bash
-npm install -g --ignore-scripts @vibekit/cli
+npm install -g --ignore-scripts @useagentsio/cli
 vibekit --help
 ```
 
 Or without a global install:
 
 ```bash
-npx --yes @vibekit/cli --help
-npx --yes @vibekit/cli init ./my-app
+npx --yes @useagentsio/cli --help
+npx --yes @useagentsio/cli init ./my-app
 ```
 
 Libraries:
 
 ```bash
-npm install @vibekit/core @vibekit/pi
+npm install @useagentsio/core @useagentsio/pi
 ```
 
-The official registry ships inside `@vibekit/cli`. Override it with `--registry <path>` or `VIBEKIT_REGISTRY`.
+The official registry ships inside `@useagentsio/cli`. Override it with `--registry <path>` or `VIBEKIT_REGISTRY`.
 
 ### From this repository
 
@@ -192,8 +192,8 @@ Tracked by default: `project.yaml`, `installed.json`, Agent definitions, Policie
 | Path | Package | Role |
 | --- | --- | --- |
 | `packages/cli` | `vibekit` | User-facing CLI |
-| `packages/core` | `@vibekit/core` | Schemas, IDs, graph, install, ownership, State |
-| `packages/pi` | `@vibekit/pi` | Resolve a Project into an isolated Pi Run |
+| `packages/core` | `@useagentsio/core` | Schemas, IDs, graph, install, ownership, State |
+| `packages/pi` | `@useagentsio/pi` | Resolve a Project into an isolated Pi Run |
 | `schemas/` | — | JSON Schema source of truth |
 | `registry/` | — | Official Components and Agents |
 | `docs/spec/` | — | Locked V1 specification |
@@ -204,8 +204,8 @@ Tracked by default: `project.yaml`, `installed.json`, Agent definitions, Policie
 Library usage (TypeScript):
 
 ```ts
-import { parseAndValidateYaml, createRepositoryState } from "@vibekit/core";
-import { prepareIsolatedRun, runIsolated } from "@vibekit/pi";
+import { parseAndValidateYaml, createRepositoryState } from "@useagentsio/core";
+import { prepareIsolatedRun, runIsolated } from "@useagentsio/pi";
 
 const { valid, data, errors } = parseAndValidateYaml("agent", yamlText);
 const state = createRepositoryState({ projectRoot });
@@ -217,7 +217,7 @@ const outcome = await runIsolated({
 });
 ```
 
-`@vibekit/pi` returns Events and a Result. It does not persist them. The default session factory dynamic-imports `@earendil-works/pi-coding-agent`.
+`@useagentsio/pi` returns Events and a Result. It does not persist them. The default session factory dynamic-imports `@earendil-works/pi-coding-agent`.
 
 ## Development
 

@@ -5,7 +5,7 @@ import {
   buildRegistryIndex,
   loadModuleFromDirectory,
   parseAndValidateYaml,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 import { describe, expect, it } from "vitest";
 
 import { officialRegistryDir } from "../helpers.js";

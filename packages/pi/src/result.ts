@@ -7,7 +7,7 @@ import {
   type ResultDocument,
   type ResultStatus,
   type RuntimeId,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 
 import { newRuntimeId } from "./ids.js";
 

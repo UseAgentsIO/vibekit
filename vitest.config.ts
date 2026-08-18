@@ -12,8 +12,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@vibekit/core": path.resolve(root, "packages/core/src/index.ts"),
-      "@vibekit/pi": path.resolve(root, "packages/pi/src/index.ts"),
+      "@useagentsio/core": path.resolve(root, "packages/core/src/index.ts"),
+      "@useagentsio/pi": path.resolve(root, "packages/pi/src/index.ts"),
       vibekit: path.resolve(root, "packages/cli/src/index.ts"),
     },
   },

@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { VibeKitError } from "@vibekit/core";
+import { VibeKitError } from "@useagentsio/core";
 import { describe, expect, it } from "vitest";
 
 import {

@@ -11,7 +11,7 @@ import {
   runDoctor,
   type ModuleType,
   type PlannedPermission,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 
 import type { GlobalFlags } from "../args.js";
 import type { OutputBuffer } from "../output.js";

@@ -10,7 +10,7 @@ import {
   runDoctor,
   writeInstalledManifest,
   writeProjectDocument,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 
 import type { GlobalFlags } from "../args.js";
 import type { OutputBuffer } from "../output.js";
@@ -182,12 +182,12 @@ function recordWorkspaceDependencies(target: string, changed: string[]): void {
   };
   const deps = raw.dependencies ?? {};
   let mutated = false;
-  if (!deps["@vibekit/core"] && !raw.devDependencies?.["@vibekit/core"]) {
-    deps["@vibekit/core"] = "workspace:*";
+  if (!deps["@useagentsio/core"] && !raw.devDependencies?.["@useagentsio/core"]) {
+    deps["@useagentsio/core"] = "workspace:*";
     mutated = true;
   }
-  if (!deps["@vibekit/pi"] && !raw.devDependencies?.["@vibekit/pi"]) {
-    deps["@vibekit/pi"] = "workspace:*";
+  if (!deps["@useagentsio/pi"] && !raw.devDependencies?.["@useagentsio/pi"]) {
+    deps["@useagentsio/pi"] = "workspace:*";
     mutated = true;
   }
   if (!mutated) {

@@ -3,7 +3,7 @@ import path from "node:path";
 import {
   PROJECT_RELATIVE_PATH,
   type ProjectDocument,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 
 import { assertValidDocument, readValidatedYaml } from "./documents.js";
 

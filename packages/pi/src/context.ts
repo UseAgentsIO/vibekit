@@ -1,4 +1,4 @@
-import type { DecisionDocument, ProjectDocument, TaskDocument } from "@vibekit/core";
+import type { DecisionDocument, ProjectDocument, TaskDocument } from "@useagentsio/core";
 
 import type { LoadedAgent } from "./agent.js";
 import type { EffectiveConfiguration } from "./config.js";

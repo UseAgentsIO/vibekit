@@ -1,4 +1,4 @@
-# Phase 5 — Pi runtime adapter (`@vibekit/pi`)
+# Phase 5 — Pi runtime adapter (`@useagentsio/pi`)
 
 **Depends on:** Phases 1–4
 

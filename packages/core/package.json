@@ -1,5 +1,5 @@
 {
-  "name": "@vibekit/core",
+  "name": "@useagentsio/core",
   "version": "0.1.0",
   "description": "VibeKit schemas, IDs, validation, install, and Project State",
   "type": "module",

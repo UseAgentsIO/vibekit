@@ -2,7 +2,7 @@ import {
   type AgentDocument,
   type ProjectDocument,
   type TaskDocument,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 
 import { assertValidDocument, readValidatedYaml } from "./documents.js";
 import { configurationInvalid, fail } from "./fail.js";

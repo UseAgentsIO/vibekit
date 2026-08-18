@@ -1,4 +1,4 @@
-import { VibeKitError, type FailureCategory } from "@vibekit/core";
+import { VibeKitError, type FailureCategory } from "@useagentsio/core";
 
 export function fail(
   category: FailureCategory,

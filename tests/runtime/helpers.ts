@@ -7,7 +7,7 @@ import {
   type AgentDocument,
   type ProjectDocument,
   type TaskDocument,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 
 import { makeTempDir, readFixture } from "../helpers.js";
 

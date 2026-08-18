@@ -9,7 +9,7 @@ import {
   loadModuleFromDirectory,
   stringifyYaml,
   writeRegistryIndex,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 

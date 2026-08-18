@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { satisfiesCompatibility } from "@vibekit/core";
+import { satisfiesCompatibility } from "@useagentsio/core";
 
 describe("compatibility ranges", () => {
   it("matches declared VibeKit, Pi, and Node ranges", () => {

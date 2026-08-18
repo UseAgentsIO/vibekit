@@ -1,4 +1,4 @@
-import { VibeKitError, loadRegistry, resolveInstallSet, resolveModule } from "@vibekit/core";
+import { VibeKitError, loadRegistry, resolveInstallSet, resolveModule } from "@useagentsio/core";
 import { describe, expect, it } from "vitest";
 
 import { buildTempRegistry } from "../helpers.js";

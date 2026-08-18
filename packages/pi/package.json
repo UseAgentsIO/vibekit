@@ -1,5 +1,5 @@
 {
-  "name": "@vibekit/pi",
+  "name": "@useagentsio/pi",
   "version": "0.1.0",
   "description": "VibeKit Pi runtime adapter",
   "type": "module",
@@ -32,7 +32,7 @@
     "prepublishOnly": "tsc -b"
   },
   "dependencies": {
-    "@vibekit/core": "workspace:*",
+    "@useagentsio/core": "workspace:*",
     "yaml": "^2.8.1"
   }
 }

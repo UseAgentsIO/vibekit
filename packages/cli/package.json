@@ -1,5 +1,5 @@
 {
-  "name": "@vibekit/cli",
+  "name": "@useagentsio/cli",
   "version": "0.1.0",
   "description": "VibeKit CLI for initializing Projects and installing Modules",
   "type": "module",
@@ -36,6 +36,6 @@
     "prepublishOnly": "node ../../scripts/prepare-publish.mjs cli && tsc -b"
   },
   "dependencies": {
-    "@vibekit/core": "workspace:*"
+    "@useagentsio/core": "workspace:*"
   }
 }

@@ -15,7 +15,7 @@ import {
   parseModuleId,
   parseProjectId,
   parseRuntimeId,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 
 describe("module IDs", () => {
   it("parses and formats valid IDs", () => {

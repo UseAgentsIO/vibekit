@@ -6,7 +6,7 @@ Read after Phase 1 is merged. Implement only Phase 2.
 Official in-repo registry + `vibekit` CLI foundation: `init`, `add`, `list`, and `.vibekit/installed.json`.
 
 ## Packages
-- `@vibekit/core` — module graph, dependency/conflict/capability resolution, file-target validation, installed-manifest types (already have schemas)
+- `@useagentsio/core` — module graph, dependency/conflict/capability resolution, file-target validation, installed-manifest types (already have schemas)
 - `vibekit` (`packages/cli`) — user-facing commands
 - `registry/` — official registry payloads
 
@@ -66,7 +66,7 @@ Atomic flow §17.4: plan → stage → validate schemas/ownership/project → ap
 Show id, version, source, and the four separate statuses: installed / configured / available / verified.
 
 ## Ownership
-Exclusive: one Module owns the file. Generated: VibeKit builds from fragments. Duplicate exclusive ownership is rejected. Path traversal and absolute targets rejected (use `@vibekit/core` helpers).
+Exclusive: one Module owns the file. Generated: VibeKit builds from fragments. Duplicate exclusive ownership is rejected. Path traversal and absolute targets rejected (use `@useagentsio/core` helpers).
 
 ## Tests to add (`tests/cli/`, `tests/registry/`, `tests/composition/`)
 Map to acceptance tests 1–6 and 12–16 as far as Phase 2 can prove them.

@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { parseAndValidateJson, parseAndValidateYaml } from "@vibekit/core";
+import { parseAndValidateJson, parseAndValidateYaml } from "@useagentsio/core";
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "vibekit";

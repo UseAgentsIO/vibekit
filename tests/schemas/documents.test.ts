@@ -5,7 +5,7 @@ import {
   parseAndValidateYaml,
   validateDocument,
   type DocumentKind,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 
 import { readFixture } from "../helpers.js";
 

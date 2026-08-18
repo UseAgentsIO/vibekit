@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { decideThreeWay, isGeneratedPath } from "@vibekit/core";
+import { decideThreeWay, isGeneratedPath } from "@useagentsio/core";
 
 describe("three-way update decisions", () => {
   it("replaces when only upstream changed", () => {

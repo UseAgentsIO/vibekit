@@ -1,4 +1,4 @@
-# Phase 5 summary — Pi runtime adapter (`@vibekit/pi`)
+# Phase 5 summary — Pi runtime adapter (`@useagentsio/pi`)
 
 Phase 5 skeleton is implemented under `packages/pi`. It compiles with `tsc -b` in that package. `pnpm test` (full workspace) and `pnpm typecheck` both pass in this workspace.
 
@@ -38,7 +38,7 @@ A real Agent Task through `@earendil-works/pi-coding-agent` is not run here. Tes
 - Agent loader: `.vibekit/agents/<binding>/agent.yaml`, instructions file, binding checks
 - Task loader / validator
 - Effective configuration layers (spec §13.1) and model resolution (spec §13.3)
-- Capability binding through `@vibekit/core` `resolveRequiredCapabilities`
+- Capability binding through `@useagentsio/core` `resolveRequiredCapabilities`
 - Allowlisted Pi tools from granted capabilities (read/write/execute → built-ins)
 - Bounded context (spec §19.3) and instruction stack (spec §19.2)
 - Environment filter: required runtime vars + authorized secret *names* from `process.env`
@@ -89,7 +89,7 @@ Deferred until State / later phases, or until a live Pi session is wired:
 
 ### Package
 
-- `packages/pi/package.json` (`@vibekit/core` workspace:*, `yaml`)
+- `packages/pi/package.json` (`@useagentsio/core` workspace:*, `yaml`)
 - `packages/pi/tsconfig.json` (references `../core`)
 - `packages/pi/README.md`
 - `packages/pi/src/index.ts`
@@ -122,7 +122,7 @@ Deferred until State / later phases, or until a live Pi session is wired:
 - `tests/runtime/result.test.ts`
 - `tests/runtime/run.test.ts`
 
-Root `tsconfig.json` does not yet reference `packages/pi`. Compile with `tsc -b packages/pi`. Tests import `@vibekit/pi` from the built `dist` (or workspace link). Root `package.json` / `vitest.config.ts` were not edited; add a workspace dependency or alias in a follow-up so a clean `pnpm install` always resolves `@vibekit/pi`.
+Root `tsconfig.json` does not yet reference `packages/pi`. Compile with `tsc -b packages/pi`. Tests import `@useagentsio/pi` from the built `dist` (or workspace link). Root `package.json` / `vitest.config.ts` were not edited; add a workspace dependency or alias in a follow-up so a clean `pnpm install` always resolves `@useagentsio/pi`.
 
 ## Spec ambiguities resolved
 

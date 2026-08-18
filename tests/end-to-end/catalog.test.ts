@@ -6,7 +6,7 @@ import {
   parseAndValidateYaml,
   readInstalledManifest,
   readProjectDocument,
-} from "@vibekit/core";
+} from "@useagentsio/core";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { runCli } from "vibekit";

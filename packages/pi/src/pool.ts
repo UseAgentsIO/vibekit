@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import type { RuntimeId } from "@vibekit/core";
+import type { RuntimeId } from "@useagentsio/core";
 
 import { fail } from "./fail.js";
 
