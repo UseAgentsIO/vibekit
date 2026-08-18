@@ -1,0 +1,4 @@
+interface:
+  display_name: "VibeKit"
+  short_description: "Compose and operate VibeKit agent projects"
+  default_prompt: "Use $vibekit to initialize, compose, inspect, or run this VibeKit project safely."
