@@ -1,0 +1,5 @@
+id: provider:openai-codex
+piProvider: openai-codex
+description: Pi OpenAI Codex / ChatGPT OAuth. Authenticate with Pi `/login`, not a VibeKit-stored key.
+auth: oauth
+defaultModel: gpt-5.3-codex

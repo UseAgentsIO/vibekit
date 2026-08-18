@@ -1,0 +1,5 @@
+id: provider:opencode
+piProvider: opencode
+description: Maps to the OpenCode Zen provider already supplied by Pi.
+secretName: OPENCODE_API_KEY
+defaultModel: deepseek-v4-flash

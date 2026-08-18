@@ -1,0 +1,45 @@
+schemaVersion: 1
+
+id: provider:openai-codex
+type: provider
+name: openai-codex
+displayName: OpenAI Codex
+version: 1.0.0
+description: Maps to Pi's openai-codex provider (ChatGPT / Codex OAuth). Does not rebuild the Pi provider runtime. Credentials stay in Pi auth.json.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.openai-codex
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets: []
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/openai-codex.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/openai-codex.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: openai-codex

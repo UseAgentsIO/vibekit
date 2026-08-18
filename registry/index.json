@@ -101,6 +101,61 @@
       "path": "components/provider/openai/1.0.0"
     },
     {
+      "id": "provider:openai-codex",
+      "version": "1.0.0",
+      "checksum": "sha256:be3993e5d20ddb82d44c341c273a381b8965e772ba98452c4ab81125aeea94e6",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/openai-codex/1.0.0"
+    },
+    {
+      "id": "provider:opencode",
+      "version": "1.0.0",
+      "checksum": "sha256:4186660f84027ba1799a78428eca4a8789737cbcdc222b8558f4a8690c1336b4",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/opencode/1.0.0"
+    },
+    {
+      "id": "provider:opencode-go",
+      "version": "1.0.0",
+      "checksum": "sha256:c932ebb08d2d9289bf3f4ebe50df734be0aff4d051f0bfcfab02ae64ea8526cb",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/opencode-go/1.0.0"
+    },
+    {
+      "id": "provider:openrouter",
+      "version": "1.0.0",
+      "checksum": "sha256:09300d22ddf9376976516f958c3037878e7649e9cc1e9a4376dde0059d05e8fe",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/openrouter/1.0.0"
+    },
+    {
+      "id": "provider:xai",
+      "version": "1.0.0",
+      "checksum": "sha256:ddf8bac2d7bb102086e24163a80d76a8e0768d5ebcadd0a829d73f7fff46073f",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/xai/1.0.0"
+    },
+    {
       "id": "skill:research",
       "version": "1.0.0",
       "checksum": "sha256:d7464b355faa23a0001ece90efe0d636710a323be3d2b608b6cc70fc75f68c2d",
@@ -169,7 +224,7 @@
     {
       "id": "verifier:command",
       "version": "1.0.0",
-      "checksum": "sha256:c6580a8bb5c51f7e74266b2d83d9f6d829154917d4e21c755541587c46182907",
+      "checksum": "sha256:40239c1a303b439fc5fd703b71f048bffbde6b2c6537a353478c38fb8cbf20c0",
       "compatibility": {
         "vibekit": "^1.0.0",
         "pi": ">=0.50.0",

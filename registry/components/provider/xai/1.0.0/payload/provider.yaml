@@ -1,0 +1,6 @@
+id: provider:xai
+piProvider: xai
+description: Pi xAI provider. OAuth via Pi `/login`, or optional XAI_API_KEY.
+auth: oauth
+secretName: XAI_API_KEY
+defaultModel: grok-4

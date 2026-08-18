@@ -1,0 +1,48 @@
+schemaVersion: 1
+
+id: provider:openrouter
+type: provider
+name: openrouter
+displayName: OpenRouter
+version: 1.0.0
+description: Maps to Pi's openrouter provider. Does not rebuild the Pi provider runtime.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.openrouter
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets:
+  - name: OPENROUTER_API_KEY
+    required: true
+    source: environment
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/openrouter.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/openrouter.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: openrouter

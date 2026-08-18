@@ -1,0 +1,5 @@
+id: provider:opencode-go
+piProvider: opencode-go
+description: Maps to the OpenCode Go provider already supplied by Pi.
+secretName: OPENCODE_API_KEY
+defaultModel: deepseek-v4-pro

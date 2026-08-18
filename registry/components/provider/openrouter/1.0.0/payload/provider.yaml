@@ -1,0 +1,5 @@
+id: provider:openrouter
+piProvider: openrouter
+description: Maps to the OpenRouter provider already supplied by Pi.
+secretName: OPENROUTER_API_KEY
+defaultModel: deepseek/deepseek-v4-flash-0731

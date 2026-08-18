@@ -157,7 +157,12 @@ Installing an Agent copies `agent.yaml` and `instructions.md` into `.vibekit/age
 
 | ID | Family |
 | --- | --- |
-| `provider:openai` | Provider (Pi config + `OPENAI_API_KEY` reference) |
+| `provider:openai` | Provider (API key `OPENAI_API_KEY`) |
+| `provider:openai-codex` | Provider (Pi `/login` OAuth) |
+| `provider:opencode` | Provider (OpenCode Zen, `OPENCODE_API_KEY`) |
+| `provider:opencode-go` | Provider (OpenCode Go, `OPENCODE_API_KEY`) |
+| `provider:xai` | Provider (Pi `/login` OAuth, optional `XAI_API_KEY`) |
+| `provider:openrouter` | Provider (`OPENROUTER_API_KEY`) |
 | `tool:filesystem` | Tool |
 | `tool:execution` | Tool |
 | `tool:github` | Tool (`GITHUB_TOKEN` reference) |

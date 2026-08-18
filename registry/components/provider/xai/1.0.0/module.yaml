@@ -1,0 +1,48 @@
+schemaVersion: 1
+
+id: provider:xai
+type: provider
+name: xai
+displayName: xAI
+version: 1.0.0
+description: Maps to Pi's xai provider. Prefer Pi `/login` OAuth. Optional XAI_API_KEY if you use a key instead. Does not rebuild the Pi provider runtime.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.xai
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets:
+  - name: XAI_API_KEY
+    required: false
+    source: environment
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/xai.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/xai.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: xai
