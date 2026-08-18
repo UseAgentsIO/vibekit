@@ -13,6 +13,8 @@ export interface CommandHelp {
 const GLOBAL_OPTIONS: CommandHelp["options"] = [
   { flags: "-y, --yes", text: "skip confirmation prompts" },
   { flags: "-d, --defaults", text: "use defaults and skip the setup wizard" },
+  { flags: "--verbose", text: "show machine ids and extra detail" },
+  { flags: "--show-files", text: "list created file paths" },
   { flags: "--dir <path>", text: "project directory (default: current directory)" },
   { flags: "--registry <path>", text: "registry to read from (default: official)" },
   { flags: "-v, --version", text: "print the version number" },
@@ -110,13 +112,22 @@ export const COMMANDS: readonly CommandHelp[] = [
     usage: "init [options] [dir]",
     summary: "initialize a Project and walk through setup",
     description:
-      "Writes .vibekit/project.yaml and installed.json, then asks which provider, Agent, Interface, Skill, Policy, and Tool to add. Each step can be skipped. Pass --defaults to skip setup, like shadcn init -d.",
+      "Writes .vibekit/project.yaml and installed.json, then walks through a keyboard-native setup. Arrow keys select, space toggles multi-select, esc goes back. Pass flags to skip the wizard, or --defaults for an empty Project.",
     arguments: [
       { name: "dir", text: "folder to initialize (default: current directory)" },
     ],
     options: [
       { flags: "-d, --defaults", text: "skip the setup wizard and use an empty Project" },
-      { flags: "-y, --yes", text: "same as --defaults" },
+      { flags: "-y, --yes", text: "same as --defaults unless setup flags are passed" },
+      { flags: "--provider <name>", text: "provider id" },
+      { flags: "--model <id>", text: "model id (requires --provider)" },
+      { flags: "--agent <name>", text: "Agent to install" },
+      { flags: "--interface <name>", text: "Interface to install" },
+      { flags: "--skill <name>", text: "Skill to install; repeatable" },
+      { flags: "--policy <name>", text: "Policy to install; repeatable" },
+      { flags: "--tool <name>", text: "Tool to install; repeatable" },
+      { flags: "--verbose", text: "show machine ids in the summary" },
+      { flags: "--show-files", text: "list created file paths" },
       { flags: "--registry <path>", text: "registry to read from (default: official)" },
       { flags: "-h, --help", text: "display help for command" },
     ],
@@ -124,6 +135,7 @@ export const COMMANDS: readonly CommandHelp[] = [
       "$ vibekit init",
       "$ vibekit init ./my-app",
       "$ vibekit init --defaults",
+      "$ vibekit init --provider openai --model gpt-5 --agent reviewer --interface terminal --skill software-development --tool filesystem",
     ],
   },
   {

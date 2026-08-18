@@ -37,13 +37,22 @@ export async function runCreate(
   const name = path.basename(target);
   const slug = isModuleName(slugify(name)) ? slugify(name) : "app";
   const agentName = flags.agent ?? "chief";
-  const selected = await selectProviderAndModel({
+  const selectedResult = await selectProviderAndModel({
     out,
     projectId: `project:${slug}`,
     provider: flags.provider,
     model: flags.model,
     yes: flags.yes,
+    verbose: flags.verbose,
   });
+  if (selectedResult.status !== "submit") {
+    throw new VibeKitError({
+      category: "cancelled",
+      code: "prompt_cancelled",
+      message: "Cancelled",
+    });
+  }
+  const selected = selectedResult.value;
   const provider = selected.provider;
   const model = selected.id;
   const iface = flags.interface ?? "terminal";

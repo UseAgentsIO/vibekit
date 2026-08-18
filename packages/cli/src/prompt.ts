@@ -1,8 +1,10 @@
-import { createInterface } from "node:readline/promises";
-import { stdin, stdout } from "node:process";
 import { isatty } from "node:tty";
+import { stdin, stdout } from "node:process";
 
 import { VibeKitError } from "@useagentsio/core";
+
+import { select, text } from "./ui/index.js";
+import type { MenuOption } from "./ui/options.js";
 
 export function canPrompt(): boolean {
   return isatty(stdin.fd);
@@ -13,19 +15,15 @@ export function say(message: string): void {
 }
 
 export async function askLine(question: string): Promise<string> {
-  if (!canPrompt()) {
+  const result = await text({ message: question, collapse: "set" });
+  if (result.status !== "submit") {
     throw new VibeKitError({
-      category: "invalid_input",
-      code: "prompt_requires_tty",
-      message: "This command needs a terminal, or pass --provider and --model",
+      category: "cancelled",
+      code: "prompt_cancelled",
+      message: "Cancelled",
     });
   }
-  const rl = createInterface({ input: stdin, output: stdout });
-  try {
-    return (await rl.question(`${question}\n> `)).trim();
-  } finally {
-    rl.close();
-  }
+  return result.value;
 }
 
 export interface Choice<T> {
@@ -49,45 +47,45 @@ export async function pickChoice<T>(
     say(`${title}: ${choices[0].label}`);
     return choices[0].value;
   }
-
-  for (;;) {
-    say("");
-    say(title);
-    choices.forEach((choice, index) => {
-      say(`  ${index + 1}. ${choice.label}`);
+  const picked = await select({
+    message: title,
+    options: toMenuOptions(choices),
+    searchable: true,
+  });
+  if (picked.status !== "submit" || picked.value === undefined) {
+    throw new VibeKitError({
+      category: "cancelled",
+      code: "prompt_cancelled",
+      message: "Cancelled",
     });
-    const raw = await askLine("Number, or paste an id");
-    if (raw.length === 0) {
-      say("Pick a number from the list.");
-      continue;
-    }
-    const asNumber = Number(raw);
-    if (Number.isInteger(asNumber) && asNumber >= 1 && asNumber <= choices.length) {
-      return choices[asNumber - 1].value;
-    }
-    const matched = choices.find((choice) => {
-      const id = choice.id ?? (typeof choice.value === "string" ? choice.value : undefined);
-      return choice.label === raw || id === raw;
-    });
-    if (matched !== undefined) {
-      return matched.value;
-    }
-    say(`Not a valid choice: ${raw}`);
   }
+  return picked.value;
 }
 
 export async function pickOrSkip<T>(
   title: string,
   choices: ReadonlyArray<Choice<T>>,
 ): Promise<T | undefined> {
-  type Result = { readonly skipped: true } | { readonly skipped: false; readonly value: T };
-  const picked = await pickChoice<Result>(title, [
-    ...choices.map((choice) => ({
-      label: choice.label,
-      id: choice.id,
-      value: { skipped: false as const, value: choice.value },
-    })),
-    { label: "Skip", id: "skip", value: { skipped: true as const } },
-  ]);
-  return picked.skipped ? undefined : picked.value;
+  const picked = await select({
+    message: title,
+    options: toMenuOptions(choices),
+    searchable: true,
+    skippable: true,
+  });
+  if (picked.status !== "submit") {
+    throw new VibeKitError({
+      category: "cancelled",
+      code: "prompt_cancelled",
+      message: "Cancelled",
+    });
+  }
+  return picked.value;
+}
+
+function toMenuOptions<T>(choices: ReadonlyArray<Choice<T>>): MenuOption<T>[] {
+  return choices.map((choice) => ({
+    label: choice.label,
+    value: choice.value,
+    id: choice.id,
+  }));
 }

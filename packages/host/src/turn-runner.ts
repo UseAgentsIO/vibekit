@@ -6,6 +6,11 @@ import {
   type RuntimeId,
   type TaskDocument,
 } from "@useagentsio/core";
+import {
+  loadAgentDocument,
+  resolveAllowlistedTools,
+  type ResolvedModel,
+} from "@useagentsio/pi";
 import type { InboundMessage } from "@useagentsio/interface-sdk";
 
 import type { ConversationRecord } from "./conversation-store.js";
@@ -64,6 +69,55 @@ export function createInboundTask(input: {
     revision: 1,
     createdAt: now,
     updatedAt: now,
+  };
+}
+
+export function prepareAgentTurn(input: {
+  readonly projectRoot: string;
+  readonly project: ProjectDocument;
+  readonly conversation: ConversationRecord;
+  readonly message: InboundMessage;
+  readonly task: TaskDocument;
+}): {
+  readonly tools: readonly string[];
+  readonly systemPrompt: string;
+  readonly model: ResolvedModel;
+} {
+  const bindingName = input.conversation.agentBinding;
+  const agent = loadAgentDocument({
+    projectRoot: input.projectRoot,
+    project: input.project,
+    bindingName,
+  });
+  const tools = resolveAllowlistedTools({
+    capabilities: agent.document.capabilities.requires,
+    permissions: {
+      allow: agent.document.permissions.allow,
+      deny: agent.document.permissions.deny,
+    },
+    authorization: "standing",
+    approvalGranted: true,
+  });
+  const model = input.project.defaults?.model;
+  if (model === undefined) {
+    throw new Error("No model is configured. Run `vibekit model`.");
+  }
+  const role = agent.document.displayName ?? agent.document.name;
+  const systemPrompt = [
+    `You are ${role}, a VibeKit Agent.`,
+    "Answer the user. Use your tools to inspect files when needed.",
+    "Do not invent tool-call markup. If a tool is unavailable, say so.",
+    "",
+    agent.instructions.trim(),
+  ].join("\n");
+  return {
+    tools,
+    systemPrompt,
+    model: {
+      provider: model.provider,
+      id: model.id,
+      source: "project",
+    },
   };
 }
 

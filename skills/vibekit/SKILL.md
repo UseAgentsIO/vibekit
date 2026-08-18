@@ -12,7 +12,7 @@ Use VibeKit as the contract and composition layer around Pi. Let Pi own models, 
 1. Read repository instructions and check the working tree before changing files.
 2. If `.vibekit/` exists, read `.vibekit/project.yaml` and `.vibekit/installed.json`, then run `vibekit list` and `vibekit doctor` against the Project root.
 3. If working in the VibeKit source repository, inspect the current package, schema, and registry files instead of relying on examples from memory. Run the CLI from source with `pnpm exec tsx packages/cli/src/index.ts`.
-4. If working in another repository, use an installed `vibekit` binary or `npx --yes @useagentsio/cli@0.1.2`. Never install or invoke the unrelated unscoped npm package named `vibekit`.
+4. If working in another repository, use an installed `vibekit` binary or `npx --yes @useagentsio/cli@0.3.0`. Never install or invoke the unrelated unscoped npm package named `vibekit`.
 5. Distinguish the requested job before loading details:
    - Initialize, add, inspect, update, or remove Modules: read [references/cli.md](references/cli.md).
    - Configure a Project or customize installed Agents: read [references/projects.md](references/projects.md).

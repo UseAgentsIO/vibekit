@@ -22,6 +22,7 @@ import {
   formatUnknownCommand,
 } from "./help.js";
 import { OutputBuffer, type CliResult } from "./output.js";
+import { releaseTerminal } from "./ui/keys.js";
 
 export type { CliResult } from "./output.js";
 
@@ -117,5 +118,7 @@ export async function runCli(argv: string[]): Promise<CliResult> {
     const message = error instanceof Error ? error.message : String(error);
     out.error(message);
     return { exitCode: 1, stdout: out.stdout, stderr: out.stderr };
+  } finally {
+    releaseTerminal();
   }
 }

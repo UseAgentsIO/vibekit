@@ -22,13 +22,19 @@ function isDirectCliInvocation(): boolean {
 }
 
 if (isDirectCliInvocation()) {
-  void runCli(process.argv.slice(2)).then((result) => {
-    if (result.stdout) {
-      process.stdout.write(result.stdout);
-    }
-    if (result.stderr) {
-      process.stderr.write(result.stderr);
-    }
-    process.exitCode = result.exitCode;
-  });
+  void runCli(process.argv.slice(2))
+    .then((result) => {
+      if (result.stdout) {
+        process.stdout.write(result.stdout);
+      }
+      if (result.stderr) {
+        process.stderr.write(result.stderr);
+      }
+      process.exit(result.exitCode);
+    })
+    .catch((error) => {
+      const message = error instanceof Error ? error.message : String(error);
+      process.stderr.write(`${message}\n`);
+      process.exit(1);
+    });
 }

@@ -16,12 +16,29 @@ export interface GlobalFlags {
   readonly live: boolean;
   readonly skipInstall: boolean;
   readonly defaults: boolean;
+  readonly verbose: boolean;
+  readonly showFiles: boolean;
+  readonly skills: readonly string[];
+  readonly tools: readonly string[];
+  readonly policies: readonly string[];
 }
 
 export interface ParsedCli {
   readonly command?: string;
   readonly positionals: string[];
   readonly flags: GlobalFlags;
+}
+
+export function hasSetupFlags(flags: GlobalFlags): boolean {
+  return (
+    flags.provider !== undefined ||
+    flags.model !== undefined ||
+    flags.agent !== undefined ||
+    flags.interface !== undefined ||
+    flags.skills.length > 0 ||
+    flags.tools.length > 0 ||
+    flags.policies.length > 0
+  );
 }
 
 export function parseCliArgs(argv: string[]): ParsedCli {
@@ -45,6 +62,11 @@ export function parseCliArgs(argv: string[]): ParsedCli {
         live: { type: "boolean", default: false },
         "skip-install": { type: "boolean", default: false },
         defaults: { type: "boolean", short: "d", default: false },
+        verbose: { type: "boolean", default: false },
+        "show-files": { type: "boolean", default: false },
+        skill: { type: "string", multiple: true },
+        tool: { type: "string", multiple: true },
+        policy: { type: "string", multiple: true },
       },
     });
   } catch (error) {
@@ -73,6 +95,11 @@ export function parseCliArgs(argv: string[]): ParsedCli {
       live: parsed.values.live === true,
       skipInstall: parsed.values["skip-install"] === true,
       defaults: parsed.values.defaults === true,
+      verbose: parsed.values.verbose === true,
+      showFiles: parsed.values["show-files"] === true,
+      skills: parsed.values.skill ?? [],
+      tools: parsed.values.tool ?? [],
+      policies: parsed.values.policy ?? [],
     },
   };
 }

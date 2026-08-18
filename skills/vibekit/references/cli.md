@@ -13,7 +13,7 @@ pnpm exec tsx packages/cli/src/index.ts --help
 Outside the source repository, prefer an installed `vibekit` binary. Otherwise use the scoped package:
 
 ```bash
-npx --yes @useagentsio/cli@0.1.2 --help
+npx --yes @useagentsio/cli@0.3.0 --help
 ```
 
 Require Node 20 or later. Do not use the unscoped npm package `vibekit`; it is unrelated. Version `0.1.0` of `@useagentsio/cli` has a broken global bin, so use `0.1.2` or later.

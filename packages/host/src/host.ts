@@ -37,6 +37,7 @@ import { persistTurnState } from "./state-writer.js";
 import { withTimeout } from "./shutdown.js";
 import {
   createInboundTask,
+  prepareAgentTurn,
   type RunTurn,
   type TurnOutcome,
 } from "./turn-runner.js";
@@ -377,11 +378,12 @@ export class VibeKitHost {
     });
 
     if (this.createSession !== undefined) {
+      const prepared = prepareAgentTurn({ ...request, task });
       const session = await this.createSession({
         cwd: this.projectRoot,
-        tools: [],
-        systemPrompt: "You are a VibeKit Agent. Answer the user.",
-        model: resolvedProjectModel(request.project),
+        tools: prepared.tools,
+        systemPrompt: prepared.systemPrompt,
+        model: prepared.model,
       });
       let text = "";
       const unsubscribe = session.subscribe((event) => {
@@ -420,12 +422,13 @@ export class VibeKitHost {
         "Persistent Pi conversation API is not available",
       );
     }
+    const prepared = prepareAgentTurn({ ...request, task });
     const result = await pi.runConversationTurn({
       cwd: this.projectRoot,
       sessionPath,
-      tools: [],
-      systemPrompt: "You are a VibeKit Agent. Answer the user.",
-      model: resolvedProjectModel(request.project),
+      tools: prepared.tools,
+      systemPrompt: prepared.systemPrompt,
+      model: prepared.model,
       text: request.message.text,
       signal: request.signal,
       allowNetwork: true,

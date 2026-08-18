@@ -1,4 +1,4 @@
-import { readProjectDocument, writeProjectDocument } from "@useagentsio/core";
+import { readProjectDocument, VibeKitError, writeProjectDocument } from "@useagentsio/core";
 
 import type { GlobalFlags } from "../args.js";
 import { formatSelectedModel, selectProviderAndModel } from "../model-select.js";
@@ -18,13 +18,22 @@ export async function runModel(
   }
 
   const parsed = parseModelPositional(positionals[0]);
-  const selected = await selectProviderAndModel({
+  const selectedResult = await selectProviderAndModel({
     out,
     projectId: project.id,
     provider: flags.provider ?? parsed?.provider ?? current?.provider,
     model: flags.model ?? parsed?.id,
     yes: flags.yes,
+    verbose: flags.verbose,
   });
+  if (selectedResult.status !== "submit") {
+    throw new VibeKitError({
+      category: "cancelled",
+      code: "prompt_cancelled",
+      message: "Cancelled",
+    });
+  }
+  const selected = selectedResult.value;
 
   writeProjectDocument(projectRoot, {
     ...project,

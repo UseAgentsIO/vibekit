@@ -4,15 +4,13 @@ import {
   OFFICIAL_PROVIDERS,
   openModelCatalog,
   secretNameForProvider,
-  type CatalogModel,
   type CatalogProvider,
   type ModelCatalog,
 } from "@useagentsio/pi";
 
 import type { OutputBuffer } from "./output.js";
-import { askLine, canPrompt, pickChoice, say } from "./prompt.js";
-
-const LIST_LIMIT = 40;
+import { canPrompt, say } from "./prompt.js";
+import { BACK, isSubmit, resolveSelect, select, submit, text, type PromptResult } from "./ui/index.js";
 
 export interface SelectedModel {
   readonly provider: string;
@@ -26,12 +24,40 @@ export async function selectProviderAndModel(input: {
   readonly provider?: string;
   readonly model?: string;
   readonly yes: boolean;
+  readonly verbose?: boolean;
   readonly env?: NodeJS.ProcessEnv;
-}): Promise<SelectedModel> {
+}): Promise<PromptResult<SelectedModel>> {
+  if (input.provider !== undefined && input.model !== undefined) {
+    return submit({
+      provider: input.provider,
+      id: input.model,
+      name: input.model,
+    }, 0);
+  }
+
   const catalog = await openModelCatalog({ allowNetwork: true, env: input.env });
-  const provider = await resolveProvider(input, catalog);
-  await ensureProviderSecret(input, catalog, provider);
-  return resolveModel(input, catalog, provider);
+
+  for (;;) {
+    const provider = await resolveProvider(input, catalog);
+    if (!isSubmit(provider)) {
+      return BACK;
+    }
+    const secret = await ensureProviderSecret(input, catalog, provider.value);
+    if (!isSubmit(secret)) {
+      if (input.provider !== undefined) {
+        return BACK;
+      }
+      continue;
+    }
+    const model = await resolveModel(input, catalog, provider.value);
+    if (!isSubmit(model)) {
+      if (input.provider !== undefined && secret.asked !== true) {
+        return BACK;
+      }
+      continue;
+    }
+    return submit(model.value);
+  }
 }
 
 async function resolveProvider(
@@ -39,16 +65,18 @@ async function resolveProvider(
     readonly out: OutputBuffer;
     readonly provider?: string;
     readonly yes: boolean;
+    readonly verbose?: boolean;
   },
   catalog: ModelCatalog,
-): Promise<CatalogProvider> {
+): Promise<PromptResult<CatalogProvider>> {
   if (input.provider !== undefined) {
-    return (
+    return submit(
       OFFICIAL_PROVIDERS.find((entry) => entry.id === input.provider) ?? {
         id: input.provider,
         name: input.provider,
         secretName: secretNameForProvider(input.provider),
-      }
+      },
+      0,
     );
   }
   if (input.yes || !canPrompt()) {
@@ -62,31 +90,49 @@ async function resolveProvider(
   const extras = catalog
     .listProviders()
     .filter((provider) => !OFFICIAL_PROVIDERS.some((official) => official.id === provider.id));
-  const more: CatalogProvider = {
-    id: "__more__",
-    name: "More providers",
-    secretName: "",
-  };
-  const firstPage = extras.length > 0 ? [...OFFICIAL_PROVIDERS, more] : [...OFFICIAL_PROVIDERS];
-  const picked = await pickChoice(
-    "Choose a provider",
-    firstPage.map((provider) => ({
-      label: provider.id === "__more__" ? provider.name : `${provider.name} (${provider.id})`,
-      value: provider,
-      id: provider.id,
-    })),
-  );
-  if (picked.id !== "__more__") {
-    return picked;
+  const moreId = "__more__";
+  const officialById = new Map(OFFICIAL_PROVIDERS.map((provider) => [provider.id, provider]));
+
+  for (;;) {
+    const firstPage = extras.length > 0 ? [...OFFICIAL_PROVIDERS.map((p) => p.id), moreId] : OFFICIAL_PROVIDERS.map((p) => p.id);
+    const picked = await select({
+      message: "Provider",
+      searchable: true,
+      options: firstPage.map((id) =>
+        id === moreId
+          ? { value: moreId, label: "More providers", id: moreId }
+          : {
+              value: id,
+              label: officialById.get(id)?.name ?? id,
+              id,
+              hint: input.verbose === true ? id : undefined,
+            },
+      ),
+    });
+    if (!isSubmit(picked) || picked.value === undefined) {
+      return BACK;
+    }
+    if (picked.value !== moreId) {
+      const id = picked.value;
+      return submit(
+        officialById.get(id) ?? { id, name: id, secretName: secretNameForProvider(id) },
+      );
+    }
+    const extra = await select({
+      message: "Provider",
+      searchable: "type",
+      options: extras.map((provider) => ({
+        value: provider,
+        label: provider.name,
+        id: provider.id,
+        hint: input.verbose === true ? provider.id : undefined,
+      })),
+    });
+    if (!isSubmit(extra) || extra.value === undefined) {
+      continue;
+    }
+    return submit(extra.value);
   }
-  return pickChoice(
-    "All providers",
-    extras.map((provider) => ({
-      label: `${provider.name} (${provider.id})`,
-      value: provider,
-      id: provider.id,
-    })),
-  );
 }
 
 async function resolveModel(
@@ -94,18 +140,18 @@ async function resolveModel(
     readonly out: OutputBuffer;
     readonly model?: string;
     readonly yes: boolean;
+    readonly verbose?: boolean;
     readonly env?: NodeJS.ProcessEnv;
   },
   catalog: ModelCatalog,
   provider: CatalogProvider,
-): Promise<SelectedModel> {
+): Promise<PromptResult<SelectedModel>> {
   if (input.model !== undefined) {
     const known = catalog.findModel(provider.id, input.model);
     if (known !== undefined) {
-      return known;
+      return submit(known, 0);
     }
-    say(`Using ${provider.id} / ${input.model} (not in Pi's current catalog)`);
-    return { provider: provider.id, id: input.model, name: input.model };
+    return submit({ provider: provider.id, id: input.model, name: input.model }, 0);
   }
   if (input.yes || !canPrompt()) {
     throw new VibeKitError({
@@ -115,8 +161,7 @@ async function resolveModel(
     });
   }
 
-  say(`Loading models for ${provider.name}...`);
-  let models = [...(await catalog.listModels(provider.id))];
+  const models = [...(await catalog.listModels(provider.id))];
   if (models.length === 0) {
     throw new VibeKitError({
       category: "unavailable",
@@ -125,29 +170,23 @@ async function resolveModel(
     });
   }
 
-  if (models.length > LIST_LIMIT) {
-    const filter = await askLine(
-      `${models.length} models. Type a filter, or press enter for the first ${LIST_LIMIT}`,
-    );
-    if (filter.length > 0) {
-      const needle = filter.toLowerCase();
-      models = models.filter(
-        (model) =>
-          model.id.toLowerCase().includes(needle) || model.name.toLowerCase().includes(needle),
-      );
-    } else {
-      models = models.slice(0, LIST_LIMIT);
-    }
-  }
-
-  return pickChoice(
-    `Choose a ${provider.name} model`,
-    models.map((model) => ({
-      label: model.name === model.id ? model.id : `${model.name} (${model.id})`,
+  const picked = await select({
+    message: "Model",
+    searchable: "type",
+    manual: {
+      parse: (raw) => ({ provider: provider.id, id: raw, name: raw }),
+    },
+    options: models.map((model) => ({
       value: model,
+      label: model.name,
       id: model.id,
+      hint: input.verbose === true && model.name !== model.id ? model.id : undefined,
     })),
-  );
+  });
+  if (!isSubmit(picked) || picked.value === undefined) {
+    return BACK;
+  }
+  return submit(picked.value);
 }
 
 async function ensureProviderSecret(
@@ -159,7 +198,7 @@ async function ensureProviderSecret(
   },
   catalog: ModelCatalog,
   provider: CatalogProvider,
-): Promise<void> {
+): Promise<PromptResult<void> & { readonly asked?: boolean }> {
   const env = input.env ?? process.env;
   const stored = readDeploymentSecrets(input.projectId)[provider.secretName];
   const fromEnv = env[provider.secretName];
@@ -172,29 +211,64 @@ async function ensureProviderSecret(
     if (!catalog.hasAuth(provider.id)) {
       await catalog.saveApiKey(provider.id, existing);
     }
-    return;
+    return { ...submit(undefined, 0), asked: false };
   }
 
   if (catalog.hasAuth(provider.id)) {
-    return;
+    return { ...submit(undefined, 0), asked: false };
   }
 
   if (input.yes || !canPrompt()) {
     say(`${provider.secretName} is not set. ${provider.name} calls will fail until it is.`);
-    return;
+    return { ...submit(undefined, 0), asked: false };
   }
-  const value = await askLine(
-    `${provider.secretName} is not set. Paste a key (saved to Pi's auth store)`,
-  );
-  if (value.length === 0) {
-    return;
+  const value = await text({
+    message: `${provider.name} API key`,
+    secret: true,
+    collapse: "saved",
+  });
+  if (!isSubmit(value)) {
+    return { ...BACK, asked: true };
   }
-  writeDeploymentSecret(input.projectId, provider.secretName, value);
-  process.env[provider.secretName] = value;
-  await catalog.saveApiKey(provider.id, value);
-  say(`Saved ${provider.name} credentials to Pi (~/.pi/agent/auth.json).`);
+  if (value.value.length === 0) {
+    return { ...submit(undefined), asked: true };
+  }
+  writeDeploymentSecret(input.projectId, provider.secretName, value.value);
+  process.env[provider.secretName] = value.value;
+  await catalog.saveApiKey(provider.id, value.value);
+  return { ...submit(undefined), asked: true };
 }
 
 export function formatSelectedModel(model: SelectedModel): string {
   return `Using ${model.provider} / ${model.id}`;
+}
+
+export function formatModelSummary(model: SelectedModel, providerName?: string): string {
+  const via = providerName ?? providerDisplayName(model.provider);
+  return `${model.name} via ${via}`;
+}
+
+export function providerDisplayName(id: string): string {
+  return OFFICIAL_PROVIDERS.find((provider) => provider.id === id)?.name ?? id;
+}
+
+export async function pickProviderId(input: {
+  readonly value?: string;
+  readonly interactive: boolean;
+  readonly verbose?: boolean;
+}): Promise<PromptResult<string | undefined>> {
+  return resolveSelect({
+    message: "Provider",
+    value: input.value,
+    interactive: input.interactive,
+    skippable: true,
+    searchable: true,
+    noneLabel: "None",
+    options: OFFICIAL_PROVIDERS.map((provider) => ({
+      value: provider.id,
+      label: provider.name,
+      id: provider.id,
+      hint: input.verbose === true ? provider.id : undefined,
+    })),
+  });
 }
