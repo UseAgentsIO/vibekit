@@ -42,7 +42,7 @@ export const COMMANDS: readonly CommandHelp[] = [
     options: [
       { flags: "--agent <name>", text: "starter Agent (default: chief)" },
       { flags: "--provider <name>", text: "provider id (default: openai)" },
-      { flags: "--model <id>", text: "model id" },
+      { flags: "--model <id>", text: "model id (required with --yes; otherwise pick from the live list)" },
       { flags: "--interface <name>", text: "Interface (default: terminal)" },
       { flags: "-y, --yes", text: "skip confirmation prompts" },
       { flags: "--dir <path>", text: "project directory" },
@@ -50,8 +50,27 @@ export const COMMANDS: readonly CommandHelp[] = [
       { flags: "-h, --help", text: "display help for command" },
     ],
     examples: [
-      "$ vibekit create my-agent --agent chief --provider openai --interface terminal --yes",
+      "$ vibekit create my-agent",
+      "$ vibekit create my-agent --provider openai --model gpt-5 --yes",
     ],
+  },
+  {
+    name: "model",
+    usage: "model [options] [provider/id]",
+    summary: "pick the Project model from Pi's live catalog",
+    description:
+      "Lists models for the selected provider from Pi. Writes defaults.model. No hardcoded model ids.",
+    arguments: [
+      { name: "provider/id", text: "optional explicit pair, for example openai/gpt-5" },
+    ],
+    options: [
+      { flags: "--provider <name>", text: "provider id" },
+      { flags: "--model <id>", text: "model id" },
+      { flags: "--dir <path>", text: "project directory (default: current directory)" },
+      { flags: "-y, --yes", text: "require --provider and --model; do not prompt" },
+      { flags: "-h, --help", text: "display help for command" },
+    ],
+    examples: ["$ vibekit model", "$ vibekit model --provider openai --model gpt-5 --yes"],
   },
   {
     name: "msg",

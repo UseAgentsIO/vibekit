@@ -1,0 +1,54 @@
+import { readProjectDocument, writeProjectDocument } from "@useagentsio/core";
+
+import type { GlobalFlags } from "../args.js";
+import { formatSelectedModel, selectProviderAndModel } from "../model-select.js";
+import type { OutputBuffer } from "../output.js";
+import { resolveProjectDir } from "../paths.js";
+
+export async function runModel(
+  positionals: readonly string[],
+  flags: GlobalFlags,
+  out: OutputBuffer,
+): Promise<number> {
+  const projectRoot = resolveProjectDir(flags.dir);
+  const project = readProjectDocument(projectRoot);
+  const current = project.defaults?.model;
+  if (current !== undefined) {
+    out.log(`Current: ${current.provider} / ${current.id}`);
+  }
+
+  const parsed = parseModelPositional(positionals[0]);
+  const selected = await selectProviderAndModel({
+    out,
+    projectId: project.id,
+    provider: flags.provider ?? parsed?.provider ?? current?.provider,
+    model: flags.model ?? parsed?.id,
+    yes: flags.yes,
+  });
+
+  writeProjectDocument(projectRoot, {
+    ...project,
+    defaults: {
+      ...project.defaults,
+      model: { provider: selected.provider, id: selected.id },
+    },
+  });
+  out.log(formatSelectedModel(selected));
+  out.log("Saved to .vibekit/project.yaml");
+  return 0;
+}
+
+function parseModelPositional(
+  value: string | undefined,
+): { provider: string; id: string } | undefined {
+  if (value === undefined || !value.includes("/")) {
+    return undefined;
+  }
+  const separator = value.indexOf("/");
+  const provider = value.slice(0, separator);
+  const id = value.slice(separator + 1);
+  if (provider.length === 0 || id.length === 0) {
+    return undefined;
+  }
+  return { provider, id };
+}

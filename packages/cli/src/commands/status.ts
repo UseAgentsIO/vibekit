@@ -17,6 +17,11 @@ export function runStatus(
   const statusPath = path.join(projectRoot, ".vibekit/runtime/host-status.json");
   out.log(`Project: ${project.id}`);
   out.log(`Default agent: ${project.defaultAgent ?? "(none)"}`);
+  if (project.defaults?.model !== undefined) {
+    out.log(`Using ${project.defaults.model.provider} / ${project.defaults.model.id}`);
+  } else {
+    out.log("Model: (none — run `vibekit model`)");
+  }
   const bindings = Object.entries(project.interfaceBindings ?? {});
   if (bindings.length === 0) {
     out.log("Interfaces: (none)");

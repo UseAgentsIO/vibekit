@@ -105,6 +105,15 @@ export {
 } from "./session.js";
 
 export {
+  OFFICIAL_PROVIDERS,
+  openModelCatalog,
+  secretNameForProvider,
+  type CatalogModel,
+  type CatalogProvider,
+  type ModelCatalog,
+} from "./models-catalog.js";
+
+export {
   closeConversationSession,
   createPersistentConversationSession,
   openPersistentConversationSession,

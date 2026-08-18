@@ -15,15 +15,16 @@ import {
 } from "@useagentsio/core";
 
 import type { GlobalFlags } from "../args.js";
+import { formatSelectedModel, selectProviderAndModel } from "../model-select.js";
 import type { OutputBuffer } from "../output.js";
 import { resolveProjectDir, resolveRegistry, slugify } from "../paths.js";
 import { printDoctor } from "./doctor.js";
 
-export function runCreate(
+export async function runCreate(
   positionals: readonly string[],
   flags: GlobalFlags,
   out: OutputBuffer,
-): number {
+): Promise<number> {
   const target = resolveProjectDir(positionals[0] ?? flags.dir);
   if (fs.existsSync(path.join(target, ".vibekit/project.yaml"))) {
     throw new VibeKitError({
@@ -36,8 +37,15 @@ export function runCreate(
   const name = path.basename(target);
   const slug = isModuleName(slugify(name)) ? slugify(name) : "app";
   const agentName = flags.agent ?? "chief";
-  const provider = flags.provider ?? "openai";
-  const model = flags.model ?? "gpt-4.1";
+  const selected = await selectProviderAndModel({
+    out,
+    projectId: `project:${slug}`,
+    provider: flags.provider,
+    model: flags.model,
+    yes: flags.yes,
+  });
+  const provider = selected.provider;
+  const model = selected.id;
   const iface = flags.interface ?? "terminal";
 
   fs.mkdirSync(target, { recursive: true });
@@ -84,13 +92,13 @@ export function runCreate(
 
   out.log(`Created VibeKit Project in ${target}`);
   out.log(`Agent: ${agentName}`);
-  out.log(`Provider: ${provider}/${model}`);
+  out.log(formatSelectedModel(selected));
   out.log(`Interface: ${iface}`);
   out.log("");
   out.log("Next:");
   out.log(`  cd ${target}`);
-  out.log(`  export ${providerEnvName(provider)}=...`);
   out.log(`  vibekit msg "Hello"`);
+  out.log(`  vibekit model`);
 
   const report = runDoctor({ projectRoot: target, registry });
   printDoctor(report, out);
@@ -140,18 +148,6 @@ function writeInterfaceConfig(target: string, iface: string): void {
   );
 }
 
-function providerEnvName(provider: string): string {
-  switch (provider) {
-    case "openai":
-    case "openai-codex":
-      return "OPENAI_API_KEY";
-    case "openrouter":
-      return "OPENROUTER_API_KEY";
-    case "xai":
-      return "XAI_API_KEY";
-    default:
-      return `${provider.replace(/[^a-z0-9]+/gi, "_").toUpperCase()}_API_KEY`;
-  }
-}
+
 
 

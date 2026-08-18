@@ -8,6 +8,7 @@ import { runDoctorCommand } from "./commands/doctor.js";
 import { runInit } from "./commands/init.js";
 import { runList } from "./commands/list.js";
 import { runMigrate } from "./commands/migrate.js";
+import { runModel } from "./commands/model.js";
 import { runMsg } from "./commands/msg.js";
 import { runRemove } from "./commands/remove.js";
 import { runStart } from "./commands/start.js";
@@ -62,7 +63,10 @@ export async function runCli(argv: string[]): Promise<CliResult> {
     let exitCode = 0;
     switch (parsed.command) {
       case "create":
-        exitCode = runCreate(parsed.positionals, parsed.flags, out);
+        exitCode = await runCreate(parsed.positionals, parsed.flags, out);
+        break;
+      case "model":
+        exitCode = await runModel(parsed.positionals, parsed.flags, out);
         break;
       case "msg":
         exitCode = await runMsg(parsed.positionals, parsed.flags, out);

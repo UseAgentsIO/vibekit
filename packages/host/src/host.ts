@@ -17,6 +17,7 @@ import type {
   RunningInterface,
 } from "@useagentsio/interface-sdk";
 
+import { readDeploymentSecrets } from "./secret-resolver.js";
 import { AttachmentStore } from "./attachment-store.js";
 import {
   ConversationManager,
@@ -116,7 +117,10 @@ export class VibeKitHost {
     this.runTurn = options.runTurn;
     this.createSession = options.createSession;
     this.now = options.now ?? (() => new Date());
-    this.secrets = new SecretResolver(project.id, options.env);
+    this.secrets = new SecretResolver(project.id, {
+      ...readDeploymentSecrets(project.id),
+      ...options.env,
+    });
     this.store = new ConversationStore(
       conversationsDirectory(this.projectRoot, project.state.path),
     );
@@ -148,7 +152,17 @@ export class VibeKitHost {
         projectRoot,
         statePath: project.state.path,
       });
-    const host = new VibeKitHost({ ...options, project, state }, project);
+    const mergedEnv = {
+      ...readDeploymentSecrets(project.id),
+      ...options.env,
+      ...process.env,
+    };
+    for (const [name, value] of Object.entries(readDeploymentSecrets(project.id))) {
+      if (value && !process.env[name]) {
+        process.env[name] = value;
+      }
+    }
+    const host = new VibeKitHost({ ...options, project, state, env: mergedEnv }, project);
     await host.boot(options.startInterfaces !== false);
     return host;
   }
@@ -367,11 +381,7 @@ export class VibeKitHost {
         cwd: this.projectRoot,
         tools: [],
         systemPrompt: "You are a VibeKit Agent. Answer the user.",
-        model: {
-          provider: request.project.defaults?.model?.provider ?? "openai",
-          id: request.project.defaults?.model?.id ?? "gpt-4.1",
-          source: "project",
-        },
+        model: resolvedProjectModel(request.project),
       });
       let text = "";
       const unsubscribe = session.subscribe((event) => {
@@ -415,11 +425,7 @@ export class VibeKitHost {
       sessionPath,
       tools: [],
       systemPrompt: "You are a VibeKit Agent. Answer the user.",
-      model: {
-        provider: request.project.defaults?.model?.provider ?? "openai",
-        id: request.project.defaults?.model?.id ?? "gpt-4.1",
-        source: "project",
-      },
+      model: resolvedProjectModel(request.project),
       text: request.message.text,
       signal: request.signal,
       allowNetwork: true,
@@ -544,6 +550,22 @@ function loadBindingConfig(
     return {};
   }
   return { path: configPath };
+}
+
+function resolvedProjectModel(project: ProjectDocument): {
+  provider: string;
+  id: string;
+  source: "project";
+} {
+  const model = project.defaults?.model;
+  if (model === undefined || model.provider.length === 0 || model.id.length === 0) {
+    throw hostError(
+      "configuration_invalid",
+      "model_unresolved",
+      "No model is configured. Run `vibekit model` and pick one from the live list.",
+    );
+  }
+  return { provider: model.provider, id: model.id, source: "project" };
 }
 
 function formatRunId(): EventDocument["runId"] & string {

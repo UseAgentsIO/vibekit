@@ -1,5 +1,6 @@
 import { conversationKeyOf } from "@useagentsio/interface-sdk";
 import { VibeKitHost } from "@useagentsio/host";
+import { readProjectDocument } from "@useagentsio/core";
 
 import type { GlobalFlags } from "../args.js";
 import type { OutputBuffer } from "../output.js";
@@ -17,6 +18,10 @@ export async function runMsg(
   }
 
   const projectRoot = resolveProjectDir(flags.dir);
+  const project = readProjectDocument(projectRoot);
+  if (project.defaults?.model !== undefined) {
+    out.log(`Using ${project.defaults.model.provider} / ${project.defaults.model.id}`);
+  }
   const host = await VibeKitHost.start({
     projectRoot,
     startInterfaces: false,

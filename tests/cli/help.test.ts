@@ -34,7 +34,7 @@ describe("cli help", () => {
   });
 
   it("prints command help for every shipped command", async () => {
-    for (const name of ["create", "msg", "start", "status", "migrate", "init", "add", "list", "diff", "update", "remove", "doctor"]) {
+    for (const name of ["create", "model", "msg", "start", "status", "migrate", "init", "add", "list", "diff", "update", "remove", "doctor"]) {
       const result = await runCli([name, "-h"]);
       expect(result.exitCode, name).toBe(0);
       expect(result.stdout, name).toContain(`Usage: vibekit ${name}`);

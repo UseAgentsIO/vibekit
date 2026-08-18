@@ -18,7 +18,7 @@ describe("create", () => {
       "--provider",
       "openai",
       "--model",
-      "gpt-4.1",
+      "gpt-5",
       "--interface",
       "terminal",
       "--yes",

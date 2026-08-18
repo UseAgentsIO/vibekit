@@ -33,6 +33,14 @@ export function parseEnvFile(text: string): Record<string, string> {
   return values;
 }
 
+export function readDeploymentSecrets(projectId: string): Record<string, string> {
+  const filePath = deploymentSecretsPath(projectId);
+  if (!fs.existsSync(filePath)) {
+    return {};
+  }
+  return parseEnvFile(fs.readFileSync(filePath, "utf8"));
+}
+
 export function writeDeploymentSecret(
   projectId: string,
   name: string,

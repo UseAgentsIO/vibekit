@@ -15,15 +15,33 @@ export function runMigrate(
 ): number {
   const projectRoot = resolveProjectDir(flags.dir);
   const current = readProjectDocument(projectRoot);
-  if (current.schemaVersion === 2 && current.host !== undefined) {
+  if (current.schemaVersion === 2 && current.host !== undefined && current.defaultAgent !== undefined) {
     out.log("Project is already schemaVersion 2.");
     return 0;
   }
+  const defaultAgent =
+    current.defaultAgent ??
+    (current.agentBindings.chief !== undefined
+      ? "chief"
+      : Object.keys(current.agentBindings)[0]);
   const defaults = createDefaultProject({
     slug: current.id.replace(/^project:/, ""),
     name: current.name,
-    defaultAgent: current.defaultAgent,
+    defaultAgent,
   });
+  const interfaceBindings =
+    current.interfaceBindings !== undefined && Object.keys(current.interfaceBindings).length > 0
+      ? current.interfaceBindings
+      : defaultAgent === undefined
+        ? {}
+        : {
+            "terminal-main": {
+              definition: "interface:terminal" as const,
+              enabled: true,
+              defaultAgent,
+              config: ".vibekit/config/interfaces/terminal-main.yaml",
+            },
+          };
   const next = {
     ...current,
     schemaVersion: 2 as const,
@@ -32,8 +50,8 @@ export function runMigrate(
       host: current.runtime?.host ?? "@useagentsio/host",
     },
     host: current.host ?? defaults.host,
-    interfaceBindings: current.interfaceBindings ?? {},
-    defaultAgent: current.defaultAgent,
+    interfaceBindings,
+    defaultAgent,
     state: {
       ...current.state,
       tracking: {
