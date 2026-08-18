@@ -157,10 +157,10 @@ VibeKit ships with an official, curated registry of modular Agents and Component
 
 | Package | Version | Description |
 | :--- | :--- | :--- |
-| **[`@useagentsio/cli`](packages/cli)** | `0.3.0` | CLI binary (`vibekit`): `create`, `msg`, `start`, `add`, `doctor`, etc. |
+| **[`@useagentsio/cli`](packages/cli)** | `0.3.1` | CLI binary (`vibekit`): `create`, `msg`, `start`, `add`, `doctor`, etc. |
 | **[`@useagentsio/host`](packages/host)** | `0.2.0` | Always-running Agent Host daemon (`vibekit-host`) |
 | **[`@useagentsio/core`](packages/core)** | `0.2.0` | JSON schemas, typed IDs, state drivers, and three-way diff engine |
-| **[`@useagentsio/pi`](packages/pi)** | `0.2.0` | Embedded Pi adapter, worktree isolation manager, and delegation runtime |
+| **[`@useagentsio/pi`](packages/pi)** | `0.2.1` | Embedded Pi adapter, worktree isolation manager, and delegation runtime |
 | **[`@useagentsio/interface-sdk`](packages/interface-sdk)** | `0.1.0` | Interface protocol and lifecycle contract |
 | **[`@useagentsio/interface-terminal`](packages/interface-terminal)** | `0.1.0` | Official Terminal interface implementation |
 

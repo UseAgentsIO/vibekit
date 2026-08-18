@@ -3,7 +3,7 @@
 CLI for initializing Projects, installing Modules, and validating composition. The binary name is `vibekit`.
 
 ```bash
-npm install -g --ignore-scripts @useagentsio/cli@0.3.0
+npm install -g --ignore-scripts @useagentsio/cli@0.3.1
 vibekit --help
 vibekit add --help
 ```
