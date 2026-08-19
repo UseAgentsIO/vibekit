@@ -11,6 +11,7 @@ import { runMigrate } from "./commands/migrate.js";
 import { runModel } from "./commands/model.js";
 import { runMsg } from "./commands/msg.js";
 import { runRemove } from "./commands/remove.js";
+import { runApprovePairing } from "./commands/approve-pairing.js";
 import { runStart } from "./commands/start.js";
 import { runStatus } from "./commands/status.js";
 import { runUpdate } from "./commands/update.js";
@@ -85,7 +86,10 @@ export async function runCli(argv: string[]): Promise<CliResult> {
         exitCode = await runInit(parsed.positionals, parsed.flags, out);
         break;
       case "add":
-        exitCode = runAdd(parsed.positionals, parsed.flags, out);
+        exitCode = await runAdd(parsed.positionals, parsed.flags, out);
+        break;
+      case "approve-pairing":
+        exitCode = runApprovePairing(parsed.positionals, parsed.flags, out);
         break;
       case "list":
         exitCode = runList(parsed.flags, out);

@@ -37,6 +37,7 @@ export class TelegramInterface implements RunningInterface {
   private readonly interfaceBinding: string;
   private readonly projectRoot: string;
   private readonly allowFrom: readonly string[];
+  private readonly pairingRequired: boolean;
   private readonly optionalStart: boolean;
   private readonly transport?: TelegramTransport;
   private readonly startError?: Error;
@@ -50,6 +51,7 @@ export class TelegramInterface implements RunningInterface {
     this.interfaceBinding = stringOption(config.interfaceBinding) ?? DEFAULT_BINDING;
     this.projectRoot = stringOption(config.projectRoot) ?? process.cwd();
     this.allowFrom = stringArray(config.allowFrom);
+    this.pairingRequired = config.pairingRequired === true;
     this.optionalStart = config.optionalStart === true;
     const prepared = prepareTransport(config, services);
     this.transport = prepared.transport;
@@ -174,7 +176,8 @@ export class TelegramInterface implements RunningInterface {
       threadId: message.message_thread_id !== undefined ? String(message.message_thread_id) : undefined,
     });
     this.remember(conversationKey, message.chat.id, message.message_thread_id);
-    const trusted = isTrustedSender(this.projectRoot, userId, this.allowFrom);
+    const trusted =
+      !this.pairingRequired || isTrustedSender(this.projectRoot, userId, this.allowFrom);
     if (!trusted) {
       await this.rejectUnpaired(userId, displayNameOf(from), message.chat.id, message.message_thread_id);
       return;
@@ -201,7 +204,8 @@ export class TelegramInterface implements RunningInterface {
       });
       this.remember(conversationKey, chatId, message?.message_thread_id);
     }
-    const trusted = isTrustedSender(this.projectRoot, userId, this.allowFrom);
+    const trusted =
+      !this.pairingRequired || isTrustedSender(this.projectRoot, userId, this.allowFrom);
     if (!trusted) {
       if (chatId !== undefined) {
         await this.rejectUnpaired(userId, displayNameOf(query.from), chatId, message?.message_thread_id);

@@ -5,13 +5,17 @@ import {
   createRepositoryState,
   decideApproval,
   isRuntimeIdOf,
+  inboundIsUntrusted,
+  loadInstalledProviders,
+  pairingRequired,
   readProjectDocument,
+  resolveEffectiveAuthority,
   type EventDocument,
   type ProjectDocument,
   type RepositoryState,
   type RuntimeId,
 } from "@useagentsio/core";
-import { loadAgentDocument, type CreatePiSession } from "@useagentsio/pi";
+import { createGuardedBuiltinTools, loadAgentDocument, type CreatePiSession } from "@useagentsio/pi";
 import type {
   HostOutput,
   InboundMessage,
@@ -232,6 +236,14 @@ export class VibeKitHost {
     if (!this.ready) {
       throw hostError("conflict", "host_not_ready", "Host is not accepting messages");
     }
+    if (pairingRequired(this.project) && message.sender.trusted !== true) {
+      throw hostError(
+        "permission_denied",
+        "pairing_required",
+        "Unknown Interface senders are denied until pairing is approved",
+        { sender: message.sender.id, interfaceBinding: message.interfaceBinding },
+      );
+    }
     if (this.seenEvents.has(message.eventId)) {
       return {
         conversationKey: message.conversationKey,
@@ -433,13 +445,39 @@ export class VibeKitHost {
       project: request.project,
       bindingName: conversation.agentBinding,
     });
-    const granted = agent.document.capabilities.requires;
-    const sessionContext = await optionalSessionContext(this.optionalState, granted);
-    const customTools = await bindInstalledTools(this.projectRoot, {
-      resolveSecret: (name) => this.secrets.resolve(name),
-      grantedCapabilities: granted,
-      scheduledRun: request.message.accountId === "schedule",
+    const scheduledRun = request.message.accountId === "schedule";
+    const authority = resolveEffectiveAuthority({
+      project: request.project,
+      agent: agent.document,
+      task,
+      installedProviders: loadInstalledProviders(this.projectRoot),
+      scheduledRun,
     });
+    const sessionContext = await optionalSessionContext(this.optionalState, authority.capabilities);
+    const approvals = () => this.state.approvals.list().map((r) => r.document);
+    const now = () => this.now();
+    const installedTools = await bindInstalledTools(this.projectRoot, {
+      resolveSecret: (name) => this.secrets.resolve(name),
+      grantedCapabilities: authority.capabilities,
+      scheduledRun,
+      allowedModuleIds: authority.toolModuleIds,
+      authority,
+      project: request.project,
+      task,
+      approvals,
+      now,
+    });
+    const customTools = [
+      ...createGuardedBuiltinTools({
+        cwd: this.projectRoot,
+        authority,
+        project: request.project,
+        task,
+        approvals,
+        now,
+      }),
+      ...installedTools,
+    ];
 
     if (this.createSession !== undefined) {
       const prepared = prepareAgentTurn({ ...request, task, sessionContext });
@@ -534,6 +572,8 @@ export class VibeKitHost {
         projectRoot: this.projectRoot,
         interfaceBinding: name,
         knownInterfaces: Object.keys(bindings),
+        pairingRequired: pairingRequired(this.project),
+        inboundUntrusted: inboundIsUntrusted(this.project),
       };
       const running = await startInterface(
         binding.definition,

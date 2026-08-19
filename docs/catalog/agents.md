@@ -1,6 +1,6 @@
 # Official Agents
 
-The official registry provides five core Agent recipes tailored for multi-agent software engineering and research workflows.
+The official registry provides six core Agent recipes tailored for multi-agent software engineering and personal-coordination workflows.
 
 To add or change an official Agent, follow [Module authoring](../contributing/module-authoring.md) and the root [CONTRIBUTING.md](../../CONTRIBUTING.md). Do not invent an `orchestrator` or `subagent` type — a Chief is an Agent with delegation permission.
 
@@ -13,7 +13,7 @@ The coordinator agent for high-level user interaction, planning, and task delega
 - **Module ID**: `agent:chief`
 - **Role**: Ingests user objectives, formulates execution plans, creates child tasks, and delegates to specialized workers.
 - **Key Capabilities**:
-  - `agent_delegate`: Authorized to dispatch tasks to `coder`, `reviewer`, `project-manager`, and `researcher`.
+  - `agent_delegate`: Authorized to dispatch tasks to `coder`, `reviewer`, `project-manager`, `researcher`, and `personal`.
   - Max delegation depth: `2`.
 - **Default Files**:
   - `.vibekit/agents/chief/agent.yaml`
@@ -74,3 +74,17 @@ Specialized in cited analysis, documentation synthesis, and architectural resear
 - **Guardrails**:
   - No write grants to source files.
   - Emits findings as structured Decision or Research documents.
+
+---
+
+## 6. Personal Agent (`agent:personal`)
+
+A life-admin worker for schedules, errands, and personal follow-ups.
+
+- **Module ID**: `agent:personal`
+- **Role**: Receives bounded personal Tasks from Chief and returns a plan or answer.
+- **Key Capabilities**:
+  - Read-only Project access (`source.read`).
+- **Guardrails**:
+  - **No `source.write`**.
+  - Stays in the personal domain; other specialties return to Chief.

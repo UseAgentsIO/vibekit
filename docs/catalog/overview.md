@@ -6,7 +6,7 @@ VibeKit ships with an **official, curated registry** of Agents and Components. C
 
 ## 1. Registry Architecture & Principles
 
-- **Official, Not a Marketplace**: V1 focuses on vetted, high-quality, secure modules directly maintained in the VibeKit monorepo. Third-party unvetted registries are intentionally excluded.
+- **Official is the default, not the definition of a Module**: V1 ships a vetted official catalog in the monorepo. Independently authored conforming Modules can be installed from a local/custom registry path (`--registry`). Hosted discovery, ratings, and a marketplace are not implemented.
 - **Honesty in Declarations**: Modules must honestly declare their runtime capabilities. A module cannot pretend to be an executable tool if it is only a configuration template.
 - **Embedded in CLI**: The official registry is packaged directly inside `@useagentsio/cli`, allowing instant offline installations.
 

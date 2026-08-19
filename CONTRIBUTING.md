@@ -34,7 +34,8 @@ Components → Agents → Project → Host
 - **Components** are atomic modules: providers, tools, skills, interfaces, policies, verifiers, state backends.
 - **Agents** are compositions of Components. A Chief is an Agent that may delegate. A Coder is an Agent configured for implementation. There is no `orchestrator` or `subagent` type.
 - **Projects** (`.vibekit/project.yaml`) are the composition boundary.
-- **The Host** (`vibekit-host`) is the running product. Interfaces are I/O adapters only.
+- **The Host** (`vibekit-host`) is the running product. Interfaces are I/O adapters only. Terminal is the default first-run Interface. Slack and Telegram are optional shipped Interfaces.
+- Canonical identity is the registry Module ID (`tool:browser`, `interface:telegram`). npm packages are optional `runtime.package` / `runtime.export` implementation artifacts.
 - **Pi** is the embedded model/tool engine. Users must not be told to launch the Pi TUI.
 - **Patterns** (Chief → Coder → Reviewer, and so on) are composition conventions, not a separate workflow language.
 
@@ -44,7 +45,7 @@ Installing a registry module copies files into the Project. Those files become l
 
 These are not style preferences. PRs that violate them will be rejected.
 
-1. **Official registry only.** Do not add a marketplace, third-party registries, or a graphical builder.
+1. **Official registry is the default curated catalog.** Independently authored Modules can be installed from a local/custom registry path (`--registry`, recorded as `registrySource` `official` | `local:<abs-path>`). Do not add hosted registries, search/discovery, ratings, a marketplace, or a graphical builder.
 2. **No `orchestrator`, `subagent`, or `Blocks` types.** Delegation is an Agent capability.
 3. **Do not fork Pi.** Consume it as the embedded engine.
 4. **Secrets are references only.** Store `{ name: OPENAI_API_KEY, source: environment }`. Never write secret values into YAML, JSON, State, Events, logs, fixtures, or examples.
@@ -121,7 +122,8 @@ Full contract, examples, and checklist: [Module authoring](docs/contributing/mod
 
 ## Out of scope unless maintainers ask
 
-- Third-party registries or a marketplace
+- Hosted registries, search/discovery, ratings, or a marketplace
+- Additional messaging platforms beyond the shipped Slack and Telegram Interfaces
 - `orchestrator` / `subagent` / `Blocks`
 - Forking or replacing Pi
 - Collapsing verification / acceptance / apply into “the Agent said it is done”

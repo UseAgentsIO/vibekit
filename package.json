@@ -12,7 +12,7 @@
     "test": "vitest run",
     "typecheck": "tsc -b",
     "registry:index": "tsx scripts/build-registry-index.ts",
-    "publish:packages": "pnpm --filter @useagentsio/core publish --access public --no-git-checks && pnpm --filter @useagentsio/interface-sdk publish --access public --no-git-checks && pnpm --filter @useagentsio/pi publish --access public --no-git-checks && pnpm --filter @useagentsio/interface-terminal publish --access public --no-git-checks && pnpm --filter @useagentsio/interface-http publish --access public --no-git-checks && pnpm --filter @useagentsio/interface-webhook publish --access public --no-git-checks && pnpm --filter @useagentsio/interface-schedule publish --access public --no-git-checks && pnpm --filter @useagentsio/interface-slack publish --access public --no-git-checks && pnpm --filter @useagentsio/interface-telegram publish --access public --no-git-checks && pnpm --filter @useagentsio/state-memory publish --access public --no-git-checks && pnpm --filter @useagentsio/tool-web publish --access public --no-git-checks && pnpm --filter @useagentsio/tool-browser publish --access public --no-git-checks && pnpm --filter @useagentsio/tool-github publish --access public --no-git-checks && pnpm --filter @useagentsio/tool-mcp publish --access public --no-git-checks && pnpm --filter @useagentsio/tool-process publish --access public --no-git-checks && pnpm --filter @useagentsio/verifier-schema publish --access public --no-git-checks && pnpm --filter @useagentsio/host publish --access public --no-git-checks && pnpm --filter @useagentsio/cli publish --access public --no-git-checks"
+    "publish:packages": "node scripts/publish-packages.mjs"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",

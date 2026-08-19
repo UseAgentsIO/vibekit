@@ -47,11 +47,10 @@ delegation:
 capabilityBindings:
   source.read: tool:filesystem
   source.write: tool:filesystem
-  command.execute: tool:execution
-  agent.delegate: tool:execution
   memory.read: tool:memory
   memory.write: tool:memory
-  schedule.manage: tool:scheduler
+  schedule.read: tool:scheduler
+  schedule.write: tool:scheduler
   web.fetch: tool:web
 
 policies:

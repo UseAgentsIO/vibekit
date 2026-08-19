@@ -116,6 +116,7 @@ async function startSlack(options: {
       transport: options.transport,
       allowFrom: options.allowFrom ?? [],
       optionalStart: options.optionalStart,
+      pairingRequired: true,
     },
     services,
   );

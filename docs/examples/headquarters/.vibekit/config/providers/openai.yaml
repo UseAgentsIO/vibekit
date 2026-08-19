@@ -1,4 +1,2 @@
-secrets:
-  - name: OPENAI_API_KEY
-    source: environment
-    required: true
+model: gpt-4.1
+

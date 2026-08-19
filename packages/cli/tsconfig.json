@@ -10,7 +10,6 @@
     { "path": "../core" },
     { "path": "../host" },
     { "path": "../interface-sdk" },
-    { "path": "../interface-terminal" },
     { "path": "../pi" }
   ]
 }

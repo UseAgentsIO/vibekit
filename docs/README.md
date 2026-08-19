@@ -4,6 +4,8 @@ Welcome to the official documentation for **VibeKit Agents**.
 
 VibeKit is an always-running **Agent Host** built on top of [Pi](https://github.com/earendil-works/pi). In VibeKit, **Components** are the pieces, **Agents** are useful compositions of those pieces, **Projects** are systems of Agents working against shared State, and the **Agent Host** executes them continuously.
 
+Registry Modules are the composition and distribution abstraction. npm packages are optional implementation artifacts referenced by Module runtime metadata. The official registry is the default curated source, not the definition of a valid Module. Independently authored Modules can use a local/custom registry path; this is not a marketplace.
+
 ---
 
 ## 📚 Documentation Map
@@ -50,7 +52,7 @@ Deep-dive into how VibeKit executes and safeguards agentic workflows:
 Master the `vibekit` CLI commands:
 
 - **[CLI Overview & Flags](cli/overview.md)**: Global options, exit codes, non-interactive mode (`--yes`), and environment controls.
-- **[Command Reference](cli/commands.md)**: Exhaustive guide to all 14 commands (`create`, `msg`, `start`, `status`, `model`, `init`, `add`, `list`, `diff`, `update`, `remove`, `doctor`, `migrate`, `help`).
+- **[Command Reference](cli/commands.md)**: `create` (including `--example headquarters`), `msg`, `start`, `approve-pairing`, composition commands, and `doctor`.
 - **[Project Lifecycle & Diagnostics](cli/project-lifecycle.md)**: Three-way diffs, atomic updates without `--force`, conflict handling, and `vibekit doctor`.
 
 ---
@@ -70,7 +72,7 @@ Configure and manage your project workspace:
 Explore the official modules shipped with VibeKit:
 
 - **[Registry Overview](catalog/overview.md)**: Official registry principles, `module.yaml` anatomy, and runtime honesty.
-- **[Official Agents](catalog/agents.md)**: Pre-configured agents: `agent:chief`, `agent:coder`, `agent:reviewer`, `agent:project-manager`, `agent:researcher`.
+- **[Official Agents](catalog/agents.md)**: Pre-configured agents: `agent:chief`, `agent:coder`, `agent:reviewer`, `agent:project-manager`, `agent:researcher`, `agent:personal`.
 - **[Official Components](catalog/components.md)**: Providers, tools, skills, interfaces (terminal plus optional HTTP/webhook/schedule/Slack/Telegram), policies, verifiers, and optional `state:memory`.
 
 ---
@@ -87,9 +89,9 @@ Embed VibeKit packages into your TypeScript applications:
 
 ---
 
-## 🧩 Patterns & Workflows
+## 🧩 Multi-Agent Patterns
 
-Documented multi-agent orchestration recipes:
+Documented composition and collaboration patterns (patterns are conventions, not an executable workflow engine or orchestration type):
 
 - **[Patterns Overview](patterns/README.md)**: Index of documented patterns.
 - **[Chief → Coder → Reviewer](patterns/chief-coder-reviewer.md)**: Delegated implementation with independent code review.

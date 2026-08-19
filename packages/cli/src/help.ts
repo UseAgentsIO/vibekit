@@ -40,13 +40,14 @@ export const COMMANDS: readonly CommandHelp[] = [
     usage: "create [options] [dir]",
     summary: "create a runnable Agent Project",
     description:
-      "Writes a schemaVersion 2 Project, installs the selected Agent, and configures a terminal Interface. Message the Agent with `vibekit msg`.",
+      "Writes a schemaVersion 2 Project, installs the selected Agents, and configures an Interface (terminal by default). Message the default Agent with `vibekit msg`.",
     arguments: [{ name: "dir", text: "folder to create (default: current directory)" }],
     options: [
-      { flags: "--agent <name>", text: "starter Agent (default: chief)" },
+      { flags: "--agent <name>", text: "Agent to include; repeatable (default: chief)" },
       { flags: "--provider <name>", text: "provider id (default: openai)" },
       { flags: "--model <id>", text: "model id (with --yes, defaults from the catalog if omitted)" },
-      { flags: "--interface <name>", text: "Interface (default: terminal)" },
+      { flags: "--interface <name>", text: "Interface (default: terminal; headquarters example uses telegram)" },
+      { flags: "--example <name>", text: "scaffold a named example (headquarters)" },
       { flags: "-y, --yes", text: "skip confirmation prompts" },
       { flags: "--dir <path>", text: "project directory" },
       { flags: "--registry <path>", text: "registry to read from" },
@@ -55,6 +56,8 @@ export const COMMANDS: readonly CommandHelp[] = [
     examples: [
       "$ vibekit create my-agent",
       "$ vibekit create my-agent --provider openai --model gpt-5 --yes",
+      "$ vibekit create my-app --agent chief --agent coder --agent reviewer --yes",
+      "$ vibekit create ~/headquarters --example headquarters --yes",
     ],
   },
   {
@@ -112,7 +115,7 @@ export const COMMANDS: readonly CommandHelp[] = [
     usage: "init [options] [dir]",
     summary: "initialize a Project and walk through setup",
     description:
-      "Writes .vibekit/project.yaml and installed.json, then walks through a keyboard-native setup. Arrow keys select, space toggles multi-select, esc goes back. Pass flags to skip the wizard, or --defaults for an empty Project.",
+      "Writes .vibekit/project.yaml and installed.json, then walks through a keyboard-native setup. Choose Agents, a default Agent, Interface(s), and project Policies. Installing an Agent pulls its required Skills, Tools, and other Components. Pass flags to skip the wizard, or --defaults for an empty Project.",
     arguments: [
       { name: "dir", text: "folder to initialize (default: current directory)" },
     ],
@@ -121,11 +124,11 @@ export const COMMANDS: readonly CommandHelp[] = [
       { flags: "-y, --yes", text: "same as --defaults unless setup flags are passed" },
       { flags: "--provider <name>", text: "provider id" },
       { flags: "--model <id>", text: "model id (requires --provider)" },
-      { flags: "--agent <name>", text: "Agent to install" },
-      { flags: "--interface <name>", text: "Interface to install" },
-      { flags: "--skill <name>", text: "Skill to install; repeatable" },
-      { flags: "--policy <name>", text: "Policy to install; repeatable" },
-      { flags: "--tool <name>", text: "Tool to install; repeatable" },
+      { flags: "--agent <name>", text: "Agent to include; repeatable. Omit to initialize without an Agent" },
+      { flags: "--interface <name>", text: "Interface to install (repeatable via the wizard; flag installs one)" },
+      { flags: "--skill <name>", text: "install a Skill explicitly; not part of the primary wizard; repeatable" },
+      { flags: "--policy <name>", text: "Project Policy to install; repeatable" },
+      { flags: "--tool <name>", text: "install a Tool explicitly; not part of the primary wizard; repeatable" },
       { flags: "--verbose", text: "show machine ids in the summary" },
       { flags: "--show-files", text: "list created file paths" },
       { flags: "--registry <path>", text: "registry to read from (default: official)" },
@@ -135,13 +138,13 @@ export const COMMANDS: readonly CommandHelp[] = [
       "$ vibekit init",
       "$ vibekit init ./my-app",
       "$ vibekit init --defaults",
-      "$ vibekit init --provider openai --model gpt-5 --agent reviewer --interface terminal --skill software-development --tool filesystem",
+      "$ vibekit init --provider openai --model gpt-5 --agent chief --agent coder --agent reviewer --interface terminal --policy least-privilege --policy require-verification",
     ],
   },
   {
     name: "add",
     usage: "add [options] <type> <name>",
-    summary: "add a Component or Agent from the official registry",
+    summary: "add a Component or Agent from the selected registry",
     description:
       "Resolves required dependencies, shows requested permissions, then copies the files into your project. You own everything that is added.",
     arguments: [
@@ -211,6 +214,14 @@ export const COMMANDS: readonly CommandHelp[] = [
     ],
     options: COMMAND_OPTIONS,
     examples: ["$ vibekit remove skill:research --yes"],
+  },
+  {
+    name: "approve-pairing",
+    usage: "approve-pairing [options] <code>",
+    summary: "approve a Telegram pairing code from an unknown sender",
+    arguments: [{ name: "code", text: "8-character pairing code from the bot" }],
+    options: READ_OPTIONS,
+    examples: ["$ vibekit approve-pairing 7K3M9P2Q"],
   },
   {
     name: "doctor",

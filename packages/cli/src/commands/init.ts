@@ -13,6 +13,8 @@ import {
   writeProjectDocument,
 } from "@useagentsio/core";
 
+import { publishedRange } from "../published-deps.js";
+
 import { hasSetupFlags, type GlobalFlags } from "../args.js";
 import {
   formatModelSummary,
@@ -29,6 +31,7 @@ import {
   slugify,
 } from "../paths.js";
 import { canPrompt } from "../prompt.js";
+import { resolveProjectAgents } from "../setup-agents.js";
 import {
   SETUP_AGENTS,
   SETUP_INTERFACES,
@@ -36,8 +39,15 @@ import {
   SETUP_SKILLS,
   SETUP_TOOLS,
   asMenuOptions,
+  delegationContractsFromRegistry,
+  deriveDelegation,
+  inferDefaultAgent,
   labelFor,
   labelsFor,
+  normalizeAgentIds,
+  projectPolicyItems,
+  setupItemsFromRegistry,
+  type SetupItem,
 } from "../setup-catalog.js";
 import {
   BACK,
@@ -46,7 +56,6 @@ import {
   printCompletion,
   printIntro,
   resolveMultiSelect,
-  resolveSelect,
   runWizard,
   submit,
   symbols,
@@ -54,16 +63,25 @@ import {
 } from "../ui/index.js";
 import { clearRenderedLines } from "../ui/theme.js";
 import { printDoctor } from "./doctor.js";
-import { installOfficialModule } from "./install-module.js";
+import { installRegistryModule } from "./install-module.js";
 
 interface SetupPlan {
   readonly provider?: string;
   readonly model?: SelectedModel;
-  readonly agent?: string;
-  readonly iface?: string;
+  readonly agents: readonly string[];
+  readonly defaultAgent?: string;
+  readonly ifaces: readonly string[];
   readonly skills: readonly string[];
   readonly policies: readonly string[];
   readonly tools: readonly string[];
+}
+
+interface SetupCatalog {
+  readonly agents: readonly SetupItem[];
+  readonly interfaces: readonly SetupItem[];
+  readonly policies: readonly SetupItem[];
+  readonly skills: readonly SetupItem[];
+  readonly tools: readonly SetupItem[];
 }
 
 export async function runInit(
@@ -107,7 +125,7 @@ export async function runInit(
 
   const interactive = canPrompt() && !flags.yes && !flags.defaults && !setupFlags;
   if (interactive) {
-    printIntro("Configure this project", "Choose components now — you can change them later.");
+    printIntro("Configure this project", "Choose your project's agents and runtime.");
   }
 
   const plan = await collectSetup(target, flags, out, {
@@ -119,11 +137,12 @@ export async function runInit(
     return finishDoctor(target, flags, out);
   }
 
+  const catalog = setupCatalog(tryRegistry(flags.registry));
   const installed = applySetup(target, flags, plan);
   const files = uniqueExisting([...created, ...changed, ...installed]);
   printCompletion(out, {
     title: existed ? "Updated VibeKit project" : "Initialized VibeKit Project",
-    lines: summaryLines(plan, flags.verbose),
+    lines: summaryLines(plan, flags.verbose, catalog),
     fileCount: files.length,
     files,
     showFiles,
@@ -154,20 +173,24 @@ async function collectSetup(
         flags.provider !== undefined && flags.model !== undefined
           ? { provider: flags.provider, id: flags.model, name: flags.model }
           : undefined,
-      agent: flags.agent,
-      iface: flags.interface,
+      agents: normalizeAgentIds(flags.agents),
+      defaultAgent: inferDefaultAgent(flags.agents),
+      ifaces: flags.interface === undefined ? [] : [flags.interface],
       skills: flags.skills,
       policies: flags.policies,
       tools: flags.tools,
     };
   }
 
+  const registry = tryRegistry(flags.registry);
+  const catalog = setupCatalog(registry);
   const project = readProjectDocument(target);
   const empty: SetupPlan = {
     provider: flags.provider,
     model: undefined,
-    agent: flags.agent,
-    iface: flags.interface,
+    agents: normalizeAgentIds(flags.agents),
+    defaultAgent: inferDefaultAgent(flags.agents),
+    ifaces: flags.interface === undefined ? [] : [flags.interface],
     skills: flags.skills,
     policies: flags.policies,
     tools: flags.tools,
@@ -181,6 +204,7 @@ async function collectSetup(
           value: flags.provider,
           interactive: true,
           verbose: input.verbose,
+          registry,
         });
         if (provider.status !== "submit") {
           return BACK;
@@ -198,6 +222,7 @@ async function collectSetup(
           model: flags.model,
           yes: false,
           verbose: input.verbose,
+          registry,
         });
         if (model.status !== "submit") {
           return BACK;
@@ -205,76 +230,60 @@ async function collectSetup(
         return submit({ ...state, model: model.value });
       },
       async (state) => {
-        const agent = await resolveSelect({
-          message: "Agent",
-          value: flags.agent,
+        const selected = await resolveProjectAgents({
+          values: flags.agents.length > 0 ? flags.agents : undefined,
+          required: false,
           interactive: true,
-          skippable: true,
-          searchable: true,
-          options: asMenuOptions(SETUP_AGENTS),
+          items: catalog.agents,
         });
-        if (agent.status !== "submit") {
+        if (selected.status !== "submit") {
           return BACK;
         }
-        return submit({ ...state, agent: agent.value });
+        return submit(
+          {
+            ...state,
+            agents: selected.value.agents,
+            defaultAgent: selected.value.defaultAgent,
+          },
+          selected.lines ?? 1,
+        );
       },
       async (state) => {
-        const iface = await resolveSelect({
-          message: "Interface",
-          value: flags.interface,
+        const selected = await resolveMultiSelect({
+          message: "Interfaces",
+          description: "How people and systems send messages into this project.",
+          values: flags.interface === undefined ? undefined : [flags.interface],
           interactive: true,
-          skippable: true,
-          searchable: false,
-          options: asMenuOptions(SETUP_INTERFACES),
+          noneLabel: "None",
+          hintBelow: true,
+          options: asMenuOptions(catalog.interfaces),
         });
-        if (iface.status !== "submit") {
+        if (selected.status !== "submit") {
           return BACK;
         }
-        return submit({ ...state, iface: iface.value });
+        return submit({ ...state, ifaces: selected.value });
       },
       async (state) => {
-        const skills = await resolveMultiSelect({
-          message: "Skills",
-          values: flags.skills.length > 0 ? flags.skills : undefined,
-          interactive: true,
-          options: asMenuOptions(SETUP_SKILLS),
-        });
-        if (skills.status !== "submit") {
-          return BACK;
-        }
-        return submit({ ...state, skills: skills.value });
-      },
-      async (state) => {
-        const policies = await resolveMultiSelect({
+        const selected = await resolveMultiSelect({
           message: "Policies",
+          description: "Project-wide safety and governance rules.",
           values: flags.policies.length > 0 ? flags.policies : undefined,
           interactive: true,
           noneLabel: "None",
-          options: asMenuOptions(SETUP_POLICIES),
+          hintBelow: true,
+          options: asMenuOptions(catalog.policies),
         });
-        if (policies.status !== "submit") {
+        if (selected.status !== "submit") {
           return BACK;
         }
-        return submit({ ...state, policies: policies.value });
+        return submit({ ...state, policies: selected.value });
       },
       async (state) => {
-        const tools = await resolveMultiSelect({
-          message: "Tools",
-          values: flags.tools.length > 0 ? flags.tools : undefined,
-          interactive: true,
-          options: asMenuOptions(SETUP_TOOLS),
-        });
-        if (tools.status !== "submit") {
-          return BACK;
-        }
-        return submit({ ...state, tools: tools.value });
-      },
-      async (state) => {
-        const rows = reviewRows(state, input.verbose);
+        const rows = reviewRows(state, input.verbose, catalog);
         writeln("");
         writeln(`${symbols.open}  Ready to create?`);
         for (const row of rows) {
-          writeln(`   ${row.label.padEnd(12)}${row.value}`);
+          writeln(`   ${row.label.padEnd(14)}${row.value}`);
         }
         writeln("");
         const tableLines = 3 + rows.length;
@@ -297,7 +306,7 @@ function applySetup(target: string, flags: GlobalFlags, plan: SetupPlan): string
   const created: string[] = [];
   if (plan.provider !== undefined) {
     created.push(
-      ...installOfficialModule({
+      ...installRegistryModule({
         projectRoot: target,
         type: "provider",
         name: plan.provider,
@@ -316,42 +325,57 @@ function applySetup(target: string, flags: GlobalFlags, plan: SetupPlan): string
     }
   }
 
-  if (plan.agent !== undefined) {
-    created.push(
-      ...installOfficialModule({
-        projectRoot: target,
-        type: "agent",
-        name: plan.agent,
-        registry: flags.registry,
-      }).created,
-    );
+  if (plan.agents.length > 0) {
+    for (const agent of plan.agents) {
+      created.push(
+        ...installRegistryModule({
+          projectRoot: target,
+          type: "agent",
+          name: agent,
+          registry: flags.registry,
+        }).created,
+      );
+    }
+    const current = readProjectDocument(target);
     writeProjectDocument(target, {
-      ...readProjectDocument(target),
-      defaultAgent: plan.agent,
+      ...current,
+      defaultAgent: plan.defaultAgent,
+      delegation: {
+        ...current.delegation,
+        ...deriveDelegation(
+          plan.agents,
+          (() => {
+            const registry = tryRegistry(flags.registry);
+            return registry === undefined
+              ? undefined
+              : delegationContractsFromRegistry(registry, plan.agents);
+          })(),
+        ),
+      },
     });
   }
 
-  if (plan.iface !== undefined) {
+  for (const iface of plan.ifaces) {
     created.push(
-      ...installOfficialModule({
+      ...installRegistryModule({
         projectRoot: target,
         type: "interface",
-        name: plan.iface,
+        name: iface,
         registry: flags.registry,
       }).created,
     );
     const current = readProjectDocument(target);
-    const defaultAgent = current.defaultAgent ?? plan.agent ?? "chief";
-    writeInterfaceConfig(target, plan.iface);
+    const defaultAgent = current.defaultAgent ?? plan.defaultAgent ?? "chief";
+    writeInterfaceConfig(target, iface);
     writeProjectDocument(target, {
       ...current,
       interfaceBindings: {
         ...current.interfaceBindings,
-        [`${plan.iface}-main`]: {
-          definition: `interface:${plan.iface}`,
+        [`${iface}-main`]: {
+          definition: `interface:${iface}`,
           enabled: true,
           defaultAgent,
-          config: `.vibekit/config/interfaces/${plan.iface}-main.yaml`,
+          config: `.vibekit/config/interfaces/${iface}.yaml`,
         },
       },
     });
@@ -359,7 +383,7 @@ function applySetup(target: string, flags: GlobalFlags, plan: SetupPlan): string
 
   for (const skill of plan.skills) {
     created.push(
-      ...installOfficialModule({
+      ...installRegistryModule({
         projectRoot: target,
         type: "skill",
         name: skill,
@@ -369,7 +393,7 @@ function applySetup(target: string, flags: GlobalFlags, plan: SetupPlan): string
   }
   for (const policy of plan.policies) {
     created.push(
-      ...installOfficialModule({
+      ...installRegistryModule({
         projectRoot: target,
         type: "policy",
         name: policy,
@@ -379,7 +403,7 @@ function applySetup(target: string, flags: GlobalFlags, plan: SetupPlan): string
   }
   for (const tool of plan.tools) {
     created.push(
-      ...installOfficialModule({
+      ...installRegistryModule({
         projectRoot: target,
         type: "tool",
         name: tool,
@@ -390,11 +414,22 @@ function applySetup(target: string, flags: GlobalFlags, plan: SetupPlan): string
   return created;
 }
 
+function setupCatalog(registry: ReturnType<typeof tryRegistry>): SetupCatalog {
+  return {
+    agents: setupItemsFromRegistry(SETUP_AGENTS, registry, "agent"),
+    interfaces: setupItemsFromRegistry(SETUP_INTERFACES, registry, "interface"),
+    policies: projectPolicyItems(setupItemsFromRegistry(SETUP_POLICIES, registry, "policy")),
+    skills: setupItemsFromRegistry(SETUP_SKILLS, registry, "skill"),
+    tools: setupItemsFromRegistry(SETUP_TOOLS, registry, "tool"),
+  };
+}
+
 function reviewRows(
   plan: SetupPlan,
   verbose: boolean,
+  catalog: SetupCatalog,
 ): Array<{ label: string; value: string }> {
-  return [
+  const rows: Array<{ label: string; value: string }> = [
     {
       label: "Provider",
       value:
@@ -413,27 +448,46 @@ function reviewRows(
             ? `${plan.model.provider} / ${plan.model.id}`
             : formatModelSummary(plan.model, providerDisplayName(plan.model.provider)),
     },
-    { label: "Agent", value: verbose ? plan.agent ?? "None" : labelFor(SETUP_AGENTS, plan.agent) },
     {
-      label: "Interface",
-      value: verbose ? plan.iface ?? "None" : labelFor(SETUP_INTERFACES, plan.iface),
+      label: "Agents",
+      value: verbose ? joinOrNone(plan.agents) : labelsFor(catalog.agents, plan.agents),
     },
+  ];
+  if (plan.defaultAgent !== undefined) {
+    rows.push({
+      label: "Default agent",
+      value: verbose ? plan.defaultAgent : labelFor(catalog.agents, plan.defaultAgent),
+    });
+  }
+  rows.push(
     {
-      label: "Skills",
-      value: verbose ? joinOrNone(plan.skills) : labelsFor(SETUP_SKILLS, plan.skills),
+      label: "Interfaces",
+      value: verbose ? joinOrNone(plan.ifaces) : labelsFor(catalog.interfaces, plan.ifaces),
     },
     {
       label: "Policies",
-      value: verbose ? joinOrNone(plan.policies) : labelsFor(SETUP_POLICIES, plan.policies),
+      value: verbose ? joinOrNone(plan.policies) : labelsFor(catalog.policies, plan.policies),
     },
-    { label: "Tools", value: verbose ? joinOrNone(plan.tools) : labelsFor(SETUP_TOOLS, plan.tools) },
-  ];
+  );
+  if (plan.skills.length > 0) {
+    rows.push({
+      label: "Skills",
+      value: verbose ? joinOrNone(plan.skills) : labelsFor(catalog.skills, plan.skills),
+    });
+  }
+  if (plan.tools.length > 0) {
+    rows.push({
+      label: "Tools",
+      value: verbose ? joinOrNone(plan.tools) : labelsFor(catalog.tools, plan.tools),
+    });
+  }
+  return rows;
 }
 
-function summaryLines(plan: SetupPlan, verbose: boolean): string[] {
+function summaryLines(plan: SetupPlan, verbose: boolean, catalog: SetupCatalog): string[] {
   const lines: string[] = [];
-  if (plan.agent !== undefined) {
-    lines.push(verbose ? plan.agent : labelFor(SETUP_AGENTS, plan.agent));
+  if (plan.agents.length > 0) {
+    lines.push(verbose ? plan.agents.join(", ") : labelsFor(catalog.agents, plan.agents));
   }
   if (plan.model !== undefined) {
     lines.push(
@@ -445,9 +499,18 @@ function summaryLines(plan: SetupPlan, verbose: boolean): string[] {
     lines.push(verbose ? plan.provider : providerDisplayName(plan.provider));
   }
   const extras = [
-    plan.iface === undefined ? undefined : verbose ? plan.iface : labelFor(SETUP_INTERFACES, plan.iface),
-    ...(verbose ? [...plan.skills] : plan.skills.map((id) => labelFor(SETUP_SKILLS, id))),
-    ...(verbose ? [...plan.tools] : plan.tools.map((id) => labelFor(SETUP_TOOLS, id))),
+    plan.ifaces.length === 0
+      ? undefined
+      : verbose
+        ? plan.ifaces.join(", ")
+        : labelsFor(catalog.interfaces, plan.ifaces),
+    plan.policies.length === 0
+      ? undefined
+      : verbose
+        ? plan.policies.join(", ")
+        : labelsFor(catalog.policies, plan.policies),
+    ...(verbose ? [...plan.skills] : plan.skills.map((id) => labelFor(catalog.skills, id))),
+    ...(verbose ? [...plan.tools] : plan.tools.map((id) => labelFor(catalog.tools, id))),
   ].filter((item): item is string => item !== undefined && item !== "None");
   if (extras.length > 0) {
     lines.push(extras.join(" · "));
@@ -508,10 +571,11 @@ function writeProjectSkeleton(
 }
 
 function writeInterfaceConfig(target: string, iface: string): void {
-  const filePath = path.join(target, ".vibekit/config/interfaces", `${iface}-main.yaml`);
+  const filePath = path.join(target, ".vibekit/config/interfaces", `${iface}.yaml`);
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, `schemaVersion: 1\nenabled: true\nmode: local\n`, "utf8");
+    const body = iface === "terminal" ? "mode: print\n" : "{}\n";
+    fs.writeFileSync(filePath, body, "utf8");
   }
 }
 
@@ -567,11 +631,11 @@ function recordWorkspaceDependencies(target: string, changed: string[]): void {
   const deps = raw.dependencies ?? {};
   let mutated = false;
   if (!deps["@useagentsio/core"] && !raw.devDependencies?.["@useagentsio/core"]) {
-    deps["@useagentsio/core"] = "workspace:*";
+    deps["@useagentsio/core"] = publishedRange("@useagentsio/core");
     mutated = true;
   }
   if (!deps["@useagentsio/pi"] && !raw.devDependencies?.["@useagentsio/pi"]) {
-    deps["@useagentsio/pi"] = "workspace:*";
+    deps["@useagentsio/pi"] = publishedRange("@useagentsio/pi");
     mutated = true;
   }
   if (!mutated) {

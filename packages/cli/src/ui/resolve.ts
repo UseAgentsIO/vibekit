@@ -13,12 +13,15 @@ export function isInteractive(): boolean {
 
 export async function resolveSelect<T>(input: {
   readonly message: string;
+  readonly description?: string;
   readonly options: ReadonlyArray<MenuOption<T>>;
   readonly value?: T;
   readonly skippable?: boolean;
   readonly noneLabel?: string;
   readonly interactive?: boolean;
   readonly searchable?: SearchMode;
+  readonly initial?: number;
+  readonly hintBelow?: boolean;
   readonly manual?: boolean | { readonly parse?: (raw: string) => T | undefined };
   readonly equals?: (left: T, right: T) => boolean;
 }): Promise<PromptResult<T | undefined>> {
@@ -43,21 +46,28 @@ export async function resolveSelect<T>(input: {
   }
   return select({
     message: input.message,
+    description: input.description,
     options: input.options,
     skippable: input.skippable,
     noneLabel: input.noneLabel,
     searchable: input.searchable,
+    initial: input.initial,
+    hintBelow: input.hintBelow,
     manual: input.manual,
   });
 }
 
 export async function resolveMultiSelect<T>(input: {
   readonly message: string;
+  readonly description?: string;
   readonly options: ReadonlyArray<MenuOption<T>>;
   readonly values?: readonly T[];
   readonly interactive?: boolean;
   readonly searchable?: SearchMode;
+  readonly initial?: readonly T[];
+  readonly min?: number;
   readonly noneLabel?: string;
+  readonly hintBelow?: boolean;
 }): Promise<PromptResult<T[]>> {
   if (input.values !== undefined) {
     const chosen = input.options.filter((option) => input.values?.includes(option.value));
@@ -75,8 +85,12 @@ export async function resolveMultiSelect<T>(input: {
   }
   return multiselect({
     message: input.message,
+    description: input.description,
     options: input.options,
     searchable: input.searchable,
+    initial: input.initial,
+    min: input.min,
     noneLabel: input.noneLabel,
+    hintBelow: input.hintBelow,
   });
 }

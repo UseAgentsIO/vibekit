@@ -11,11 +11,11 @@ import {
 
 import type { GlobalFlags } from "../args.js";
 import type { OutputBuffer } from "../output.js";
-import { resolveProjectDir, resolveRegistry } from "../paths.js";
+import { resolveProjectDir, resolveRegistrySelection } from "../paths.js";
 
 export function runList(flags: GlobalFlags, out: OutputBuffer): number {
   const projectRoot = resolveProjectDir(flags.dir);
-  const registry = resolveRegistry(flags.registry);
+  const { registry, source } = resolveRegistrySelection(flags.registry);
   const available = listRegistryModules(registry);
   let installed: readonly InstalledModuleDocument[] = [];
   let configuredIds = new Set<string>();
@@ -37,7 +37,7 @@ export function runList(flags: GlobalFlags, out: OutputBuffer): number {
     rows.set(`${entry.id}@${entry.version}`, {
       id: entry.id,
       version: entry.version,
-      source: "official",
+      source,
       installed: "no",
       configured: "no",
       available: "yes",

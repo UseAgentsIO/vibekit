@@ -1,4 +1,4 @@
-/** GitHub tool stub. Runtime enforcement is implemented in a later phase. */
+/** GitHub tool definition. */
 export const githubTool = {
   name: "github",
   capabilities: [

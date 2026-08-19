@@ -120,6 +120,7 @@ async function startTelegram(options: {
       projectRoot: options.projectRoot,
       transport: options.transport,
       allowFrom: options.allowFrom ?? [],
+      pairingRequired: true,
     },
     recorded.services,
   );

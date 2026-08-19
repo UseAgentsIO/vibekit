@@ -1,12 +1,3 @@
-import {
-  defaultRegistryRoot,
-  getInstalledModule,
-  isModuleId,
-  loadRegistry,
-  readInstalledManifest,
-  resolveModule,
-  type ModuleRuntime,
-} from "@useagentsio/core";
 import type {
   InterfaceFactory,
   InterfaceServices,
@@ -14,18 +5,13 @@ import type {
 } from "@useagentsio/interface-sdk";
 
 import { hostError } from "./errors.js";
-import { importProjectModule } from "./project-import.js";
+import {
+  importRuntimeExport,
+  readInstalledRecord,
+  resolveExecutableRuntime,
+} from "./runtime-loader.js";
 
 export type InterfaceFactoryMap = Readonly<Record<string, InterfaceFactory>>;
-
-const OFFICIAL_INTERFACE_RUNTIME: Readonly<
-  Record<string, { readonly package: string; readonly export: string }>
-> = {
-  "interface:terminal": {
-    package: "@useagentsio/interface-terminal",
-    export: "createTerminalInterface",
-  },
-};
 
 export async function loadInterfaceFactory(
   definition: string,
@@ -36,23 +22,40 @@ export async function loadInterfaceFactory(
     return factories[definition];
   }
 
-  for (const runtime of interfaceRuntimeCandidates(definition, projectRoot)) {
-    const factory = await importInterfaceFactory(
-      runtime.package,
-      runtime.export,
-      projectRoot,
+  if (projectRoot === undefined) {
+    throw hostError(
+      "unavailable",
+      "interface_unsupported",
+      `No executable Interface factory is registered for ${definition}`,
+      { definition },
     );
-    if (factory !== undefined) {
-      return factory;
-    }
   }
 
-  throw hostError(
-    "unavailable",
-    "interface_unsupported",
-    `No executable Interface factory is registered for ${definition}`,
-    { definition },
-  );
+  const record = readInstalledRecord(projectRoot, definition);
+  const executable = resolveExecutableRuntime(record, {
+    expectedType: "interface",
+    executableKinds: ["interface"],
+  });
+  if (executable === undefined) {
+    throw hostError(
+      "unavailable",
+      "interface_not_executable",
+      `${definition} is installed but is not executable`,
+      { definition, version: record.version, registrySource: record.registrySource },
+    );
+  }
+
+  const exported = await importRuntimeExport(projectRoot, executable.package, executable.export);
+  const factory = asInterfaceFactory(exported);
+  if (factory === undefined) {
+    throw hostError(
+      "unavailable",
+      "interface_export_invalid",
+      `${executable.package} export ${executable.export} is not an Interface factory`,
+      { definition, package: executable.package, export: executable.export },
+    );
+  }
+  return factory;
 }
 
 export async function startInterface(
@@ -64,89 +67,6 @@ export async function startInterface(
 ): Promise<RunningInterface> {
   const factory = await loadInterfaceFactory(definition, factories, projectRoot);
   return factory.create(config, services);
-}
-
-function interfaceRuntimeCandidates(
-  definition: string,
-  projectRoot?: string,
-): ReadonlyArray<{ readonly package: string; readonly export: string }> {
-  const candidates: Array<{ readonly package: string; readonly export: string }> = [];
-  const fromRegistry = runtimeFromOfficialRegistry(definition, projectRoot);
-  if (fromRegistry !== undefined) {
-    candidates.push(fromRegistry);
-  }
-  const fallback = OFFICIAL_INTERFACE_RUNTIME[definition];
-  if (
-    fallback !== undefined &&
-    (fromRegistry === undefined ||
-      fromRegistry.package !== fallback.package ||
-      fromRegistry.export !== fallback.export)
-  ) {
-    candidates.push(fallback);
-  }
-  return candidates;
-}
-
-function runtimeFromOfficialRegistry(
-  definition: string,
-  projectRoot?: string,
-): { readonly package: string; readonly export: string } | undefined {
-  try {
-    const version = installedModuleVersion(definition, projectRoot);
-    const loaded = resolveModule(loadRegistry(defaultRegistryRoot()), definition, version);
-    if (loaded.document.type === "agent") {
-      return undefined;
-    }
-    return packageExportOf(loaded.document.runtime);
-  } catch {
-    return undefined;
-  }
-}
-
-function installedModuleVersion(definition: string, projectRoot?: string): string | undefined {
-  if (projectRoot === undefined || !isModuleId(definition)) {
-    return undefined;
-  }
-  try {
-    return getInstalledModule(readInstalledManifest(projectRoot), definition)?.version;
-  } catch {
-    return undefined;
-  }
-}
-
-function packageExportOf(
-  runtime: ModuleRuntime | undefined,
-): { readonly package: string; readonly export: string } | undefined {
-  if (
-    runtime?.kind !== "interface" ||
-    runtime.package === undefined ||
-    runtime.package.length === 0 ||
-    runtime.export === undefined ||
-    runtime.export.length === 0
-  ) {
-    return undefined;
-  }
-  return { package: runtime.package, export: runtime.export };
-}
-
-async function importInterfaceFactory(
-  packageName: string,
-  exportName: string,
-  projectRoot?: string,
-): Promise<InterfaceFactory | undefined> {
-  if (projectRoot !== undefined) {
-    const fromProject = await importProjectModule(projectRoot, packageName);
-    const factory = asInterfaceFactory(fromProject?.[exportName]);
-    if (factory !== undefined) {
-      return factory;
-    }
-  }
-  try {
-    const mod = (await import(packageName)) as Record<string, unknown>;
-    return asInterfaceFactory(mod[exportName]);
-  } catch {
-    return undefined;
-  }
 }
 
 function asInterfaceFactory(exported: unknown): InterfaceFactory | undefined {

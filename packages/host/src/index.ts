@@ -19,5 +19,7 @@ export {
   optionalSessionContext,
   type OptionalStateAdapter,
 } from "./state-binder.js";
+export { loadInterfaceFactory, startInterface } from "./interface-loader.js";
+export type { InterfaceFactoryMap } from "./interface-loader.js";
 export { importProjectModule } from "./project-import.js";
 export type { HostHealth } from "./health.js";

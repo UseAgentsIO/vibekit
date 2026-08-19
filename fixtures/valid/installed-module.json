@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "tool:github",
   "version": "1.0.0",
-  "registrySource": "https://github.com/vibekit/registry",
+  "registrySource": "official",
   "sourceRevision": "a1b2c3d4e5f6789012345678901234567890abcd",
   "integrityChecksum": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
   "installedAt": "2026-01-15T12:00:00.000Z",

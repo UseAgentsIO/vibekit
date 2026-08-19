@@ -55,4 +55,4 @@ runtime:
 
 packages:
   dependencies:
-    "@useagentsio/interface-telegram": "^0.1.0"
+    "@useagentsio/interface-telegram": "^0.1.1"

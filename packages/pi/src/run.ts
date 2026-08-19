@@ -3,6 +3,7 @@ import path from "node:path";
 import {
   createRepositoryState,
   isVibeKitError,
+  type ApprovalDocument,
   type ClaimRecord,
   type DecisionDocument,
   type EventDocument,
@@ -58,6 +59,8 @@ import {
   assertTaskMatchesProject,
   resolveTaskDocument,
 } from "./task.js";
+import { createGuardedBuiltinTools, guardCustomTool } from "./builtin-guard.js";
+import { bindInstalledProjectTools } from "./installed-tools.js";
 import { AGENT_DELEGATE_TOOL, registerDelegateTool } from "./tools.js";
 import {
   createWorktree,
@@ -85,7 +88,9 @@ export interface IsolatedRunInput {
   readonly runId?: RuntimeId;
   readonly signal?: AbortSignal;
   readonly now?: Date;
-  readonly approvalGranted?: boolean;
+  readonly scheduledRun?: boolean;
+  readonly approvals?: readonly ApprovalDocument[];
+  readonly allowUnfilteredCustomTools?: boolean;
   readonly createSession?: CreatePiSession;
   readonly state?: RepositoryState;
   readonly pool?: ConcurrencyPool;
@@ -131,7 +136,8 @@ export interface DelegationExecuteInput extends DelegationGraphContext {
   readonly extraEnv?: Readonly<Record<string, string>>;
   readonly signal?: AbortSignal;
   readonly now?: Date;
-  readonly approvalGranted?: boolean;
+  readonly scheduledRun?: boolean;
+  readonly approvals?: readonly ApprovalDocument[];
   readonly componentSecrets?: readonly SecretReference[];
   readonly taskModel?: ModelRef;
   readonly projectAgentModel?: ModelRef;
@@ -192,7 +198,8 @@ export function prepareIsolatedRun(input: IsolatedRunInput): PreparedRun {
     projectAgentModel: input.projectAgentModel,
     componentSecrets: input.componentSecrets,
     cwd: input.cwd,
-    approvalGranted: input.approvalGranted,
+    scheduledRun: input.scheduledRun === true,
+    approvals: input.approvals,
   });
 
   const context = assembleBoundedContext({
@@ -296,10 +303,11 @@ export async function runIsolated(input: IsolatedRunInput): Promise<IsolatedRunO
       return finish("cancelled", prepared, events, assistantText, now(), ["run-cancelled"]);
     }
 
+    const runTools = await resolveRunTools(input, prepared);
     session = await createSession({
       cwd: prepared.configuration.cwd,
       tools: prepared.configuration.tools,
-      customTools: input.customTools,
+      customTools: runTools,
       systemPrompt: systemPromptForTools(
         prepared.context.systemPrompt,
         prepared.configuration.tools,
@@ -748,7 +756,8 @@ export async function executeDelegation(
     extraEnv: input.extraEnv,
     signal: input.signal,
     now: input.now,
-    approvalGranted: input.approvalGranted,
+    scheduledRun: input.scheduledRun,
+    approvals: input.approvals,
     componentSecrets: input.componentSecrets,
     taskModel: input.taskModel,
     projectAgentModel: input.projectAgentModel,
@@ -799,6 +808,42 @@ function resolveIdempotencyStore(
       ? path.join(state.paths.runtime, "idempotency")
       : path.join(path.resolve(input.projectRoot), ".vibekit", "runtime", "idempotency");
   return createIdempotencyStore({ directory });
+}
+
+async function resolveRunTools(
+  input: IsolatedRunInput,
+  prepared: PreparedRun,
+): Promise<PiCustomTool[]> {
+  if (input.customTools !== undefined && input.customTools.length > 0 && input.allowUnfilteredCustomTools !== true) {
+    throw fail(
+      "permission_denied",
+      "custom_tools_unfiltered",
+      "Worker Runs cannot accept unfiltered customTools; Tools must come from installed Modules and effective authority",
+      { count: input.customTools.length },
+    );
+  }
+
+  const guardContext = {
+    cwd: prepared.configuration.cwd,
+    authority: prepared.configuration.authority,
+    project: prepared.project,
+    task: prepared.task,
+    approvals: input.approvals,
+  };
+  const builtins = createGuardedBuiltinTools(guardContext);
+  const installed = await bindInstalledProjectTools({
+    projectRoot: input.projectRoot,
+    resolveSecret: (name) => prepared.environment.env[name] ?? "",
+    grantedCapabilities: prepared.configuration.capabilities,
+    scheduledRun: prepared.configuration.scheduledRun,
+    allowedModuleIds: prepared.configuration.authority.toolModuleIds,
+  });
+  const guardedInstalled = installed.map((tool) => guardCustomTool(tool, guardContext, tool.moduleId));
+  const extras =
+    input.allowUnfilteredCustomTools === true
+      ? (input.customTools ?? []).map((tool) => guardCustomTool(tool, guardContext))
+      : [];
+  return [...builtins, ...guardedInstalled, ...extras];
 }
 
 export function openProjectState(input: {

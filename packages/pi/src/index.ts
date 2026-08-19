@@ -127,6 +127,14 @@ export {
 } from "./conversation.js";
 
 export {
+  authorizeToolCall,
+  createGuardedBuiltinTools,
+  guardCustomTool,
+} from "./builtin-guard.js";
+export { bindInstalledProjectTools } from "./installed-tools.js";
+export type { BindInstalledToolsInput, BoundCustomTool } from "./installed-tools.js";
+
+export {
   executeDelegation,
   openProjectState,
   prepareIsolatedRun,

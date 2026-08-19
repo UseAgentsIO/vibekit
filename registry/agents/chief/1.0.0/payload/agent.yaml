@@ -25,6 +25,7 @@ components:
     - agent:coder
     - agent:reviewer
     - agent:researcher
+    - agent:personal
     - policy:least-privilege
     - policy:require-verification
 
@@ -60,6 +61,7 @@ permissions:
           - coder
           - reviewer
           - researcher
+          - personal
   deny:
     - capability: source.write
     - capability: project.configure
@@ -73,6 +75,7 @@ delegation:
     - coder
     - reviewer
     - researcher
+    - personal
   maxDepth: 2
   maxParallelChildren: 4
 

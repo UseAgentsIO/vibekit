@@ -1,5 +1,7 @@
 import {
   formatRuntimeId,
+  loadInstalledProviders,
+  resolveEffectiveAuthority,
   type EventDocument,
   type ProjectDocument,
   type ResultDocument,
@@ -8,7 +10,6 @@ import {
 } from "@useagentsio/core";
 import {
   loadAgentDocument,
-  resolveAllowlistedTools,
   type ResolvedModel,
 } from "@useagentsio/pi";
 import type { InboundMessage } from "@useagentsio/interface-sdk";
@@ -90,15 +91,14 @@ export function prepareAgentTurn(input: {
     project: input.project,
     bindingName,
   });
-  const tools = resolveAllowlistedTools({
-    capabilities: agent.document.capabilities.requires,
-    permissions: {
-      allow: agent.document.permissions.allow,
-      deny: agent.document.permissions.deny,
-    },
-    authorization: "standing",
-    approvalGranted: true,
+  const authority = resolveEffectiveAuthority({
+    project: input.project,
+    agent: agent.document,
+    task: input.task,
+    installedProviders: loadInstalledProviders(input.projectRoot),
+    scheduledRun: input.message.accountId === "schedule",
   });
+  const tools = authority.builtinTools;
   const model = input.project.defaults?.model;
   if (model === undefined) {
     throw new Error("No model is configured. Run `vibekit model`.");

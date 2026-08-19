@@ -66,4 +66,4 @@ Write shared Module settings as separate `.vibekit/config/<type>/<name>.yaml` fr
 
 ## Validate manual edits
 
-Preserve `schemaVersion: 1`, typed IDs, relative paths, compatible Module references, an acyclic delegation graph, and bound required capabilities. After editing the Project or an Agent, run `vibekit doctor` and inspect every finding before running an Agent.
+Preserve a supported `schemaVersion` (`2` for Host-aware Projects created by current `vibekit create` / `init`; `1` remains readable), typed registry IDs (`agent:coder`, not npm package names), relative paths, compatible Module references, an acyclic delegation graph, and bound required capabilities. After editing the Project or an Agent, run `vibekit doctor` against the intended registry and inspect every finding before running an Agent.

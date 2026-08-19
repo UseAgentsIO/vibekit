@@ -81,6 +81,8 @@ describe("acceptance 2-4: add", () => {
       "agent:coder",
       "skill:software-development",
       "state:repository",
+      "tool:execution",
+      "tool:filesystem",
       "verifier:command",
     ]);
     expect(ids).not.toContain("policy:require-verification");

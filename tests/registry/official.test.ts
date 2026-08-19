@@ -13,6 +13,7 @@ import { officialRegistryDir } from "../helpers.js";
 const officialIds = [
   "agent:chief",
   "agent:coder",
+  "agent:personal",
   "agent:project-manager",
   "agent:researcher",
   "agent:reviewer",

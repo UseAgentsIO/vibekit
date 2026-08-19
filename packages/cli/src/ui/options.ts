@@ -30,8 +30,12 @@ export function wrapIndex(index: number, length: number): number {
   return (index + length) % length;
 }
 
-export function defaultMenuLimit(rows = process.stdout.rows ?? 24): number {
-  return Math.max(6, Math.min(12, rows - 6));
+export function defaultMenuLimit(rows = process.stdout.rows ?? 24, linesPerItem = 1): number {
+  const raw = Math.max(6, Math.min(12, rows - 6));
+  if (linesPerItem <= 1) {
+    return raw;
+  }
+  return Math.max(4, Math.floor(raw / linesPerItem));
 }
 
 export function windowItems<T>(

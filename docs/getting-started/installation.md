@@ -98,7 +98,7 @@ export OPENROUTER_API_KEY="sk-or-..."
 
 ### Local / unpublished registry path (development)
 
-By default the CLI uses the official registry bundled inside `@useagentsio/cli`. V1 does not support third-party registries. `--registry` / `VIBEKIT_REGISTRY` exist so you can test modules from this repo (or a clone) before they ship:
+By default the CLI uses the official registry bundled inside `@useagentsio/cli`. Independently authored Modules can be installed from a local/custom registry path (`--registry <path>`). That path is recorded as `registrySource: "local:<absolute-path>"`. Hosted registries, search/discovery, and a marketplace are not implemented.
 
 ```bash
 export VIBEKIT_REGISTRY="/path/to/vibekit/registry"

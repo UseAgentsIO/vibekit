@@ -4,6 +4,8 @@ import { fileURLToPath } from "node:url";
 
 import semver from "semver";
 
+import { checksumDirectory } from "./checksum.js";
+import { OFFICIAL_REGISTRY_SOURCE } from "./constants.js";
 import { VibeKitError } from "./errors.js";
 import { isModuleType, parseModuleId, type ModuleId } from "./ids.js";
 import {
@@ -30,6 +32,8 @@ export interface RegistryIndex {
 export interface Registry {
   readonly root: string;
   readonly index: RegistryIndex;
+  /** `official` or `local:<absolute-path>`. */
+  readonly source: string;
 }
 
 export function defaultRegistryRoot(): string {
@@ -58,7 +62,7 @@ export function defaultRegistryRoot(): string {
   return found;
 }
 
-export function loadRegistry(root: string): Registry {
+export function loadRegistry(root: string, source?: string): Registry {
   const resolved = path.resolve(root);
   const indexPath = path.join(resolved, "index.json");
   if (!fs.existsSync(indexPath)) {
@@ -82,7 +86,27 @@ export function loadRegistry(root: string): Registry {
     });
   }
   const index = parseRegistryIndex(parsed);
-  return { root: resolved, index };
+  return {
+    root: resolved,
+    index,
+    source: source ?? registrySourceForRoot(resolved),
+  };
+}
+
+export function localRegistrySource(root: string): string {
+  return `local:${path.resolve(root)}`;
+}
+
+export function registrySourceForRoot(registryRoot: string): string {
+  const resolved = path.resolve(registryRoot);
+  try {
+    if (path.resolve(defaultRegistryRoot()) === resolved) {
+      return OFFICIAL_REGISTRY_SOURCE;
+    }
+  } catch {
+    // Official root is unavailable; a non-default path is still local.
+  }
+  return localRegistrySource(resolved);
 }
 
 export function loadModuleDocument(
@@ -161,6 +185,15 @@ export function resolveModule(
     });
   }
   const moduleDir = path.join(registry.root, selected.path);
+  const actual = checksumDirectory(moduleDir);
+  if (actual !== selected.checksum) {
+    throw new VibeKitError({
+      category: "conflict",
+      code: "registry_integrity_mismatch",
+      message: `Module ${id}@${selected.version} on disk does not match the registry index checksum`,
+      details: { id, version: selected.version, expected: selected.checksum, actual },
+    });
+  }
   return loadModuleFromDirectory(registry.root, moduleDir, selected.checksum);
 }
 

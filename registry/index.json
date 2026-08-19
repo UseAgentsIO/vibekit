@@ -4,7 +4,7 @@
     {
       "id": "agent:chief",
       "version": "1.0.0",
-      "checksum": "sha256:aff9fa0dff1a6c77904455cdfdba22470f5bc04b4a2e50af181fbe500d62d8c6",
+      "checksum": "sha256:e3fa77ecf4840abcfd7fe20525092f79844975fb01b53f7289963c4d8cfa947a",
       "compatibility": {
         "vibekit": "^1.0.0",
         "pi": ">=0.50.0",
@@ -22,6 +22,17 @@
         "node": ">=20"
       },
       "path": "agents/coder/1.0.0"
+    },
+    {
+      "id": "agent:personal",
+      "version": "1.0.0",
+      "checksum": "sha256:92f50e8e7d2c6cd2051d00e5b3eb00927cd7d98451d72c9e3eaca8ecdf447f2d",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "agents/personal/1.0.0"
     },
     {
       "id": "agent:project-manager",
@@ -59,7 +70,7 @@
     {
       "id": "interface:http",
       "version": "1.0.0",
-      "checksum": "sha256:5afd54c5465423b1ccb0237d4db5698b7e380fc339042958be2a289a2ffcf185",
+      "checksum": "sha256:df872a0334f3f32dab49415edeae36b847f99855997fcf5fcee56dd32afa2558",
       "compatibility": {
         "vibekit": "^1.0.0",
         "pi": ">=0.50.0",
@@ -81,7 +92,7 @@
     {
       "id": "interface:slack",
       "version": "1.0.0",
-      "checksum": "sha256:c66afa4586632c3d36b67bf8a75b819209c0a76f352a038589467cff2d561fab",
+      "checksum": "sha256:a1fa5ddecc7b1c98b73767466845988def896e2cc883765f296de5fc6d06c846",
       "compatibility": {
         "vibekit": "^1.0.0",
         "pi": ">=0.50.0",
@@ -92,7 +103,7 @@
     {
       "id": "interface:telegram",
       "version": "1.0.0",
-      "checksum": "sha256:05ea3961a24f66bfaafb2a2711f393b501c1e4931907e7bc937ed4c54f6a8fa7",
+      "checksum": "sha256:63ccb0e92701d00a6274ce7135370aff1c891fedced1493b816ed4525802ae87",
       "compatibility": {
         "vibekit": "^1.0.0",
         "pi": ">=0.50.0",
@@ -873,7 +884,7 @@
     {
       "id": "state:repository",
       "version": "1.0.0",
-      "checksum": "sha256:3c1f8344ef676063d2da8045744dd769ba3bbc5e0e8a3e7c4ae13bb8b527972b",
+      "checksum": "sha256:e6631d3421c24d42c927cc5c19709ce5f45aabc564830a2cb3fe00dd398e4707",
       "compatibility": {
         "vibekit": "^1.0.0",
         "pi": ">=0.50.0",
@@ -895,7 +906,7 @@
     {
       "id": "tool:execution",
       "version": "1.0.0",
-      "checksum": "sha256:68ae7b6bad80702b0bd59d91609bd7268e9e281cb66200049502e3c251ce4de5",
+      "checksum": "sha256:a201d0b37bfc8c9b25ff992484cbcdff1567fe3355debca94ef3e16adb6753b1",
       "compatibility": {
         "vibekit": "^1.0.0",
         "pi": ">=0.50.0",
@@ -906,7 +917,7 @@
     {
       "id": "tool:filesystem",
       "version": "1.0.0",
-      "checksum": "sha256:1886fdc4b76c1a520ff52b0e4caeeb17c3bcc95f9909427d666b06b96b58ad2a",
+      "checksum": "sha256:d88615340dd88ed80a1c088d85358fb6cf2f127831c934ac5b84df1f93f0ccd5",
       "compatibility": {
         "vibekit": "^1.0.0",
         "pi": ">=0.50.0",
@@ -917,7 +928,7 @@
     {
       "id": "tool:github",
       "version": "1.0.0",
-      "checksum": "sha256:f8f7abd257c74408dec000c1b193356b4e62f441addf2b9824198d173dbdd8cb",
+      "checksum": "sha256:551618937337cf3ba3ba224ae5dee93a636bdd4bba26330de7462323d958d50e",
       "compatibility": {
         "vibekit": "^1.0.0",
         "pi": ">=0.50.0",
@@ -972,7 +983,7 @@
     {
       "id": "tool:scheduler",
       "version": "1.0.0",
-      "checksum": "sha256:e698a66cbe702513cc1887418a380a89c323f60a48c7f8593e07dcbd036d1a87",
+      "checksum": "sha256:a3fd9785e7d3b8a3b8c0e60086132d854a46d24d75c956b75101f9e2fb249b78",
       "compatibility": {
         "vibekit": "^1.0.0",
         "pi": ">=0.50.0",

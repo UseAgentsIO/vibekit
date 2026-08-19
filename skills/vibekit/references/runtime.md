@@ -2,9 +2,15 @@
 
 The running product is the Agent Host (`@useagentsio/host`, binary `vibekit-host`). Users talk to a Project with `vibekit create`, `vibekit msg`, and `vibekit start`. Pi is embedded inside the Host. Do not launch the Pi TUI and do not treat `init` / `add` / `doctor` as the finished product.
 
-`vibekit-host` loads `kind: interface` Modules by importing `runtime.package` and calling `runtime.export` (official fallback: `interface:terminal` → `@useagentsio/interface-terminal` / `createTerminalInterface`). Do not inject factories unless a test needs a fake Interface. A running Host listens on `.vibekit/runtime/host.sock`; `vibekit msg` must reuse that socket instead of starting a second process. The terminal Interface collects Approval decisions (`y` / `n`) and forwards them through `InterfaceServices.approve`.
+Taxonomy: Components → Agents → Project → Host. Canonical identity is the registry Module ID (`tool:browser`, `interface:telegram`). npm packages are optional `runtime.package` / `runtime.export` implementation artifacts.
 
-Slack and Telegram are planned Interfaces. They are not in this drop.
+`vibekit-host` loads `kind: interface` Modules by importing `runtime.package` and calling `runtime.export`. `factories` on `VibeKitHost.start` are a testing seam; production loads Interfaces from installed Module runtime metadata. Terminal (`interface:terminal` → `@useagentsio/interface-terminal` / `createTerminalInterface`) is the default first-run Interface. Slack and Telegram are optional shipped Interfaces (`interface:slack`, `interface:telegram`). A running Host listens on `.vibekit/runtime/host.sock`; `vibekit msg` must reuse that socket instead of starting a second process. The terminal Interface collects Approval decisions (`y` / `n`) and forwards them through `InterfaceServices.approve`.
+
+The official registry is the default curated catalog. Independently authored Modules can be installed from a local/custom registry path (`--registry`, recorded as `registrySource` `official` | `local:<abs-path>`). Hosted registries, search/discovery, ratings, and a marketplace are not implemented.
+
+`tool:github` 1.1.0 is executable (`pi-extension`, `@useagentsio/tool-github`). 1.0.0 remains config-only.
+
+Permissions are enforced at the runtime boundary (Capability ∩ Policy ∩ Agent grant ∩ Task scope ∩ authorization). Policies are runtime governance, not prompt text.
 
 Use `@useagentsio/core` for schemas, IDs, Project State, installation contracts, verification, and proposal/apply decisions. Use `@useagentsio/pi` as the embedded adapter that resolves a Project and Agent into an isolated worker Run. Use `@useagentsio/interface-sdk` when attaching an Interface. The Host persists conversations and State; the adapter does not.
 

@@ -1,11 +1,24 @@
 import { describe, expect, it } from "vitest";
 
+import { loadRegistry } from "@useagentsio/core";
+
 import { parseCliArgs } from "../../packages/cli/src/args.js";
 import { parseKey, releaseTerminal, withRawInput } from "../../packages/cli/src/ui/keys.js";
 import { defaultMenuLimit, filterOptions, windowItems, wrapIndex } from "../../packages/cli/src/ui/options.js";
+import { optionLines } from "../../packages/cli/src/ui/render.js";
 import { BACK, isBack, submit } from "../../packages/cli/src/ui/result.js";
 import { runWizard } from "../../packages/cli/src/ui/wizard.js";
-import { asMenuOptions, labelFor, SETUP_AGENTS } from "../../packages/cli/src/setup-catalog.js";
+import {
+  asMenuOptions,
+  deriveDelegation,
+  inferDefaultAgent,
+  labelFor,
+  projectPolicyItems,
+  SETUP_AGENTS,
+  SETUP_POLICIES,
+  setupItemsFromRegistry,
+} from "../../packages/cli/src/setup-catalog.js";
+import { buildTempRegistry, officialRegistryDir } from "../helpers.js";
 
 describe("cli ui kit", () => {
   it("parses navigation and control keys", () => {
@@ -22,8 +35,12 @@ describe("cli ui kit", () => {
   });
 
   it("filters and windows menu options for reuse", () => {
-    const options = asMenuOptions(SETUP_AGENTS);
-    expect(filterOptions(options, "rev").map((option) => option.value)).toEqual(["reviewer"]);
+    const registry = loadRegistry(officialRegistryDir);
+    const agentItems = setupItemsFromRegistry(SETUP_AGENTS, registry, "agent");
+    const options = asMenuOptions(agentItems);
+    expect(options.find((option) => option.value === "reviewer")?.hint).toMatch(/independent review/);
+    expect(filterOptions(options, "independent").map((option) => option.value)).toEqual(["reviewer"]);
+    expect(filterOptions(options, "bounded software").map((option) => option.value)).toEqual(["coder"]);
     expect(filterOptions(options, "project-manager").map((option) => option.label)).toEqual([
       "Project Manager",
     ]);
@@ -58,6 +75,91 @@ describe("cli ui kit", () => {
     expect(parsed.flags.tools).toEqual(["filesystem"]);
     expect(parsed.flags.verbose).toBe(true);
     expect(parsed.flags.showFiles).toBe(true);
+  });
+
+  it("parses repeatable --agent flags and infers the default Agent", () => {
+    const parsed = parseCliArgs([
+      "init",
+      "--agent",
+      "coder",
+      "--agent",
+      "reviewer",
+      "--agent",
+      "chief",
+    ]);
+    expect(parsed.flags.agents).toEqual(["coder", "reviewer", "chief"]);
+    expect(inferDefaultAgent(parsed.flags.agents)).toBe("chief");
+    expect(inferDefaultAgent(["coder", "reviewer"])).toBe("coder");
+    expect(inferDefaultAgent([])).toBeUndefined();
+    expect(deriveDelegation(["chief", "coder", "reviewer"])).toEqual({
+      chief: ["coder", "reviewer"],
+      coder: [],
+      reviewer: [],
+    });
+    expect(deriveDelegation(["coder", "reviewer"])).toEqual({
+      coder: [],
+      reviewer: [],
+    });
+    expect(
+      deriveDelegation(["lead", "worker"], { lead: ["worker", "reviewer"], worker: [] }),
+    ).toEqual({
+      lead: ["worker"],
+      worker: [],
+    });
+  });
+
+  it("does not invent official Agents that a custom registry omitted", () => {
+    const registry = loadRegistry(
+      buildTempRegistry([
+        {
+          type: "policy",
+          name: "only-policy",
+        },
+      ]),
+    );
+    const agents = setupItemsFromRegistry(SETUP_AGENTS, registry, "agent");
+    expect(agents.map((item) => item.id)).toEqual([]);
+  });
+
+  it("hydrates setup items from registry metadata and keeps project policies small", () => {
+    const registry = loadRegistry(officialRegistryDir);
+    const agents = setupItemsFromRegistry(SETUP_AGENTS, registry, "agent");
+    expect(agents.map((item) => item.id)).toEqual([
+      "chief",
+      "coder",
+      "reviewer",
+      "researcher",
+      "project-manager",
+      "personal",
+    ]);
+    expect(agents.find((item) => item.id === "coder")?.description).toMatch(/evidence/);
+    expect(agents.find((item) => item.id === "personal")?.label).toBe("Personal");
+
+    const policies = projectPolicyItems(setupItemsFromRegistry(SETUP_POLICIES, registry, "policy"));
+    expect(policies.map((item) => item.id)).toEqual(["least-privilege", "require-verification"]);
+    expect(policies[0]?.description).toMatch(/Deny by default/);
+
+    const interfaces = setupItemsFromRegistry(
+      [{ id: "terminal", label: "Terminal" }],
+      registry,
+      "interface",
+    );
+    expect(interfaces.map((item) => item.id)).toEqual(
+      expect.arrayContaining(["terminal", "telegram", "slack", "http", "webhook", "schedule"]),
+    );
+    expect(interfaces.find((item) => item.id === "telegram")?.description).toMatch(/Telegram/);
+  });
+
+  it("renders option descriptions below the label when asked", () => {
+    const lines = optionLines({
+      active: true,
+      label: "Chief",
+      hint: "Coordinates user intent, decomposes work, and delegates to specialized agents.",
+      hintBelow: true,
+    });
+    expect(lines).toHaveLength(2);
+    expect(lines[0]).toContain("Chief");
+    expect(lines[1]).toMatch(/delegates to specialized agents/);
   });
 
   it("runWizard goes back to the previous step on esc", async () => {

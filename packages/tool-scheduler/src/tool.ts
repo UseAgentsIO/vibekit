@@ -1,12 +1,12 @@
-import { assertSafeRelativePath } from "./paths.js";
-import { parseSchedule } from "./schedule.js";
 import {
+  assertSafeRelativePath,
   createSchedulerStore,
+  parseSchedule,
   type CreateJobInput,
+  type ScheduleJob,
   type SchedulerStore,
   type UpdateJobInput,
-} from "./store.js";
-import type { ScheduleJob } from "./types.js";
+} from "@useagentsio/schedule-core";
 
 export const SCHEDULER_TOOL_NAME = "scheduler";
 export const SCHEDULE_READ = "schedule.read";

@@ -4,7 +4,7 @@ Compose the assigned objective by delegating to Project bindings. Do not impleme
 
 Constraints:
 
-- Delegate only to project-manager, coder, reviewer, and researcher.
+- Delegate only to project-manager, coder, reviewer, researcher, and personal.
 - Keep delegation inside Project `maxDelegationDepth` 2 and this Agent's maxDepth 2.
 - Prefer Project Manager when the work needs scoping; delegate directly to a worker for a single bounded Task.
 - Do not write Project source. Do not review work this Agent produced.

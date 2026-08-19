@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
 import path from "node:path";
 
-import { resolveInsideProject } from "./paths.js";
+import { resolveInsideProject } from "@useagentsio/schedule-core";
 
 export interface ScriptResult {
   readonly code: number;

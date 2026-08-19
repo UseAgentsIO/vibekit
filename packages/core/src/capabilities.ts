@@ -32,6 +32,14 @@ export function resolveCapability(
   },
 ): CapabilityResolution {
   if (options.agentBinding) {
+    if (!providerOffers(options.installedProviders, options.agentBinding, capability)) {
+      return {
+        status: "unresolved",
+        capability,
+        reason: "none",
+        providers: [],
+      };
+    }
     return {
       status: "resolved",
       capability,
@@ -40,6 +48,14 @@ export function resolveCapability(
     };
   }
   if (options.projectBinding) {
+    if (!providerOffers(options.installedProviders, options.projectBinding, capability)) {
+      return {
+        status: "unresolved",
+        capability,
+        reason: "none",
+        providers: [],
+      };
+    }
     return {
       status: "resolved",
       capability,
@@ -99,6 +115,16 @@ export function assertCapabilityResolved(resolution: CapabilityResolution): Modu
     message: `No installed Module provides capability ${resolution.capability}`,
     details: { capability: resolution.capability },
   });
+}
+
+function providerOffers(
+  installedProviders: readonly CapabilityProvider[],
+  id: ModuleId,
+  capability: string,
+): boolean {
+  return installedProviders.some(
+    (provider) => provider.id === id && provider.capabilities.includes(capability),
+  );
 }
 
 export function resolveRequiredCapabilities(

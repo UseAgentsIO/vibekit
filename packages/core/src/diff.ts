@@ -7,6 +7,7 @@ import { getInstalledModule } from "./installed.js";
 import type { InstalledManifestDocument } from "./types.js";
 import type { Registry } from "./registry.js";
 import { resolveModule } from "./registry.js";
+import { assertRegistryMatchesInstallSource } from "./registry-source.js";
 import {
   analyzeInstalledModule,
   findNewestCompatible,
@@ -55,6 +56,8 @@ export function diffInstalledModule(options: {
       details: { id: options.id },
     });
   }
+
+  assertRegistryMatchesInstallSource(record, options.registry);
 
   const newest = findNewestCompatible(options.registry, options.id);
   const compareVersion = newest?.version ?? record.version;

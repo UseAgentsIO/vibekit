@@ -117,6 +117,7 @@ export {
   parseAndValidateJson,
   parseAndValidateYaml,
   validateDocument,
+  validateJsonSchema,
 } from "./validate.js";
 
 export {
@@ -198,9 +199,23 @@ export {
   loadModuleDocument,
   loadModuleFromDirectory,
   loadRegistry,
+  localRegistrySource,
+  registrySourceForRoot,
   resolveModule,
 } from "./registry.js";
 export type { Registry, RegistryIndex, RegistryIndexEntry } from "./registry.js";
+
+export {
+  assertRegistryMatchesInstallSource,
+  isOfficialRegistrySource,
+  loadRegistryForSource,
+  LOCAL_REGISTRY_SOURCE_PREFIX,
+  parseRegistrySource,
+  registryForInstalledModule,
+  resolveInstalledModule,
+  resolveInstalledModuleRuntime,
+} from "./registry-source.js";
+export type { ParsedRegistrySource } from "./registry-source.js";
 
 export {
   detectConflicts,
@@ -221,6 +236,52 @@ export type {
   CapabilityProvider,
   CapabilityResolution,
 } from "./capabilities.js";
+
+export {
+  BUILTIN_TOOL_CAPABILITIES,
+  CAPABILITY_BUILTIN_TOOLS,
+  DELEGATE_CAPABILITY,
+  inboundIsUntrusted,
+  invocationFromToolCall,
+  authorizeInvocation,
+  loadInstalledProviders,
+  MUTATING_CAPABILITIES,
+  NON_MODULE_CAPABILITIES,
+  pairingRequired,
+  providersFromInstalled,
+  resolveEffectiveAuthority,
+} from "./authority.js";
+export type {
+  AuthorityContext,
+  EffectiveAuthority,
+  EffectiveGrant,
+  InstalledCapabilityProvider,
+  ToolInvocation,
+} from "./authority.js";
+
+export {
+  assertCommandInScope,
+  assertPathInScope,
+  assertResourceInScope,
+  commandAllowed,
+  intersectScopes,
+  pathAllowed,
+  pathMatches,
+  resourceAllowed,
+  scopeIsImpossible,
+} from "./scope.js";
+
+export { resolveCapabilityProviders } from "./composition.js";
+export type { CapabilityProviderResolution } from "./composition.js";
+
+export {
+  applyPackageState,
+  collectPackageDependencies,
+  mergePackageDependencies,
+  packageManagerInstallArgs,
+  packagesToRemove,
+} from "./packages.js";
+export type { PackageApplyResult, PackageApplyTracker } from "./packages.js";
 
 export { collectInstalledOwnership, planFileOwnership } from "./ownership.js";
 export type { OwnershipClaim, PlannedFile } from "./ownership.js";
@@ -265,6 +326,7 @@ export {
   applyUpdate,
   assertCompatibleModule,
   buildGeneratedDocument,
+  collectInstalledPackageDependencies,
   currentEnvironment,
   decideThreeWay,
   defaultConfigFor,

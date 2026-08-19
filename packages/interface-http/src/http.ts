@@ -50,6 +50,7 @@ export class HttpInterface implements RunningInterface {
   private started = false;
   private server?: Server;
   private readonly resolved: ResolvedHttpConfig;
+  private readonly pairingRequired: boolean;
   private readonly outputs = new Map<string, HostOutput[]>();
 
   constructor(
@@ -57,6 +58,7 @@ export class HttpInterface implements RunningInterface {
     private readonly services: InterfaceServices,
   ) {
     this.resolved = resolveHttpConfig(config);
+    this.pairingRequired = config.pairingRequired === true;
   }
 
   get port(): number {
@@ -252,7 +254,7 @@ export class HttpInterface implements RunningInterface {
       conversationId,
       ...(threadId !== undefined ? { threadId } : {}),
       conversationKey,
-      sender: { id: senderId, displayName: senderId, trusted: true },
+      sender: { id: senderId, displayName: senderId, trusted: !this.pairingRequired },
       text,
       attachments: [],
       timestamp: new Date().toISOString(),

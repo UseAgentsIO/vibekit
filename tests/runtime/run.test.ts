@@ -76,7 +76,7 @@ describe("isolated Pi Run", () => {
     expect(seen).toHaveLength(1);
     expect(seen[0]?.cwd).toBe(fixture.root);
     expect(seen[0]?.tools).toEqual(
-      expect.arrayContaining(["read", "write", "edit", "bash"]),
+      expect.arrayContaining(["read", "write", "edit"]),
     );
     expect(seen[0]?.systemPrompt).toContain("You are executing a VibeKit Agent Run");
     expect(outcome.status).toBe("completed");

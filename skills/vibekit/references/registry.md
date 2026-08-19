@@ -1,6 +1,8 @@
 # VibeKit registry authoring
 
-Use this reference only when adding or changing an official Component or Agent. V1 has one official registry and immutable versioned payloads; do not add third-party registry behavior or a marketplace.
+Use this reference when adding or changing a Component or Agent. The official registry is the default curated catalog with immutable versioned payloads. Independently authored Modules can live in a local/custom registry path (`vibekit add --registry <path>`). Do not build hosted discovery, ratings, or a marketplace.
+
+Canonical identity is the registry ID (`tool:browser`, `interface:telegram`). npm packages are optional `runtime.package` / `runtime.export` implementation artifacts. A package-backed Tool or Interface must load through the Host generic resolver without editing Host/CLI ID maps.
 
 ## Start from the source of truth
 
@@ -33,7 +35,8 @@ Keep Skills procedural and Policies restrictive. A Skill never grants authority,
 - Use relative file targets and explicit `exclusive` or `generated` ownership.
 - Reject traversal, absolute paths, null bytes, and symlink escapes.
 - Put shared settings in per-Module fragments and generate combined runtime configuration elsewhere.
-- Express Module dependencies only through the schema's `requires` sets. Do not invent npm dependency fields, arbitrary installation hooks, or other properties rejected by the current schema.
+- Express Module-to-Module dependencies through the schema's `requires` sets.
+- When a Tool or Interface is executable, declare `runtime.package` / `runtime.export` and list the implementation package in `packages.dependencies`. That field is a real Module contract: install/update/remove must reconcile it transactionally. Do not invent other npm fields, arbitrary installation hooks, or properties rejected by the current schema.
 - Store secret names and `source: environment` only. Scan fixtures, payloads, and examples for likely values.
 - Map Tools and Skills to Pi-native mechanisms before adding a VibeKit-specific runtime layer.
 

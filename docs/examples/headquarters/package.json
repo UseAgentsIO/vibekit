@@ -12,10 +12,12 @@
     "@useagentsio/host": "workspace:*",
     "@useagentsio/pi": "workspace:*",
     "@useagentsio/interface-sdk": "workspace:*",
-    "@useagentsio/interface-terminal": "workspace:*",
     "@useagentsio/interface-telegram": "workspace:*",
+    "@useagentsio/interface-terminal": "workspace:*",
     "@useagentsio/interface-schedule": "workspace:*",
-    "@useagentsio/state-memory": "workspace:*",
-    "@useagentsio/tool-web": "workspace:*"
+    "@useagentsio/schedule-core": "workspace:*",
+    "@useagentsio/tool-scheduler": "workspace:*",
+    "@useagentsio/tool-web": "workspace:*",
+    "@useagentsio/state-memory": "workspace:*"
   }
 }

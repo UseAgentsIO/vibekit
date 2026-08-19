@@ -1,0 +1,84 @@
+schemaVersion: 1
+
+id: agent:personal
+type: agent
+name: personal
+displayName: Personal
+version: 1.0.0
+description: Handles personal planning, notes, and life-admin Tasks. Does not write Project source.
+
+instructions: ./instructions.md
+
+model:
+  provider: inherit
+  id: inherit
+  allowProjectOverride: true
+  allowTaskOverride: false
+
+components:
+  required:
+    - state:repository
+  optional: []
+  recommended:
+    - policy:least-privilege
+
+capabilities:
+  requires:
+    - source.read
+
+inputs:
+  required:
+    - objective
+  optional:
+    - constraints
+    - acceptanceCriteria
+
+outputs:
+  required:
+    - summary
+    - unresolvedIssues
+
+permissions:
+  allow:
+    - capability: source.read
+      scope:
+        paths:
+          - "**"
+  deny:
+    - capability: source.write
+    - capability: project.configure
+    - capability: module.install
+    - capability: deploy.apply
+
+delegation:
+  allowed: false
+  targets: []
+  maxDepth: 0
+  maxParallelChildren: 0
+
+state:
+  read:
+    - project
+    - tasks
+    - decisions
+  write:
+    - results
+    - events
+
+execution:
+  isolation: process
+  timeoutMs: 600000
+  cleanupRequired: true
+
+verification:
+  required: []
+  independentReview: false
+
+completion:
+  requires:
+    - result-recorded
+
+escalation:
+  on:
+    - permission-denied
+    - missing-acceptance-criteria

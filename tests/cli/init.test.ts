@@ -86,11 +86,89 @@ describe("acceptance 1: init", () => {
     );
     expect(project.valid, JSON.stringify(project.errors)).toBe(true);
     expect(project.data?.defaultAgent).toBe("reviewer");
+    expect(project.data?.agentBindings?.reviewer?.definition).toBe("agent:reviewer");
     expect(project.data?.defaults?.model).toEqual({ provider: "openai", id: "gpt-5" });
     expect(project.data?.interfaceBindings?.["terminal-main"]?.definition).toBe("interface:terminal");
     expect(fs.existsSync(path.join(dir, ".vibekit/agents/reviewer/agent.yaml"))).toBe(true);
     expect(fs.existsSync(path.join(dir, ".vibekit/components/providers/openai.yaml"))).toBe(true);
     expect(fs.existsSync(path.join(dir, ".vibekit/config/tools/filesystem.yaml"))).toBe(true);
+  });
+
+  it("installs an Agent's required Components without a Skills or Tools picker", async () => {
+    const dir = makeTempDir("vibekit-init-coder-deps-");
+    const result = await runCli([
+      "init",
+      dir,
+      "--provider",
+      "openai",
+      "--model",
+      "gpt-5",
+      "--agent",
+      "coder",
+      "--interface",
+      "terminal",
+      "--policy",
+      "least-privilege",
+      "--policy",
+      "require-verification",
+      "--registry",
+      officialRegistryDir,
+    ]);
+    expect(result.exitCode, result.stderr).toBe(0);
+
+    const installed = parseAndValidateJson(
+      "installed",
+      fs.readFileSync(path.join(dir, ".vibekit/installed.json"), "utf8"),
+    );
+    const ids = installed.data?.modules.map((module) => module.id) ?? [];
+    expect(ids).toContain("agent:coder");
+    expect(ids).toContain("skill:software-development");
+    expect(ids).toContain("state:repository");
+    expect(ids).toContain("verifier:command");
+    expect(ids).toContain("policy:least-privilege");
+    expect(ids).toContain("policy:require-verification");
+    expect(fs.existsSync(path.join(dir, ".pi/skills/software-development/SKILL.md"))).toBe(true);
+  });
+
+  it("installs multiple Agents and infers Chief as the default", async () => {
+    const dir = makeTempDir("vibekit-init-agents-");
+    const result = await runCli([
+      "init",
+      dir,
+      "--provider",
+      "openai",
+      "--model",
+      "gpt-5",
+      "--agent",
+      "coder",
+      "--agent",
+      "reviewer",
+      "--agent",
+      "chief",
+      "--interface",
+      "terminal",
+      "--registry",
+      officialRegistryDir,
+    ]);
+    expect(result.exitCode, result.stderr).toBe(0);
+    expect(result.stdout).toMatch(/Chief, Coder, Reviewer|chief, coder, reviewer/);
+
+    const project = parseAndValidateYaml(
+      "project",
+      fs.readFileSync(path.join(dir, ".vibekit/project.yaml"), "utf8"),
+    );
+    expect(project.valid, JSON.stringify(project.errors)).toBe(true);
+    expect(project.data?.defaultAgent).toBe("chief");
+    expect(Object.keys(project.data?.agentBindings ?? {}).sort()).toEqual([
+      "chief",
+      "coder",
+      "reviewer",
+    ]);
+    expect(project.data?.delegation?.chief).toEqual(["coder", "reviewer"]);
+    expect(project.data?.interfaceBindings?.["terminal-main"]?.defaultAgent).toBe("chief");
+    expect(fs.existsSync(path.join(dir, ".vibekit/agents/chief/agent.yaml"))).toBe(true);
+    expect(fs.existsSync(path.join(dir, ".vibekit/agents/coder/agent.yaml"))).toBe(true);
+    expect(fs.existsSync(path.join(dir, ".vibekit/agents/reviewer/agent.yaml"))).toBe(true);
   });
 
   it("lists created files with --show-files", async () => {

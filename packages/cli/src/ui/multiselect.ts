@@ -8,17 +8,20 @@ import {
   wrapIndex,
   type MenuOption,
 } from "./options.js";
-import { footer, formatDone, LiveFrame, optionLine, requireTty, symbols } from "./render.js";
+import { dim, footer, formatDone, LiveFrame, optionLines, requireTty, symbols } from "./render.js";
 import { BACK, submit, type PromptResult } from "./result.js";
 import { searchModeOf, type SearchMode } from "./select.js";
 
 export interface MultiSelectOptions<T> {
   readonly message: string;
+  readonly description?: string;
   readonly options: ReadonlyArray<MenuOption<T>>;
   readonly searchable?: SearchMode;
   readonly initial?: readonly T[];
   readonly limit?: number;
+  readonly min?: number;
   readonly noneLabel?: string;
+  readonly hintBelow?: boolean;
 }
 
 export async function multiselect<T>(options: MultiSelectOptions<T>): Promise<PromptResult<T[]>> {
@@ -46,25 +49,35 @@ export async function multiselect<T>(options: MultiSelectOptions<T>): Promise<Pr
       if (cursor >= visible.length) {
         cursor = Math.max(0, visible.length - 1);
       }
-      const limit = options.limit ?? defaultMenuLimit();
+      const limit = options.limit ?? defaultMenuLimit(undefined, options.hintBelow === true ? 2 : 1);
       const page = windowItems(visible, cursor, limit);
       const filterHint = searching || (mode === "type" && query.length > 0) ? `  /${query}` : "";
       const lines = [`? ${options.message}${filterHint}`];
+      if (options.description !== undefined && options.description.length > 0) {
+        lines.push(`  ${dim(options.description)}`);
+      }
       if (visible.length === 0) {
         lines.push("    No matches");
       } else {
         for (const [index, option] of page.items.entries()) {
           lines.push(
-            optionLine({
+            ...optionLines({
               active: page.start + index === cursor,
               label: option.label,
               hint: option.hint,
               mark: selected.has(option.value) ? symbols.radioOn : symbols.radioOff,
+              hintBelow: options.hintBelow,
             }),
           );
         }
       }
-      const parts = ["space toggle", "enter continue"];
+      const min = options.min ?? 0;
+      const parts = ["space toggle"];
+      if (selected.size < min) {
+        parts.push(min === 1 ? "select at least one" : `select at least ${min}`);
+      } else {
+        parts.push("enter continue");
+      }
       if (mode === "type") {
         parts.push("type to filter");
       } else if (mode === "slash") {
@@ -105,6 +118,9 @@ export async function multiselect<T>(options: MultiSelectOptions<T>): Promise<Pr
           return BACK;
         }
         if (key.name === "enter") {
+          if (selected.size < (options.min ?? 0)) {
+            continue;
+          }
           const chosen = options.options.filter((option) => selected.has(option.value));
           const label =
             chosen.length === 0 ? noneLabel : chosen.map((option) => option.label).join(", ");

@@ -17,6 +17,11 @@ import { assertFileTarget } from "./file-targets.js";
 import type { ModuleId } from "./ids.js";
 import { planInstall, type InstallPlan } from "./install.js";
 import {
+  applyPackageState,
+  collectPackageDependencies,
+  packagesToRemove,
+} from "./packages.js";
+import {
   getInstalledModule,
   upsertInstalledModule,
   writeInstalledManifest,
@@ -27,6 +32,7 @@ import { safeResolve } from "./paths.js";
 import { writeProjectDocument } from "./project.js";
 import type { Registry, RegistryIndexEntry } from "./registry.js";
 import { assertModulePayload, resolveModule } from "./registry.js";
+import { assertRegistryMatchesInstallSource, resolveInstalledModule } from "./registry-source.js";
 import type {
   CompatibilityDeclaration,
   InstalledFileRecord,
@@ -80,6 +86,8 @@ export interface UpdatePlan {
   readonly project: ProjectDocument;
   readonly manifest: InstalledManifestDocument;
   readonly alreadyCurrent: boolean;
+  readonly packageDependencies: Readonly<Record<string, string>>;
+  readonly packagesToRemove: readonly string[];
 }
 
 export interface UpdateResult {
@@ -167,17 +175,8 @@ export function assertCompatibleModule(module: LoadedModule, project: ProjectDoc
   }
 }
 
-export function defaultConfigFor(module: LoadedModule): Record<string, unknown> {
-  if (module.secrets.length === 0) {
-    return {};
-  }
-  return {
-    secrets: module.secrets.map((secret) => ({
-      name: secret.name,
-      source: secret.source,
-      ...(secret.required === undefined ? {} : { required: secret.required }),
-    })),
-  };
+export function defaultConfigFor(_module: LoadedModule): Record<string, unknown> {
+  return {};
 }
 
 export function analyzeInstalledModule(options: {
@@ -283,6 +282,7 @@ export function planUpdate(options: PlanUpdateOptions): UpdatePlan {
       details: { id: options.id },
     });
   }
+  assertRegistryMatchesInstallSource(record, options.registry);
 
   const selected = options.version
     ? resolveSelectedVersion(options.registry, options.id, options.version)
@@ -320,6 +320,8 @@ export function planUpdate(options: PlanUpdateOptions): UpdatePlan {
       project: options.project,
       manifest: options.manifest,
       alreadyCurrent: false,
+      packageDependencies: {},
+      packagesToRemove: [],
     };
   }
 
@@ -424,6 +426,13 @@ export function planUpdate(options: PlanUpdateOptions): UpdatePlan {
   });
   manifest = upsertInstalledModule(manifest, nextRecord);
 
+  const previousPackages = collectInstalledPackageDependencies(options.manifest, options.registry);
+  const nextPackages = collectInstalledPackageDependencies(manifest, options.registry);
+  const removedPackages = packagesToRemove(previousPackages, nextPackages);
+  const packageChanged =
+    removedPackages.length > 0 ||
+    Object.keys(nextPackages).some((name) => previousPackages[name] !== nextPackages[name]);
+
   const generated = buildGeneratedDocument(manifest, options.projectRoot, writes);
   writes.push({
     path: GENERATED_CONFIG_RELATIVE_PATH,
@@ -432,7 +441,10 @@ export function planUpdate(options: PlanUpdateOptions): UpdatePlan {
 
   const mutatingWrites = writes.filter((write) => write.path !== GENERATED_CONFIG_RELATIVE_PATH);
   const alreadyCurrent =
-    record.version === upstream.version && mutatingWrites.length === 0 && deletes.length === 0;
+    record.version === upstream.version &&
+    mutatingWrites.length === 0 &&
+    deletes.length === 0 &&
+    !packageChanged;
 
   return {
     id: options.id,
@@ -446,6 +458,8 @@ export function planUpdate(options: PlanUpdateOptions): UpdatePlan {
     project,
     manifest,
     alreadyCurrent,
+    packageDependencies: nextPackages,
+    packagesToRemove: removedPackages,
   };
 }
 
@@ -481,6 +495,8 @@ export function applyUpdate(options: {
     deletes: options.plan.deletes,
     project: options.plan.project,
     manifest: options.plan.manifest,
+    packageDependencies: options.plan.packageDependencies,
+    packagesToRemove: options.plan.packagesToRemove,
   });
 
   return {
@@ -512,6 +528,8 @@ export function applyStagedChanges(options: {
   readonly deletes: readonly string[];
   readonly project: ProjectDocument;
   readonly manifest: InstalledManifestDocument;
+  readonly packageDependencies?: Readonly<Record<string, string>>;
+  readonly packagesToRemove?: readonly string[];
 }): {
   created: string[];
   changed: string[];
@@ -617,6 +635,18 @@ export function applyStagedChanges(options: {
       changed.push(".vibekit/installed.json");
     }
 
+    if (
+      options.packageDependencies !== undefined ||
+      (options.packagesToRemove !== undefined && options.packagesToRemove.length > 0)
+    ) {
+      applyPackageState({
+        projectRoot: options.projectRoot,
+        dependencies: options.packageDependencies ?? {},
+        remove: options.packagesToRemove ?? [],
+        tracker: { created, changed, backups },
+      });
+    }
+
     return { created, changed, removed };
   } catch (error) {
     rollback(options.projectRoot, created, backups);
@@ -659,6 +689,21 @@ function resolveSelectedVersion(
     });
   }
   return match;
+}
+
+export function collectInstalledPackageDependencies(
+  manifest: InstalledManifestDocument,
+  registry?: Registry,
+): Record<string, string> {
+  const modules: LoadedModule[] = [];
+  for (const record of manifest.modules) {
+    try {
+      modules.push(resolveInstalledModule(record, registry));
+    } catch {
+      continue;
+    }
+  }
+  return collectPackageDependencies(modules);
 }
 
 function toUpdatedRecord(options: {

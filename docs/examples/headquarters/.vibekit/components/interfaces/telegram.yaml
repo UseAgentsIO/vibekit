@@ -1,58 +1,19 @@
-schemaVersion: 1
-
 id: interface:telegram
-type: interface
-name: telegram
-displayName: Telegram Interface
-version: 1.0.0
-description: Translates Telegram Bot API messages and approval callbacks into Host I/O. Does not own Project State.
-
-compatibility:
-  vibekit: "^1.0.0"
-  pi: ">=0.50.0"
-  node: ">=20"
-
-source:
-  repository: "https://github.com/UseAgentsIO/vibekit"
-  revision: "v1.0.0"
-
-license: MIT
-
-providesCapabilities:
-  - interface.telegram
-
-requires:
-  required: []
-  optional: []
-  recommended: []
-  conflicts: []
-
-requestsPermissions: []
-
-secrets:
-  - name: TELEGRAM_BOT_TOKEN
-    required: true
-    source: environment
-
-files:
-  - source: payload/interface.yaml
-    target: .vibekit/components/interfaces/telegram.yaml
-    ownership: exclusive
-
-configuration:
-  target: .vibekit/config/interfaces/telegram.yaml
-  schema: config.schema.json
-
-healthCheck:
-  type: pi-interface
-  name: telegram
-
-runtime:
-  kind: interface
-  package: "@useagentsio/interface-telegram"
-  export: createTelegramInterface
-  lifecycle: singleton
-
-packages:
-  dependencies:
-    "@useagentsio/interface-telegram": "^0.1.0"
+kind: telegram
+description: Telegram Bot API Interface. Translates Telegram I/O. Does not own Project State.
+ownsProjectState: false
+actions:
+  - accept-human-input
+  - create-tasks
+  - request-cancellation
+  - display-progress
+  - display-results
+  - collect-approval-decisions
+notOwned:
+  - agent-definitions
+  - project-state
+  - permissions
+  - tasks
+  - approvals
+  - schedules
+  - verification-rules

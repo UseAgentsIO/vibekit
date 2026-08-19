@@ -2,8 +2,14 @@ import fs from "node:fs";
 import path from "node:path";
 
 import {
+  defaultRegistryRoot,
+  emptyInstalledManifest,
+  loadRegistry,
   parseAndValidateYaml,
+  resolveModule,
   stringifyYaml,
+  upsertInstalledModule,
+  writeInstalledManifest,
   type AgentDocument,
   type ProjectDocument,
   type TaskDocument,
@@ -57,6 +63,7 @@ export function writeRuntimeFixture(options: RuntimeFixtureOptions = {}): Runtim
     options.instructions ?? "# Coder\n\nStay inside the Task scope.\n",
     "utf8",
   );
+  writeOfficialProviders(root);
   if (options.agentConfig !== undefined) {
     fs.mkdirSync(path.join(root, ".vibekit", "config", "agents"), { recursive: true });
     fs.writeFileSync(
@@ -67,6 +74,29 @@ export function writeRuntimeFixture(options: RuntimeFixtureOptions = {}): Runtim
   }
 
   return { root, bindingName, project, agent, task };
+}
+
+function writeOfficialProviders(root: string): void {
+  const registry = loadRegistry(defaultRegistryRoot());
+  const now = new Date().toISOString();
+  let manifest = emptyInstalledManifest();
+  for (const id of ["tool:filesystem", "tool:execution"] as const) {
+    const loaded = resolveModule(registry, id);
+    manifest = upsertInstalledModule(manifest, {
+      schemaVersion: 1,
+      id: loaded.id,
+      version: loaded.version,
+      registrySource: "official",
+      sourceRevision: loaded.source?.revision ?? "unspecified",
+      integrityChecksum: loaded.checksum ?? `${loaded.id}@${loaded.version}`,
+      installedAt: now,
+      dependencies: [...loaded.requiredDependencies],
+      files: [],
+      configurationPaths: [],
+      compatibility: loaded.compatibility ?? { vibekit: "^1.0.0", pi: ">=0.50.0" },
+    });
+  }
+  writeInstalledManifest(root, manifest);
 }
 
 function mustParse<K extends "project" | "agent" | "task">(

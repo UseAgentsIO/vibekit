@@ -94,7 +94,9 @@ describe("acceptance 6: unsafe file targets", () => {
       registry,
     ]);
     expect(result.exitCode).toBe(1);
-    expect(result.stderr).toMatch(/file_target_invalid|module_yaml_invalid/);
+    expect(result.stderr).toMatch(
+      /file_target_invalid|module_yaml_invalid|registry_integrity_mismatch/,
+    );
     expect(fs.existsSync(path.join(project, "..", "escaped.txt"))).toBe(false);
   });
 });

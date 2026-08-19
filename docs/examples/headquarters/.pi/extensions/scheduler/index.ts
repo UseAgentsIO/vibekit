@@ -1,1 +1,1 @@
-export { createSchedulerTool } from "@useagentsio/interface-schedule";
+export { createSchedulerTool } from "@useagentsio/tool-scheduler";

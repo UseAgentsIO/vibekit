@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
 
-import { createSchedulerTool } from "../../packages/interface-schedule/src/index.js";
+import { createSchedulerTool } from "../../packages/tool-scheduler/src/index.js";
 
 const temps: string[] = [];
 

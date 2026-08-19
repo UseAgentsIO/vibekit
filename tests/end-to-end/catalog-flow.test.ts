@@ -214,7 +214,11 @@ async function initCatalogProject(): Promise<string> {
   return dir;
 }
 
-async function addOfficial(dir: string, type: "agent" | "policy", name: string): Promise<void> {
+async function addOfficial(
+  dir: string,
+  type: "agent" | "policy" | "tool" | "skill" | "verifier" | "state",
+  name: string,
+): Promise<void> {
   const result = await runCli([
     "add",
     type,
@@ -236,12 +240,21 @@ async function bindComposition(dir: string): Promise<ProjectDocument> {
       ...project.defaults,
       model: project.defaults?.model ?? { provider: "openai", id: "gpt-4.1" },
     },
+    authorization: {
+      ...project.authorization,
+      actions: {
+        ...project.authorization.actions,
+        "agent.delegate": "standing",
+        "source.read": "standing",
+        "source.write": "standing",
+        "command.execute": "standing",
+      },
+    },
     capabilityBindings: {
       ...project.capabilityBindings,
       "source.read": "tool:filesystem",
       "source.write": "tool:filesystem",
       "command.execute": "tool:execution",
-      "agent.delegate": "tool:execution",
     },
     delegation: {
       ...project.delegation,

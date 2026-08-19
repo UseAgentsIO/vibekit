@@ -50,7 +50,7 @@ Transactional record of modules installed in the Project. Schema: `schemas/insta
 | :--- | :--- |
 | `id` | Module ID (`agent:chief`) |
 | `version` | Installed semver |
-| `registrySource` | `official` (or the source recorded at install) |
+| `registrySource` | `official` for the default curated registry, or `local:<absolute-path>` for a custom registry path |
 | `sourceRevision` | Registry module `source.revision` |
 | `integrityChecksum` | Directory checksum of the installed module version |
 | `files[]` | Project-relative `path`, content `hash` (`sha256:…`), `ownership` (`exclusive` \| `generated`) |

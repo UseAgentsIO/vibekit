@@ -18,6 +18,7 @@ const OFFICIAL_AGENTS = [
   "researcher",
   "project-manager",
   "chief",
+  "personal",
 ] as const;
 
 const temps: string[] = [];

@@ -28,6 +28,10 @@ $$\textbf{Components} \longrightarrow \textbf{Agents} \longrightarrow \textbf{Pr
 * **The Host** is the always-running product daemon that coordinates interfaces, executes agent work, enforces permissions, and persists durable state.
 * **Pi** is the internal model and tool execution engine embedded underneath the Host.
 
+Registry Modules are VibeKit's composition and distribution abstraction. npm packages are optional implementation artifacts referenced by Module `runtime.package` / `runtime.export`. Canonical identity is the registry ID (`tool:browser`, `interface:telegram`), not `@useagentsio/tool-browser`.
+
+The official registry is the default curated registry. Independently authored Modules can conform to the same runtime, compatibility, ownership, permission, and security rules. Local/custom registry paths are supported now; hosted registries and a marketplace are not.
+
 ```text
 Human
   ↓
@@ -219,6 +223,7 @@ VibeKit includes a curated official registry of modular Agents and Components.
 | **`agent:reviewer`** | Independent Review | Validates diffs and test results. Strictly isolated with no source write permissions. |
 | **`agent:project-manager`** | Planning & Scope | Breaks requirements into discrete tasks with constraints and acceptance criteria. |
 | **`agent:researcher`** | Cited Analysis | Researches documentation and codebases; emits cited decision records. |
+| **`agent:personal`** | Personal planning | Life-admin plans and follow-ups. No source write. |
 
 ### Official Components
 
@@ -272,17 +277,17 @@ Optional Components bind with `vibekit add <family> <name>`. `create` / `init` d
 
 | Package | Version | Description |
 | :--- | :--- | :--- |
-| **[`@useagentsio/cli`](packages/cli)** | `0.3.1` | CLI binary (`vibekit`): `create`, `msg`, `start`, `add`, `doctor`, etc. |
-| **[`@useagentsio/host`](packages/host)** | `0.2.0` | Always-running Agent Host daemon (`vibekit-host`) |
-| **[`@useagentsio/core`](packages/core)** | `0.2.0` | JSON schemas, typed IDs, state drivers, and three-way diff engine |
-| **[`@useagentsio/pi`](packages/pi)** | `0.2.1` | Embedded Pi adapter, worktree isolation manager, and delegation runtime |
+| **[`@useagentsio/cli`](packages/cli)** | `0.3.2` | CLI binary (`vibekit`): `create`, `msg`, `start`, `add`, `doctor`, etc. |
+| **[`@useagentsio/host`](packages/host)** | `0.2.1` | Always-running Agent Host daemon (`vibekit-host`) |
+| **[`@useagentsio/core`](packages/core)** | `0.2.1` | JSON schemas, typed IDs, state drivers, and three-way diff engine |
+| **[`@useagentsio/pi`](packages/pi)** | `0.2.2` | Embedded Pi adapter, worktree isolation manager, and delegation runtime |
 | **[`@useagentsio/interface-sdk`](packages/interface-sdk)** | `0.1.0` | Interface protocol and lifecycle contract |
 | **[`@useagentsio/interface-terminal`](packages/interface-terminal)** | `0.1.0` | Official Terminal interface implementation |
-| **[`@useagentsio/interface-http`](packages/interface-http)** | `0.1.0` | Optional loopback HTTP Interface |
+| **[`@useagentsio/interface-http`](packages/interface-http)** | `0.1.1` | Optional loopback HTTP Interface |
 | **[`@useagentsio/interface-webhook`](packages/interface-webhook)** | `0.1.0` | Optional signed webhook Interface |
 | **[`@useagentsio/interface-schedule`](packages/interface-schedule)** | `0.1.0` | Optional schedule Interface + scheduler tool |
-| **[`@useagentsio/interface-slack`](packages/interface-slack)** | `0.1.0` | Optional Slack Interface |
-| **[`@useagentsio/interface-telegram`](packages/interface-telegram)** | `0.1.0` | Optional Telegram Interface |
+| **[`@useagentsio/interface-slack`](packages/interface-slack)** | `0.1.1` | Optional Slack Interface |
+| **[`@useagentsio/interface-telegram`](packages/interface-telegram)** | `0.1.1` | Optional Telegram Interface |
 | **[`@useagentsio/state-memory`](packages/state-memory)** | `0.1.0` | Optional SQLite+FTS5 memory store and tool |
 | **[`@useagentsio/tool-web`](packages/tool-web)** | `0.1.0` | Optional web fetch/search tool |
 | **[`@useagentsio/tool-browser`](packages/tool-browser)** | `0.1.0` | Optional isolated browser tool |

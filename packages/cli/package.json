@@ -1,6 +1,6 @@
 {
   "name": "@useagentsio/cli",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "VibeKit CLI for initializing Projects and installing Modules",
   "type": "module",
   "license": "UNLICENSED",
@@ -39,7 +39,7 @@
     "@useagentsio/core": "workspace:*",
     "@useagentsio/host": "workspace:*",
     "@useagentsio/interface-sdk": "workspace:*",
-    "@useagentsio/interface-terminal": "workspace:*",
+    "@useagentsio/interface-telegram": "workspace:*",
     "@useagentsio/pi": "workspace:*"
   }
 }

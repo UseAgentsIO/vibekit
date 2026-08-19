@@ -119,8 +119,9 @@ describe("effective configuration and model resolution", () => {
       task: fixture.task,
     });
     expect(configuration.tools).toEqual(
-      expect.arrayContaining(["read", "grep", "find", "ls", "write", "edit", "bash"]),
+      expect.arrayContaining(["read", "grep", "find", "ls", "write", "edit"]),
     );
+    expect(configuration.tools).not.toContain("bash");
     expect(configuration.tools).not.toContain("agent_delegate");
   });
 

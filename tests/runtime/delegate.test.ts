@@ -297,14 +297,18 @@ function writeChiefFixture(
     agent: chiefAgent(),
     instructions: "PARENT_ONLY_CONTEXT_TOKEN\nCompose work by delegating bounded Tasks.\n",
     project: {
-      capabilityBindings: {
-        "source.read": "tool:filesystem",
-        "source.write": "tool:filesystem",
-        "command.execute": "tool:execution",
-        "repository.read": "tool:github",
-        "repository.write": "tool:github",
-        "agent.delegate": "tool:execution",
+      authorization: {
+        default: "deny",
+        actions: {
+          "source.read": "standing",
+          "source.write": "standing",
+          "agent.delegate": "standing",
+          "deploy.apply": "explicit",
+          "destructive.delete": "explicit",
+          "project.configure": "explicit",
+        },
       },
+      capabilityBindings: {},
       delegation: options.projectDelegation ?? {
         chief: ["coder", "reviewer"],
         coder: [],

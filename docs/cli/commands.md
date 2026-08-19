@@ -1,6 +1,6 @@
 # CLI Command Reference
 
-Comprehensive reference for all 14 commands supported by the `vibekit` CLI.
+Comprehensive reference for the `vibekit` CLI commands.
 
 ---
 
@@ -21,8 +21,9 @@ Writes a schemaVersion 2 Project, installs `agent:<name>`, `provider:<id>`, and 
 - `--agent <name>`: Starter Agent to install (default: `chief`).
 - `--provider <name>`: Provider ID (default: `openai`).
 - `--model <id>`: Model ID. Interactive create can pick from Pi’s catalog. With `--yes` and no `--model`, the CLI uses the first catalog model or a known-provider default (`openai` → `gpt-4.1`).
-- `--interface <name>`: Interface component to bind (default: `terminal`).
-- `-y, --yes`: Skip confirmation prompts.
+- `--interface <name>`: Interface component to bind (default: `terminal`; headquarters example defaults to `telegram`).
+- `--example <name>`: Scaffold a named example. `headquarters` installs Chief + Personal + Telegram.
+- `-y, --yes`: Skip confirmation prompts. Prompts for missing required module secrets unless `--yes`.
 - `--dir <path>`: Project directory override.
 - `--registry <path>`: Custom registry root.
 
@@ -33,6 +34,9 @@ vibekit create my-agent
 
 # Non-interactive automated creation
 vibekit create my-agent --agent chief --provider openai --model gpt-5 --yes
+
+# Copyable Headquarters example (Chief + Personal + Telegram)
+vibekit create ~/headquarters --example headquarters --provider openai --yes
 ```
 
 ---
@@ -312,7 +316,25 @@ vibekit migrate --yes
 
 ---
 
-## 14. `vibekit help`
+## 14. `vibekit approve-pairing`
+
+Approves a Telegram pairing code so that sender can talk to the Host.
+
+### Usage
+```bash
+vibekit approve-pairing [options] <code>
+```
+
+Codes are 8 characters (from the bot). They expire after one hour. Stored in `.vibekit/runtime/pairing-telegram.json`.
+
+### Examples
+```bash
+vibekit approve-pairing 7K3M9P2Q
+```
+
+---
+
+## 15. `vibekit help`
 
 Displays global help or in-depth documentation for a specific command.
 

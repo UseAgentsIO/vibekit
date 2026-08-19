@@ -3,11 +3,13 @@ import path from "node:path";
 import {
   PI_RUNTIME_VERSION,
   VIBEKIT_VERSION,
-  assertCapabilityResolved,
-  resolveRequiredCapabilities,
+  loadInstalledProviders,
+  resolveEffectiveAuthority,
   satisfiesCompatibility,
   type AgentDocument,
+  type ApprovalDocument,
   type AuthorizationMode,
+  type EffectiveAuthority,
   type IsolationMode,
   type ModuleId,
   type PermissionGrant,
@@ -68,6 +70,8 @@ export interface EffectiveConfiguration {
   readonly maxDelegationDepth: number;
   readonly allowProjectOverride: boolean;
   readonly allowTaskOverride: boolean;
+  readonly authority: EffectiveAuthority;
+  readonly scheduledRun: boolean;
 }
 
 export interface ResolveEffectiveConfigurationInput {
@@ -80,7 +84,8 @@ export interface ResolveEffectiveConfigurationInput {
   readonly projectAgentModel?: ModelRef;
   readonly componentSecrets?: readonly SecretReference[];
   readonly cwd?: string;
-  readonly approvalGranted?: boolean;
+  readonly scheduledRun?: boolean;
+  readonly approvals?: readonly ApprovalDocument[];
 }
 
 export function resolveEffectiveConfiguration(
@@ -119,20 +124,22 @@ export function resolveEffectiveConfiguration(
     });
   }
 
-  const capabilities = unique(input.agent.capabilities.requires);
-  const capabilityBindings = resolveCapabilityBindings(input.project, capabilities);
-  assertRequiredCapabilitiesAuthorized(input.task, capabilities);
+  const authority = resolveEffectiveAuthority({
+    project: input.project,
+    agent: input.agent,
+    task: input.task,
+    installedProviders: loadInstalledProviders(input.projectRoot),
+    scheduledRun: input.scheduledRun === true,
+    approvals: input.approvals,
+  });
+  const capabilities = authority.capabilities;
+  const capabilityBindings = authority.capabilityBindings;
 
   const permissions: EffectivePermissions = {
     allow: input.agent.permissions.allow,
     deny: input.agent.permissions.deny,
   };
-  const tools = resolveAllowlistedTools({
-    capabilities,
-    permissions,
-    authorization: input.task.authorization.state,
-    approvalGranted: input.approvalGranted === true,
-  });
+  const tools = authority.builtinTools;
 
   const secrets = mergeSecrets(input.agent.secrets ?? [], input.componentSecrets ?? []);
   const verification = applyVerificationPolicy(input.project, input.agent);
@@ -168,6 +175,8 @@ export function resolveEffectiveConfiguration(
     ),
     allowProjectOverride,
     allowTaskOverride,
+    authority,
+    scheduledRun: input.scheduledRun === true,
   };
 }
 
@@ -175,7 +184,6 @@ export function resolveAllowlistedTools(input: {
   readonly capabilities: readonly string[];
   readonly permissions: EffectivePermissions;
   readonly authorization: AuthorizationMode;
-  readonly approvalGranted: boolean;
 }): readonly string[] {
   const denied = new Set(input.permissions.deny.map((grant) => grant.capability));
   const allowed = new Set(input.permissions.allow.map((grant) => grant.capability));
@@ -189,23 +197,16 @@ export function resolveAllowlistedTools(input: {
   }
 
   const uniqueNames = uniqueTools(names);
-  if (input.authorization === "standing") {
-    return uniqueNames;
+  if (input.authorization === "deny") {
+    throw fail(
+      "authorization_required",
+      "task_authorization_denied",
+      "Task authorization does not permit a Run",
+      { authorization: input.authorization },
+    );
   }
-  if (input.authorization === "explicit" && input.approvalGranted) {
+  if (input.authorization === "standing" || input.authorization === "explicit") {
     return uniqueNames;
-  }
-  if (input.authorization === "explicit") {
-    const readOnly = uniqueNames.filter((tool) => !MUTATING_TOOLS.has(tool));
-    if (readOnly.length !== uniqueNames.length) {
-      throw fail(
-        "authorization_required",
-        "mutating_tools_require_approval",
-        "Mutating tools require explicit Approval before a Run may start",
-        { tools: uniqueNames.filter((tool) => MUTATING_TOOLS.has(tool)) },
-      );
-    }
-    return readOnly;
   }
   throw fail(
     "authorization_required",
@@ -213,37 +214,6 @@ export function resolveAllowlistedTools(input: {
     "Task authorization does not permit a Run",
     { authorization: input.authorization },
   );
-}
-
-function resolveCapabilityBindings(
-  project: ProjectDocument,
-  capabilities: readonly string[],
-): Readonly<Record<string, ModuleId>> {
-  const resolutions = resolveRequiredCapabilities(capabilities, {
-    projectBindings: project.capabilityBindings,
-    installedProviders: [],
-  });
-  const bindings: Record<string, ModuleId> = {};
-  for (const resolution of resolutions) {
-    bindings[resolution.capability] = assertCapabilityResolved(resolution);
-  }
-  return bindings;
-}
-
-function assertRequiredCapabilitiesAuthorized(
-  task: TaskDocument,
-  granted: readonly string[],
-): void {
-  const grantedSet = new Set(granted);
-  const missing = task.requiredCapabilities.filter((capability) => !grantedSet.has(capability));
-  if (missing.length > 0) {
-    throw fail(
-      "permission_denied",
-      "task_capability_ungranted",
-      `Task requires capabilities the Agent does not grant: ${missing.join(", ")}`,
-      { missing, granted },
-    );
-  }
 }
 
 function applyVerificationPolicy(

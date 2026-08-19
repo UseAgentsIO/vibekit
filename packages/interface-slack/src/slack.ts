@@ -36,6 +36,7 @@ export class SlackInterface implements RunningInterface {
   private readonly interfaceBinding: string;
   private readonly projectRoot: string;
   private readonly allowFrom: readonly string[];
+  private readonly pairingRequired: boolean;
   private readonly optionalStart: boolean;
   private readonly transport?: SlackTransport;
   private readonly startError?: Error;
@@ -49,6 +50,7 @@ export class SlackInterface implements RunningInterface {
     this.interfaceBinding = stringOption(config.interfaceBinding) ?? DEFAULT_BINDING;
     this.projectRoot = stringOption(config.projectRoot) ?? process.cwd();
     this.allowFrom = stringArray(config.allowFrom);
+    this.pairingRequired = config.pairingRequired === true;
     this.optionalStart = config.optionalStart === true;
     const prepared = prepareTransport(config, services);
     this.transport = prepared.transport;
@@ -164,7 +166,8 @@ export class SlackInterface implements RunningInterface {
       channel: event.channel,
       threadTs: event.threadTs ?? event.ts,
     });
-    const trusted = isTrustedSender(this.projectRoot, event.userId, this.allowFrom);
+    const trusted =
+      !this.pairingRequired || isTrustedSender(this.projectRoot, event.userId, this.allowFrom);
     if (event.kind === "block_actions") {
       if (!trusted) {
         await this.rejectUnpaired(event);

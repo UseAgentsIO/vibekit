@@ -1,4 +1,4 @@
-import { VibeKitError } from "@useagentsio/core";
+import { VibeKitError, type Registry } from "@useagentsio/core";
 import { readDeploymentSecrets, writeDeploymentSecret } from "@useagentsio/host";
 import {
   OFFICIAL_PROVIDERS,
@@ -10,6 +10,7 @@ import {
 
 import type { OutputBuffer } from "./output.js";
 import { canPrompt, say } from "./prompt.js";
+import { setupItemsFromRegistry } from "./setup-catalog.js";
 import { BACK, isSubmit, resolveSelect, select, submit, text, type PromptResult } from "./ui/index.js";
 
 export interface SelectedModel {
@@ -26,6 +27,7 @@ export async function selectProviderAndModel(input: {
   readonly yes: boolean;
   readonly verbose?: boolean;
   readonly env?: NodeJS.ProcessEnv;
+  readonly registry?: Registry;
 }): Promise<PromptResult<SelectedModel>> {
   if (input.provider !== undefined && input.model !== undefined) {
     return submit({
@@ -66,6 +68,7 @@ async function resolveProvider(
     readonly provider?: string;
     readonly yes: boolean;
     readonly verbose?: boolean;
+    readonly registry?: Registry;
   },
   catalog: ModelCatalog,
 ): Promise<PromptResult<CatalogProvider>> {
@@ -87,25 +90,34 @@ async function resolveProvider(
     });
   }
 
+  const registryItems = providerItems(input.registry);
+  const menuIds = orderedProviderIds(registryItems);
   const extras = catalog
     .listProviders()
-    .filter((provider) => !OFFICIAL_PROVIDERS.some((official) => official.id === provider.id));
+    .filter((provider) => !menuIds.includes(provider.id));
   const moreId = "__more__";
   const officialById = new Map(OFFICIAL_PROVIDERS.map((provider) => [provider.id, provider]));
+  const labels = new Map(registryItems.map((item) => [item.id, item.label]));
+  const descriptions = new Map(
+    registryItems.flatMap((item) =>
+      item.description === undefined ? [] : [[item.id, item.description]],
+    ),
+  );
 
   for (;;) {
-    const firstPage = extras.length > 0 ? [...OFFICIAL_PROVIDERS.map((p) => p.id), moreId] : OFFICIAL_PROVIDERS.map((p) => p.id);
+    const firstPage = extras.length > 0 ? [...menuIds, moreId] : menuIds;
     const picked = await select({
       message: "Provider",
+      description: "Which model provider should this project use?",
       searchable: true,
       options: firstPage.map((id) =>
         id === moreId
           ? { value: moreId, label: "More providers", id: moreId }
           : {
               value: id,
-              label: officialById.get(id)?.name ?? id,
+              label: labels.get(id) ?? officialById.get(id)?.name ?? id,
               id,
-              hint: input.verbose === true ? id : undefined,
+              hint: input.verbose === true ? id : descriptions.get(id),
             },
       ),
     });
@@ -115,7 +127,7 @@ async function resolveProvider(
     if (picked.value !== moreId) {
       const id = picked.value;
       return submit(
-        officialById.get(id) ?? { id, name: id, secretName: secretNameForProvider(id) },
+        officialById.get(id) ?? { id, name: labels.get(id) ?? id, secretName: secretNameForProvider(id) },
       );
     }
     const extra = await select({
@@ -289,19 +301,43 @@ export async function pickProviderId(input: {
   readonly value?: string;
   readonly interactive: boolean;
   readonly verbose?: boolean;
+  readonly registry?: Registry;
 }): Promise<PromptResult<string | undefined>> {
+  const items = providerItems(input.registry);
+  const ids = orderedProviderIds(items);
+  const byId = new Map(items.map((item) => [item.id, item]));
+  const officialById = new Map(OFFICIAL_PROVIDERS.map((provider) => [provider.id, provider]));
   return resolveSelect({
     message: "Provider",
+    description: "Which model provider should this project use?",
     value: input.value,
     interactive: input.interactive,
     skippable: true,
     searchable: true,
     noneLabel: "None",
-    options: OFFICIAL_PROVIDERS.map((provider) => ({
-      value: provider.id,
-      label: provider.name,
-      id: provider.id,
-      hint: input.verbose === true ? provider.id : undefined,
+    options: ids.map((id) => ({
+      value: id,
+      label: byId.get(id)?.label ?? officialById.get(id)?.name ?? id,
+      id,
+      hint: input.verbose === true ? id : byId.get(id)?.description,
     })),
   });
+}
+
+function providerItems(registry: Registry | undefined) {
+  return setupItemsFromRegistry([], registry, "provider");
+}
+
+function orderedProviderIds(
+  items: ReadonlyArray<{ readonly id: string }>,
+): string[] {
+  const liveIds = items.map((item) => item.id);
+  if (liveIds.length === 0) {
+    return OFFICIAL_PROVIDERS.map((provider) => provider.id);
+  }
+  const officialOrder = OFFICIAL_PROVIDERS.map((provider) => provider.id).filter((id) =>
+    liveIds.includes(id),
+  );
+  const rest = liveIds.filter((id) => !officialOrder.includes(id));
+  return [...officialOrder, ...rest];
 }

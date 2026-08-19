@@ -52,9 +52,9 @@ healthCheck:
 
 runtime:
   kind: pi-extension
-  package: "@useagentsio/interface-schedule"
+  package: "@useagentsio/tool-scheduler"
   export: createSchedulerTool
 
 packages:
   dependencies:
-    "@useagentsio/interface-schedule": "^0.1.0"
+    "@useagentsio/tool-scheduler": "^1.0.0"

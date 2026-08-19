@@ -11,7 +11,7 @@ import {
 
 import type { GlobalFlags } from "../args.js";
 import type { OutputBuffer } from "../output.js";
-import { resolveProjectDir, resolveRegistry } from "../paths.js";
+import { resolveProjectDir, resolveRegistrySelection } from "../paths.js";
 import { parseModuleSelector } from "./diff.js";
 import { printDoctor } from "./doctor.js";
 
@@ -22,7 +22,7 @@ export function runUpdate(
 ): number {
   const { id, version } = parseModuleSelector(positionals, "update");
   const projectRoot = resolveProjectDir(flags.dir);
-  const registry = resolveRegistry(flags.registry);
+  const { registry, source } = resolveRegistrySelection(flags.registry);
   const project = readProjectDocument(projectRoot);
   const manifest = readInstalledManifest(projectRoot);
 
@@ -33,7 +33,7 @@ export function runUpdate(
     version,
     project,
     manifest,
-    registrySource: "official",
+    registrySource: source,
   });
 
   out.log(`Update ${plan.id} ${plan.fromVersion} → ${plan.toVersion}`);

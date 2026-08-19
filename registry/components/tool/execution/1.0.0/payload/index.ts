@@ -1,4 +1,4 @@
-/** Execution tool stub. Runtime enforcement is implemented in a later phase. */
+/** Execution tool definition. */
 export const executionTool = {
   name: "execution",
   capabilities: ["command.execute"],

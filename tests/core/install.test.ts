@@ -8,6 +8,7 @@ import {
   planInstall,
   readInstalledManifest,
   readProjectDocument,
+  writeRegistryIndex,
 } from "@useagentsio/core";
 import { describe, expect, it } from "vitest";
 
@@ -43,6 +44,7 @@ describe("atomic install rollback", () => {
       path.join(registryRoot, "components/policy/multi/1.0.0/payload/two.txt"),
       "two\n",
     );
+    writeRegistryIndex(registryRoot);
     const dir = makeTempDir("vibekit-rollback-");
     expect((await runCli(["init", dir, "--registry", registryRoot])).exitCode).toBe(0);
     const registry = loadRegistry(registryRoot);

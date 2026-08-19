@@ -1,6 +1,6 @@
 {
   "name": "@useagentsio/pi",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "VibeKit Pi runtime adapter",
   "type": "module",
   "license": "UNLICENSED",

@@ -2,6 +2,10 @@
 
 This document describes the runtime architecture, subsystem boundaries, and lifecycle execution model of **VibeKit Agents**.
 
+Registry Modules are VibeKit's composition and distribution abstraction. npm packages (`@useagentsio/tool-web`, `@useagentsio/interface-telegram`, or a third-party package) are optional implementation artifacts referenced by Module `runtime.package` / `runtime.export`. They are not the product taxonomy.
+
+The official registry is the default curated registry. Independently authored Modules can conform to the same runtime, compatibility, ownership, permission, and security rules via a local/custom registry path. Hosted discovery, ratings, and a marketplace are out of scope.
+
 ---
 
 ## High-Level Architecture

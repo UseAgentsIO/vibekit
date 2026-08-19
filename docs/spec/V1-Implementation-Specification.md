@@ -1,6 +1,6 @@
 # VibeKit Agents: V1 Implementation Specification
 
-> **Runtime correction.** The front door in this document (`init` / `add` / `doctor` as the product, Slack deferred as the remaining V1 story, users run Pi themselves) is superseded by [V1-Runtime-Correction.md](./V1-Runtime-Correction.md). The Component / Agent / Project model remains.
+> **Runtime correction.** The front door in this document (`init` / `add` / `doctor` as the product, Slack deferred as the remaining V1 story, users run Pi themselves, and single-registry-source restrictions) is superseded by [V1-Runtime-Correction.md](./V1-Runtime-Correction.md). The Component / Agent / Project model remains.
 
 ## Document status
 

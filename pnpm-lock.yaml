@@ -38,9 +38,9 @@ importers:
       '@useagentsio/interface-sdk':
         specifier: workspace:*
         version: link:../interface-sdk
-      '@useagentsio/interface-terminal':
+      '@useagentsio/interface-telegram':
         specifier: workspace:*
-        version: link:../interface-terminal
+        version: link:../interface-telegram
       '@useagentsio/pi':
         specifier: workspace:*
         version: link:../pi
@@ -72,9 +72,6 @@ importers:
       '@useagentsio/interface-sdk':
         specifier: workspace:*
         version: link:../interface-sdk
-      '@useagentsio/interface-terminal':
-        specifier: workspace:*
-        version: link:../interface-terminal
       '@useagentsio/pi':
         specifier: workspace:*
         version: link:../pi
@@ -93,6 +90,9 @@ importers:
       '@useagentsio/interface-sdk':
         specifier: workspace:*
         version: link:../interface-sdk
+      '@useagentsio/schedule-core':
+        specifier: workspace:*
+        version: link:../schedule-core
 
   packages/interface-sdk: {}
 
@@ -132,6 +132,8 @@ importers:
         specifier: ^2.8.1
         version: 2.9.0
 
+  packages/schedule-core: {}
+
   packages/state-memory: {}
 
   packages/tool-browser:
@@ -145,6 +147,12 @@ importers:
   packages/tool-mcp: {}
 
   packages/tool-process: {}
+
+  packages/tool-scheduler:
+    dependencies:
+      '@useagentsio/schedule-core':
+        specifier: workspace:*
+        version: link:../schedule-core
 
   packages/tool-web: {}
 

@@ -1,6 +1,6 @@
 {
   "name": "@useagentsio/interface-telegram",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "VibeKit Telegram Bot API Interface adapter",
   "type": "module",
   "license": "UNLICENSED",

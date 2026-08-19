@@ -1,6 +1,6 @@
 {
   "name": "@useagentsio/host",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "VibeKit long-running Host process",
   "type": "module",
   "license": "UNLICENSED",
@@ -37,7 +37,6 @@
   "dependencies": {
     "@useagentsio/core": "workspace:*",
     "@useagentsio/interface-sdk": "workspace:*",
-    "@useagentsio/interface-terminal": "workspace:*",
     "@useagentsio/pi": "workspace:*",
     "yaml": "^2.8.1"
   }

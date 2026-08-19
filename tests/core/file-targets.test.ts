@@ -1,11 +1,17 @@
+import fs from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
   VibeKitError,
   assertFileTarget,
   isSafeFileTarget,
+  safeResolve,
   validateFileTarget,
 } from "@useagentsio/core";
+
+import { makeTempDir } from "../helpers.js";
 
 describe("file targets", () => {
   it.each([
@@ -38,5 +44,13 @@ describe("file targets", () => {
     expect(isSafeFileTarget(target)).toBe(false);
     expect(validateFileTarget(target).valid).toBe(false);
     expect(() => assertFileTarget(target)).toThrow(VibeKitError);
+  });
+
+  it("rejects a target that escapes the project root through a symlink", () => {
+    const root = makeTempDir("vibekit-symlink-");
+    const outside = makeTempDir("vibekit-symlink-outside-");
+    fs.writeFileSync(path.join(outside, "secret.txt"), "nope\n");
+    fs.symlinkSync(outside, path.join(root, "link"));
+    expect(() => safeResolve(root, "link/secret.txt")).toThrow(/symlink/i);
   });
 });

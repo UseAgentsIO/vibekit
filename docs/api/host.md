@@ -42,7 +42,7 @@ export interface HostOptions {
 }
 ```
 
-- `factories` — optional overrides. When omitted, the Host loads `runtime.package` / `runtime.export` (official fallback: `interface:terminal`).
+- `factories` — testing seam only. Production loads Interfaces from installed Module `runtime` metadata (`runtime.package` / `runtime.export`). When omitted, the Host resolves each enabled Interface that way. Terminal (`interface:terminal`) is the default first-run Interface; Slack and Telegram are optional shipped Interfaces (`interface:slack`, `interface:telegram`).
 - `startInterfaces` — default `true`. `vibekit msg` sets this `false`.
 - `runTurn` / `createSession` — test seams, not product modes.
 

@@ -9,10 +9,11 @@ import {
   type MenuOption,
 } from "./options.js";
 import {
+  dim,
   footer,
   formatDone,
   LiveFrame,
-  optionLine,
+  optionLines,
   printDone,
   printSkipped,
   requireTty,
@@ -24,12 +25,14 @@ export type SearchMode = false | true | "type";
 
 export interface SelectOptions<T> {
   readonly message: string;
+  readonly description?: string;
   readonly options: ReadonlyArray<MenuOption<T>>;
   readonly searchable?: SearchMode;
   readonly skippable?: boolean;
   readonly noneLabel?: string;
   readonly initial?: number;
   readonly limit?: number;
+  readonly hintBelow?: boolean;
   readonly manual?: boolean | { readonly parse?: (raw: string) => T | undefined };
 }
 
@@ -108,19 +111,23 @@ async function runSelectLoop<T>(options: SelectOptions<T>): Promise<LoopResult<T
       if (cursor >= rows.length) {
         cursor = Math.max(0, rows.length - 1);
       }
-      const limit = options.limit ?? defaultMenuLimit();
+      const limit = options.limit ?? defaultMenuLimit(undefined, options.hintBelow === true ? 2 : 1);
       const page = windowItems(rows, cursor, limit);
       const filterHint = searching || (mode === "type" && query.length > 0) ? `  /${query}` : "";
       const lines = [`? ${options.message}${filterHint}`];
+      if (options.description !== undefined && options.description.length > 0) {
+        lines.push(`  ${dim(options.description)}`);
+      }
       if (rows.length === 0) {
         lines.push("    No matches");
       } else {
         for (const [index, option] of page.items.entries()) {
           lines.push(
-            optionLine({
+            ...optionLines({
               active: page.start + index === cursor,
               label: option.label,
               hint: "hint" in option ? option.hint : undefined,
+              hintBelow: options.hintBelow,
             }),
           );
         }

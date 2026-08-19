@@ -10,14 +10,14 @@ $$\textbf{Components} \longrightarrow \textbf{Agents} \longrightarrow \textbf{Pr
 
 ### 1. [Headquarters: Minimal Life Coordinator Blueprint](headquarters/README.md)
 * **Directory**: [`headquarters/`](headquarters/)
-* **Description**: A streamlined starter blueprint pairing a central **Chief of Staff** with a specialized **Personal Director**. Designed as an educational foundation to teach users how to compose a front-door coordinator with a domain agent, and how to incrementally add their own custom agents (e.g., Health, Finance, Home, Career, or Engineering).
-* **Key Concepts**: Single front-door intake via Telegram, hierarchical delegation (`Chief → Personal`), scoped SQLite memory, and step-by-step instructions for extending the workforce.
+* **Description**: Copyable Chief + Personal Project on Telegram. Scaffold with `vibekit create ~/headquarters --example headquarters`.
+* **Key Concepts**: Telegram pairing, `agent:chief` → `agent:personal` delegation, required secrets from module manifests.
 
 ---
 
 ## 🎯 How to Use These Examples
 
-1. **Minimal Architecture Reference**: Study `.vibekit/project.yaml` to see how a clean 2-agent composition and delegation rule is configured.
+1. **Create the Project**: `vibekit create ~/headquarters --example headquarters --provider openai --yes` then `vibekit start`.
 2. **Extensible Blueprint**: Follow the walkthrough in the README to add your own domain agents, skills, and tools.
 3. **Interface & Host Wiring**: Learn how to attach external transports (like Telegram or Terminal) to an always-running Host daemon.
 

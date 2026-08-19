@@ -7,7 +7,7 @@
       "version": "1.0.0",
       "registrySource": "official",
       "sourceRevision": "v1.0.0",
-      "integrityChecksum": "sha256:aff9fa0dff1a6c77904455cdfdba22470f5bc04b4a2e50af181fbe500d62d8c6",
+      "integrityChecksum": "sha256:e3fa77ecf4840abcfd7fe20525092f79844975fb01b53f7289963c4d8cfa947a",
       "installedAt": "2026-08-19T04:59:53.533Z",
       "dependencies": [
         "state:repository"
@@ -35,9 +35,9 @@
       "schemaVersion": 1,
       "id": "agent:personal",
       "version": "1.0.0",
-      "registrySource": "project-local",
+      "registrySource": "official",
       "sourceRevision": "unspecified",
-      "integrityChecksum": "sha256:67a9ddecb6ac12bc9e31f5bdf01f761b699e27bca5b37468148a86db03b32f4b",
+      "integrityChecksum": "sha256:92f50e8e7d2c6cd2051d00e5b3eb00927cd7d98451d72c9e3eaca8ecdf447f2d",
       "installedAt": "2026-08-19T05:00:34.618Z",
       "dependencies": [
         "state:repository"
@@ -91,13 +91,13 @@
       "version": "1.0.0",
       "registrySource": "official",
       "sourceRevision": "unspecified",
-      "integrityChecksum": "sha256:05ea3961a24f66bfaafb2a2711f393b501c1e4931907e7bc937ed4c54f6a8fa7",
+      "integrityChecksum": "sha256:63ccb0e92701d00a6274ce7135370aff1c891fedced1493b816ed4525802ae87",
       "installedAt": "2026-08-19T05:03:09.086Z",
       "dependencies": [],
       "files": [
         {
           "path": ".vibekit/components/interfaces/telegram.yaml",
-          "hash": "sha256:05ea3961a24f66bfaafb2a2711f393b501c1e4931907e7bc937ed4c54f6a8fa7",
+          "hash": "sha256:77df642d4aac6af3a5cf82e83e6f4dfbbaf30b33932a6d961aa82998e313ba43",
           "ownership": "exclusive"
         }
       ],
@@ -191,7 +191,7 @@
       "version": "1.0.0",
       "registrySource": "official",
       "sourceRevision": "v1.0.0",
-      "integrityChecksum": "sha256:356dc379f6927e7d502af9134329b226df2218068cb57ab17f77f89744d33c49",
+      "integrityChecksum": "sha256:96b8695daa5a57eea8efb470e3d9eefe6fffbf496d65051aa036de1c70e689d9",
       "installedAt": "2026-08-19T04:59:53.533Z",
       "dependencies": [],
       "files": [
@@ -291,18 +291,45 @@
       "version": "1.0.0",
       "registrySource": "official",
       "sourceRevision": "v1.0.0",
-      "integrityChecksum": "sha256:3c1f8344ef676063d2da8045744dd769ba3bbc5e0e8a3e7c4ae13bb8b527972b",
+      "integrityChecksum": "sha256:e6631d3421c24d42c927cc5c19709ce5f45aabc564830a2cb3fe00dd398e4707",
       "installedAt": "2026-08-19T04:59:53.533Z",
       "dependencies": [],
       "files": [
         {
           "path": ".vibekit/components/state/repository.yaml",
-          "hash": "sha256:74f5239a0ffc2a7675323a6b4206787e5ec3e86519701f24cc85f4f16dc9d56a",
+          "hash": "sha256:2ccfcb67ec81be245e6e896242b17fd3ca9e495283fbdf42c22321b262fa9279",
           "ownership": "exclusive"
         }
       ],
       "configurationPaths": [
         ".vibekit/config/state/repository.yaml"
+      ],
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "tool:filesystem",
+      "version": "1.0.0",
+      "registrySource": "official",
+      "sourceRevision": "v1.0.0",
+      "integrityChecksum": "sha256:d88615340dd88ed80a1c088d85358fb6cf2f127831c934ac5b84df1f93f0ccd5",
+      "installedAt": "2026-08-19T04:59:53.533Z",
+      "dependencies": [
+        "policy:least-privilege"
+      ],
+      "files": [
+        {
+          "path": ".pi/extensions/filesystem/index.ts",
+          "hash": "sha256:7aae43865f0aa01217b828a63c53e03e18e42260fb3a743584e964bc0efaa568",
+          "ownership": "exclusive"
+        }
+      ],
+      "configurationPaths": [
+        ".vibekit/config/tools/filesystem.yaml"
       ],
       "compatibility": {
         "vibekit": "^1.0.0",
@@ -343,7 +370,7 @@
       "version": "1.0.0",
       "registrySource": "official",
       "sourceRevision": "v1.0.0",
-      "integrityChecksum": "sha256:e698a66cbe702513cc1887418a380a89c323f60a48c7f8593e07dcbd036d1a87",
+      "integrityChecksum": "sha256:a3fd9785e7d3b8a3b8c0e60086132d854a46d24d75c956b75101f9e2fb249b78",
       "installedAt": "2026-08-19T04:59:53.533Z",
       "dependencies": [
         "interface:schedule"
@@ -351,7 +378,7 @@
       "files": [
         {
           "path": ".pi/extensions/scheduler/index.ts",
-          "hash": "sha256:c8568e093903227f4332b6dbc445e50dd43164754b921243b40f23d7afe02e75",
+          "hash": "sha256:c9c6e31e00695612a199b0bf72cf679ad7e4d22bd9d1f1ec0dfbdecae2c3f6a4",
           "ownership": "exclusive"
         }
       ],

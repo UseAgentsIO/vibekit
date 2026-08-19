@@ -70,16 +70,33 @@ export class LiveFrame {
   }
 }
 
+export function optionLines(input: {
+  readonly active: boolean;
+  readonly label: string;
+  readonly hint?: string;
+  readonly mark?: string;
+  readonly hintBelow?: boolean;
+}): string[] {
+  const prefix = input.active ? cyan(symbols.pointer) : " ";
+  const mark = input.mark === undefined ? "" : `${input.mark} `;
+  const head = `  ${prefix} ${mark}${input.label}`;
+  if (input.hint === undefined || input.hint.length === 0) {
+    return [head];
+  }
+  if (input.hintBelow === true) {
+    return [head, `      ${dim(input.hint)}`];
+  }
+  return [`${head} ${dim(input.hint)}`];
+}
+
 export function optionLine(input: {
   readonly active: boolean;
   readonly label: string;
   readonly hint?: string;
   readonly mark?: string;
+  readonly hintBelow?: boolean;
 }): string {
-  const prefix = input.active ? cyan(symbols.pointer) : " ";
-  const mark = input.mark === undefined ? "" : `${input.mark} `;
-  const hint = input.hint === undefined || input.hint.length === 0 ? "" : ` ${dim(input.hint)}`;
-  return `  ${prefix} ${mark}${input.label}${hint}`;
+  return optionLines(input).join("\n");
 }
 
 export function footer(text: string): string {

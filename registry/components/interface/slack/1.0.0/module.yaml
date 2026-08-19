@@ -58,4 +58,4 @@ runtime:
 
 packages:
   dependencies:
-    "@useagentsio/interface-slack": "^0.1.0"
+    "@useagentsio/interface-slack": "^0.1.1"

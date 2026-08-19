@@ -1,8 +1,12 @@
 # Module Authoring Guide
 
-How to add or change official **Agents** and **Components** in the VibeKit registry.
+How to add or change **Agents** and **Components** that conform to the VibeKit Module contract.
 
-The registry is a curated catalog inside this monorepo, not a marketplace. Installing a module copies its payload into the Project, where the files become locally owned. See the [PRD registry and ownership sections](../PRD.md) and [catalog overview](../catalog/overview.md).
+The **official** registry is the default curated catalog inside this monorepo. It is not a marketplace, and it is not the definition of a valid Module. Independently authored Modules can live in a local/custom registry path and install through the same CLI (`--registry <path>`) once they satisfy the same runtime, compatibility, ownership, permission, and security rules.
+
+Installing a module copies its payload into the Project, where the files become locally owned. See the [PRD registry and ownership sections](../PRD.md) and [catalog overview](../catalog/overview.md).
+
+A Tool or Interface does **not** require editing VibeKit core, Host ID maps, or `vibekit start` in order to load. The Host resolves `runtime.kind` / `runtime.package` / `runtime.export` from the **installed** Module and its recorded registry source.
 
 ---
 
@@ -18,7 +22,7 @@ Accept a module when it is:
 Reject a module that:
 
 - Introduces `orchestrator`, `subagent`, or `Blocks`
-- Requires a third-party registry or remote “app store”
+- Requires a hosted registry service or remote “app store”
 - Stores secret values
 - Pretends to be an executable Tool while shipping only config (`runtime.kind` must be `config-only` and `available: false` until the Tool exists)
 - Owns Project State from an Interface
@@ -117,6 +121,36 @@ Required on Components:
 - `configuration` — `{ target, schema }` (Project config path + schema file name)
 
 Optional: `healthCheck`, `runtime`, `packages`.
+
+### Runtime contract (Tools and Interfaces)
+
+Package-backed Components declare how the Host loads them. This is implementation metadata, not identity:
+
+```yaml
+runtime:
+  kind: interface          # or pi-extension / package / pi-builtin / config-only
+  package: "@alice/vibekit-discord"
+  export: createDiscordInterface
+  available: true          # false or kind: config-only means do not execute
+packages:
+  dependencies:
+    "@alice/vibekit-discord": "^1.0.0"
+```
+
+Required for a loadable Tool or Interface:
+
+- `id` / `type` / `name` / `version` / `description` / `compatibility`
+- `runtime.kind` matching the family (`interface` or `pi-extension` / `package` for Tools)
+- `runtime.package` and `runtime.export` for package-backed implementations
+- configuration schema, requested capabilities/permissions, secret **references** only
+- relative `files` targets and ownership
+- `requires` for other Modules the installer must resolve
+
+The Host loads `runtime.package` from the **Project** (`importProjectModule`) and calls `runtime.export`. Official `@useagentsio/*` packages are implementations of official Modules; a third-party package is treated the same after registry validation. Adding `interface:discord` must not require edits to `packages/cli/src/commands/start.ts` or a Host ID map.
+
+`publisher` is a document field, not a privileged runtime type. It does not have to be UseAgentsIO.
+
+Set `runtime.kind: config-only` and `available: false` until an executable implementation exists.
 
 ### Agent fields
 

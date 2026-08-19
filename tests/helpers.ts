@@ -36,6 +36,15 @@ export interface SyntheticComponentOptions {
   readonly permissions?: string[];
   readonly files?: Array<{ source: string; target: string; ownership?: "exclusive" | "generated" }>;
   readonly payload?: string;
+  readonly runtime?: {
+    readonly kind: "interface" | "pi-builtin" | "pi-extension" | "package" | "config-only";
+    readonly package?: string;
+    readonly export?: string;
+    readonly lifecycle?: "singleton";
+    readonly tools?: readonly string[];
+    readonly available?: boolean;
+  };
+  readonly packages?: { readonly dependencies?: Readonly<Record<string, string>> };
 }
 
 export function writeSyntheticComponent(
@@ -88,6 +97,8 @@ export function writeSyntheticComponent(
       target: `.vibekit/config/${options.type}/${options.name}.yaml`,
       schema: "config.schema.json",
     },
+    ...(options.runtime !== undefined ? { runtime: options.runtime } : {}),
+    ...(options.packages !== undefined ? { packages: options.packages } : {}),
   };
   fs.writeFileSync(path.join(dir, "module.yaml"), stringifyYaml(document), "utf8");
   fs.writeFileSync(

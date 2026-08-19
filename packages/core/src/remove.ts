@@ -9,15 +9,17 @@ import type { LoadedModule } from "./module.js";
 import type { Registry } from "./registry.js";
 import type { InstalledManifestDocument, InstalledModuleDocument, ProjectDocument } from "./types.js";
 import { stringifyYaml } from "./yaml.js";
+import { resolveInstalledModule } from "./registry-source.js";
 import {
   GENERATED_CONFIG_RELATIVE_PATH,
   applyStagedChanges,
   buildGeneratedDocument,
+  collectInstalledPackageDependencies,
   defaultConfigFor,
   isGeneratedPath,
-  tryResolveModule,
   type PlannedUpdateWrite,
 } from "./update.js";
+import { packagesToRemove } from "./packages.js";
 
 export interface KeptModule {
   readonly id: ModuleId;
@@ -34,6 +36,8 @@ export interface RemovePlan {
   readonly project: ProjectDocument;
   readonly manifest: InstalledManifestDocument;
   readonly writes: readonly PlannedUpdateWrite[];
+  readonly packageDependencies: Readonly<Record<string, string>>;
+  readonly packagesToRemove: readonly string[];
 }
 
 export interface RemoveResult {
@@ -88,7 +92,12 @@ export function planRemove(options: PlanRemoveOptions): RemovePlan {
     if (installed === undefined) {
       continue;
     }
-    const base = tryResolveModule(options.registry, installed.id, installed.version);
+    let base: LoadedModule | undefined;
+    try {
+      base = resolveInstalledModule(installed, options.registry);
+    } catch {
+      base = undefined;
+    }
     for (const file of installed.files) {
       if (file.ownership === "generated" || isGeneratedPath(file.path)) {
         continue;
@@ -143,6 +152,8 @@ export function planRemove(options: PlanRemoveOptions): RemovePlan {
       project: options.project,
       manifest: options.manifest,
       writes: [],
+      packageDependencies: {},
+      packagesToRemove: [],
     };
   }
 
@@ -160,6 +171,9 @@ export function planRemove(options: PlanRemoveOptions): RemovePlan {
     },
   ];
 
+  const previousPackages = collectInstalledPackageDependencies(options.manifest, options.registry);
+  const nextPackages = collectInstalledPackageDependencies(nextManifest, options.registry);
+
   return {
     id: options.id,
     modulesToRemove,
@@ -170,6 +184,8 @@ export function planRemove(options: PlanRemoveOptions): RemovePlan {
     project: nextProject,
     manifest: nextManifest,
     writes,
+    packageDependencies: nextPackages,
+    packagesToRemove: packagesToRemove(previousPackages, nextPackages),
   };
 }
 
@@ -192,6 +208,8 @@ export function applyRemove(options: {
     deletes: options.plan.filesToRemove,
     project: options.plan.project,
     manifest: options.plan.manifest,
+    packageDependencies: options.plan.packageDependencies,
+    packagesToRemove: options.plan.packagesToRemove,
   });
 
   return {

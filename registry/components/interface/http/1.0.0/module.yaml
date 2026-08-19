@@ -55,4 +55,4 @@ runtime:
 
 packages:
   dependencies:
-    "@useagentsio/interface-http": "^0.1.0"
+    "@useagentsio/interface-http": "^0.1.1"

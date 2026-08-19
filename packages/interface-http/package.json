@@ -1,6 +1,6 @@
 {
   "name": "@useagentsio/interface-http",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "VibeKit local loopback HTTP Interface adapter",
   "type": "module",
   "license": "UNLICENSED",

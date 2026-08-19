@@ -67,8 +67,9 @@ Project is healthy.
 ```
 
 ### What `doctor` Checks:
-- **Schema Conformity**: Validates `project.yaml` against JSON Schema Draft-07.
-- **Checksum Verification**: Detects files that have been modified, corrupted, or deleted out of band.
-- **Dependency Completeness**: Ensures that every ID in an installed module’s `requires.required` list exists in `installed.json`.
-- **Cycle Detection**: Verifies that agent delegation graphs and module dependencies do not contain infinite loops.
-- **Path Traversal Guards**: Rejects any configuration containing `..` or absolute paths.
+- **Schema Conformity**: Validates `project.yaml`, `installed.json`, and all component configurations against their respective JSON schemas.
+- **Integrity Verification**: Checks installed manifest checksums against the module registry and verifies installed file hashes for tampering.
+- **Dependency & Capability Completeness**: Ensures all required dependencies and required agent capabilities resolve to installed providers.
+- **Cycle Detection**: Verifies that agent delegation graphs and module dependencies do not contain cycles.
+- **Scope & Path Safety**: Validates agent permission grants for path traversal (`..`), leading slashes, null bytes, command injection characters, and invalid scope combinations.
+- **Runtime Exports**: Verifies that executable modules declaring `runtime.package` have resolvable packages and valid exported symbols matching `runtime.export`.

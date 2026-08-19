@@ -8,7 +8,7 @@ import {
   type ModuleType,
 } from "@useagentsio/core";
 
-import { resolveRegistry } from "../paths.js";
+import { resolveRegistrySelection } from "../paths.js";
 
 export interface InstallModuleResult {
   readonly id: string;
@@ -16,7 +16,10 @@ export interface InstallModuleResult {
   readonly alreadyInstalled: boolean;
 }
 
-export function installOfficialModule(input: {
+/** @deprecated Use installRegistryModule. */
+export const installOfficialModule = installRegistryModule;
+
+export function installRegistryModule(input: {
   readonly projectRoot: string;
   readonly type: string;
   readonly name: string;
@@ -25,7 +28,7 @@ export function installOfficialModule(input: {
   if (!isModuleType(input.type)) {
     return { id: `${input.type}:${input.name}`, created: [], alreadyInstalled: false };
   }
-  const registry = resolveRegistry(input.registry);
+  const { registry, source } = resolveRegistrySelection(input.registry);
   const project = readProjectDocument(input.projectRoot);
   const manifest = readInstalledManifest(input.projectRoot);
   const id = formatModuleId(input.type as ModuleType, input.name);
@@ -38,7 +41,7 @@ export function installOfficialModule(input: {
     roots: [id],
     project,
     manifest,
-    registrySource: "official",
+    registrySource: source,
   });
   const result = applyInstall({ projectRoot: input.projectRoot, plan });
   return { id, created: result.created, alreadyInstalled: false };

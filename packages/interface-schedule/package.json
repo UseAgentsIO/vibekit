@@ -1,7 +1,7 @@
 {
   "name": "@useagentsio/interface-schedule",
   "version": "0.1.0",
-  "description": "VibeKit scheduled-input Interface and scheduler tool",
+  "description": "VibeKit scheduled-input Interface",
   "type": "module",
   "license": "UNLICENSED",
   "author": "UseAgentsIO",
@@ -32,6 +32,7 @@
     "prepublishOnly": "tsc -b"
   },
   "dependencies": {
-    "@useagentsio/interface-sdk": "workspace:*"
+    "@useagentsio/interface-sdk": "workspace:*",
+    "@useagentsio/schedule-core": "workspace:*"
   }
 }

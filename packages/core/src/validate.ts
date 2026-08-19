@@ -139,6 +139,24 @@ export function parseAndValidateJson<K extends DocumentKind>(
   return validateDocument(kind, data);
 }
 
+export function validateJsonSchema(
+  schema: object,
+  data: unknown,
+): ValidationResult<unknown> {
+  const ajv = new Ajv({
+    allErrors: true,
+    strict: false,
+    validateFormats: true,
+    allowUnionTypes: true,
+  });
+  addFormats(ajv);
+  const validator = ajv.compile(schema);
+  if (validator(data)) {
+    return { valid: true, errors: [], data };
+  }
+  return { valid: false, errors: formatAjvErrors(validator.errors) };
+}
+
 function getValidator(kind: DocumentKind): ValidateFunction {
   const existing = compiled.get(kind);
   if (existing) {

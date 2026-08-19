@@ -1,6 +1,6 @@
 {
   "name": "@useagentsio/core",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "VibeKit schemas, IDs, validation, install, and Project State",
   "type": "module",
   "license": "UNLICENSED",

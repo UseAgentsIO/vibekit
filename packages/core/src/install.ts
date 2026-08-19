@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 
 import { satisfiesCompatibility } from "./compatibility.js";
 import { sha256Checksum, sha256File } from "./checksum.js";
+import { resolveCapabilityProviders } from "./composition.js";
 import {
   OFFICIAL_REGISTRY_SOURCE,
   PI_RUNTIME_VERSION,
@@ -17,7 +18,9 @@ import type { ModuleId } from "./ids.js";
 import { upsertInstalledModule, writeInstalledManifest } from "./installed.js";
 import type { LoadedModule } from "./module.js";
 import { planFileOwnership, type PlannedFile } from "./ownership.js";
+import { applyPackageState, collectPackageDependencies } from "./packages.js";
 import { safeResolve } from "./paths.js";
+import { resolveInstalledModule } from "./registry-source.js";
 import { writeProjectDocument } from "./project.js";
 import type { Registry } from "./registry.js";
 import { assertModulePayload, resolveModule } from "./registry.js";
@@ -40,6 +43,7 @@ export interface InstallPlan {
   readonly secrets: readonly SecretReference[];
   readonly recommended: readonly ModuleId[];
   readonly optional: readonly ModuleId[];
+  readonly packageDependencies: Readonly<Record<string, string>>;
   readonly project: ProjectDocument;
   readonly manifest: InstalledManifestDocument;
 }
@@ -79,15 +83,29 @@ export function planInstall(options: PlanInstallOptions): InstallPlan {
   };
 
   const installedIds = new Set<ModuleId>(options.manifest.modules.map((module) => module.id));
-  const resolved = resolveInstallSet(options.roots, lookup, installedIds);
+  const installedLoaded = loadInstalledModules(options.manifest, options.registry);
+  const { resolved, bindings } = resolveInstallWithCapabilities({
+    registry: options.registry,
+    lookup,
+    roots: options.roots,
+    installedIds,
+    installedLoaded,
+    projectBindings: options.project.capabilityBindings,
+  });
 
   const files: PlannedFile[] = [];
   const permissions: PlannedPermission[] = [];
   const secrets: SecretReference[] = [];
-  const nextProject = structuredClone(options.project) as ProjectDocument;
+  const nextProject = {
+    ...structuredClone(options.project),
+    capabilityBindings: {
+      ...options.project.capabilityBindings,
+      ...bindings,
+    },
+  } as ProjectDocument;
   let nextManifest = options.manifest;
   const installedAt = (options.now ?? new Date()).toISOString();
-  const registrySource = options.registrySource ?? OFFICIAL_REGISTRY_SOURCE;
+  const registrySource = options.registrySource ?? options.registry.source ?? OFFICIAL_REGISTRY_SOURCE;
 
   for (const module of resolved.toInstall) {
     assertModulePayload(module);
@@ -122,6 +140,10 @@ export function planInstall(options: PlanInstallOptions): InstallPlan {
     );
   }
 
+  const packageDependencies = collectPackageDependencies(
+    uniqueModules([...resolved.toInstall, ...resolved.alreadyInstalled, ...installedLoaded]),
+  );
+
   planFileOwnership(files, options.manifest);
   assertNoExistingConflicts(options.projectRoot, files);
 
@@ -142,6 +164,7 @@ export function planInstall(options: PlanInstallOptions): InstallPlan {
     secrets,
     recommended: resolved.recommended,
     optional: resolved.optional,
+    packageDependencies,
     project: nextProject,
     manifest: nextManifest,
   };
@@ -234,6 +257,12 @@ export function applyInstall(options: {
     if (!changed.includes(".vibekit/installed.json") && !created.includes(".vibekit/installed.json")) {
       changed.push(".vibekit/installed.json");
     }
+
+    applyPackageState({
+      projectRoot: options.projectRoot,
+      dependencies: options.plan.packageDependencies,
+      tracker: { created, changed, backups },
+    });
 
     return { created, changed, plan: options.plan };
   } catch (error) {
@@ -337,7 +366,7 @@ function applyProjectSideEffects(project: ProjectDocument, module: LoadedModule)
   if (module.type === "verifier" && !mutable.verification.default.includes(module.id)) {
     mutable.verification.default.push(module.id);
   }
-  if (module.type === "state") {
+  if (module.type === "state" && module.id === "state:repository") {
     mutable.state.backend = module.id;
   }
 }
@@ -372,17 +401,8 @@ function toInstalledRecord(
   };
 }
 
-function defaultConfigFor(module: LoadedModule): Record<string, unknown> {
-  if (module.secrets.length === 0) {
-    return {};
-  }
-  return {
-    secrets: module.secrets.map((secret) => ({
-      name: secret.name,
-      source: secret.source,
-      ...(secret.required === undefined ? {} : { required: secret.required }),
-    })),
-  };
+function defaultConfigFor(_module: LoadedModule): Record<string, unknown> {
+  return {};
 }
 
 function assertNoExistingConflicts(projectRoot: string, files: readonly PlannedFile[]): void {
@@ -410,6 +430,72 @@ function assertNoExistingConflicts(projectRoot: string, files: readonly PlannedF
       });
     }
   }
+}
+
+function resolveInstallWithCapabilities(options: {
+  readonly registry: Registry;
+  readonly lookup: (id: ModuleId) => LoadedModule | undefined;
+  readonly roots: readonly ModuleId[];
+  readonly installedIds: ReadonlySet<ModuleId>;
+  readonly installedLoaded: readonly LoadedModule[];
+  readonly projectBindings: Readonly<Record<string, ModuleId>>;
+}): {
+  resolved: ReturnType<typeof resolveInstallSet>;
+  bindings: Readonly<Record<string, ModuleId>>;
+} {
+  let roots = [...options.roots];
+  let resolved = resolveInstallSet(roots, options.lookup, options.installedIds);
+  let bindings: Readonly<Record<string, ModuleId>> = options.projectBindings;
+  for (let round = 0; round < 8; round += 1) {
+    const available = uniqueModules([
+      ...resolved.toInstall,
+      ...resolved.alreadyInstalled,
+      ...options.installedLoaded,
+    ]);
+    const extra = resolveCapabilityProviders({
+      registry: options.registry,
+      lookup: options.lookup,
+      agents: available.filter((module) => module.type === "agent"),
+      available,
+      projectBindings: bindings,
+    });
+    bindings = extra.bindings;
+    const missing = extra.extraRoots.filter((id) => !roots.includes(id) && !options.installedIds.has(id));
+    if (missing.length === 0) {
+      return { resolved, bindings };
+    }
+    roots = [...roots, ...missing];
+    resolved = resolveInstallSet(roots, options.lookup, options.installedIds);
+  }
+  return { resolved, bindings };
+}
+
+function loadInstalledModules(
+  manifest: InstalledManifestDocument,
+  registry: Registry,
+): LoadedModule[] {
+  const loaded: LoadedModule[] = [];
+  for (const record of manifest.modules) {
+    try {
+      loaded.push(resolveInstalledModule(record, registry));
+    } catch {
+      continue;
+    }
+  }
+  return loaded;
+}
+
+function uniqueModules(modules: readonly LoadedModule[]): LoadedModule[] {
+  const seen = new Set<ModuleId>();
+  const result: LoadedModule[] = [];
+  for (const module of modules) {
+    if (seen.has(module.id)) {
+      continue;
+    }
+    seen.add(module.id);
+    result.push(module);
+  }
+  return result;
 }
 
 function ensureParentDirs(dest: string, projectRoot: string, createdDirs: string[]): void {

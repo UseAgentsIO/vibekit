@@ -2,19 +2,22 @@ import fs from "node:fs";
 import path from "node:path";
 
 import {
-  defaultRegistryRoot,
-  getInstalledModule,
-  loadRegistry,
+  authorizeInvocation,
+  invocationFromToolCall,
   parseModuleId,
   readInstalledManifest,
-  resolveModule,
+  type ApprovalDocument,
+  type EffectiveAuthority,
   type ModuleId,
-  type ModuleRuntime,
+  type ProjectDocument,
+  type TaskDocument,
 } from "@useagentsio/core";
 import type { PiCustomTool } from "@useagentsio/pi";
 import { parse as parseYaml } from "yaml";
 
+import { hostError } from "./errors.js";
 import { exportedValue, importProjectModule } from "./project-import.js";
+import { resolveExecutableRuntime } from "./runtime-loader.js";
 
 export interface BoundCustomTool extends PiCustomTool {
   readonly moduleId: ModuleId;
@@ -25,6 +28,12 @@ export interface ToolBindContext {
   readonly resolveSecret: (name: string) => string;
   readonly grantedCapabilities?: readonly string[];
   readonly scheduledRun?: boolean;
+  readonly allowedModuleIds?: readonly ModuleId[];
+  readonly authority?: EffectiveAuthority;
+  readonly project?: ProjectDocument;
+  readonly task?: TaskDocument;
+  readonly approvals?: readonly ApprovalDocument[] | (() => readonly ApprovalDocument[]);
+  readonly now?: Date | (() => Date);
 }
 
 export interface ToolFactory {
@@ -60,19 +69,32 @@ export async function bindInstalledTools(
     if (parsed.type !== "tool") {
       continue;
     }
-    const runtime = runtimeOf(record.id, record.version, projectRoot);
-    if (runtime?.package === undefined || runtime.export === undefined) {
+    if (
+      context.allowedModuleIds !== undefined &&
+      !context.allowedModuleIds.includes(record.id)
+    ) {
       continue;
     }
-    if (runtime.kind === "config-only" || runtime.available === false) {
+    const executable = resolveExecutableRuntime(record, {
+      expectedType: "tool",
+      executableKinds: ["pi-extension", "package"],
+    });
+    if (executable === undefined) {
       continue;
     }
-    if (getInstalledModule(manifest, record.id) === undefined) {
-      continue;
-    }
-    const factory = await loadToolFactory(projectRoot, runtime.package, runtime.export);
+    const factory = await loadToolFactory(projectRoot, executable.package, executable.export);
     if (factory === undefined) {
-      continue;
+      throw hostError(
+        "unavailable",
+        "tool_factory_missing",
+        `Unable to load ${record.id} from ${executable.package} (${executable.export})`,
+        {
+          id: record.id,
+          package: executable.package,
+          export: executable.export,
+          registrySource: record.registrySource,
+        },
+      );
     }
     const config = loadToolConfig(projectRoot, record.id);
     const created = await factory({
@@ -87,7 +109,16 @@ export async function bindInstalledTools(
       if (!isPiCustomTool(tool)) {
         continue;
       }
-      bound.push({ ...tool, moduleId: record.id });
+      bound.push(
+        wrapToolExecution({ ...tool, moduleId: record.id }, {
+          allowedModuleIds: context.allowedModuleIds,
+          authority: context.authority,
+          project: context.project,
+          task: context.task,
+          approvals: context.approvals,
+          now: context.now,
+        }),
+      );
     }
   }
   return bound;
@@ -104,31 +135,6 @@ export async function loadToolFactory(
     return exported as ToolFactory;
   }
   return undefined;
-}
-
-function runtimeOf(
-  id: ModuleId,
-  version: string,
-  projectRoot: string,
-): ModuleRuntime | undefined {
-  try {
-    const loaded = resolveModule(loadRegistry(defaultRegistryRoot()), id, version);
-    if (loaded.document.type === "agent") {
-      return undefined;
-    }
-    return loaded.document.runtime;
-  } catch {
-    try {
-      const loaded = resolveModule(loadRegistry(defaultRegistryRoot()), id);
-      if (loaded.document.type === "agent") {
-        return undefined;
-      }
-      return loaded.document.runtime;
-    } catch {
-      void projectRoot;
-      return undefined;
-    }
-  }
 }
 
 function loadToolConfig(projectRoot: string, id: ModuleId): Record<string, unknown> {
@@ -151,6 +157,52 @@ function loadToolConfig(projectRoot: string, id: ModuleId): Record<string, unkno
     }
   }
   return {};
+}
+
+function wrapToolExecution(
+  tool: BoundCustomTool,
+  context: {
+    readonly allowedModuleIds: readonly ModuleId[] | undefined;
+    readonly authority?: EffectiveAuthority;
+    readonly project?: ProjectDocument;
+    readonly task?: TaskDocument;
+    readonly approvals?: readonly ApprovalDocument[] | (() => readonly ApprovalDocument[]);
+    readonly now?: Date | (() => Date);
+  },
+): BoundCustomTool {
+  const inner = tool.execute.bind(tool);
+  return {
+    ...tool,
+    execute: async (args: unknown) => {
+      if (context.allowedModuleIds !== undefined && !context.allowedModuleIds.includes(tool.moduleId)) {
+        throw hostError(
+          "permission_denied",
+          "tool_not_granted",
+          `${tool.moduleId} is not in the effective Tool grant set`,
+          { moduleId: tool.moduleId, name: tool.name },
+        );
+      }
+      if (context.authority !== undefined && context.project !== undefined && context.task !== undefined) {
+        const invocation = invocationFromToolCall({
+          toolName: tool.name,
+          args,
+          authority: context.authority,
+          moduleId: tool.moduleId,
+        });
+        const approvals = typeof context.approvals === "function" ? context.approvals() : context.approvals;
+        const now = typeof context.now === "function" ? context.now() : context.now;
+        authorizeInvocation({
+          authority: context.authority,
+          invocation,
+          project: context.project,
+          task: context.task,
+          approvals,
+          now,
+        });
+      }
+      return inner(args);
+    },
+  };
 }
 
 function isPiCustomTool(value: unknown): value is PiCustomTool {

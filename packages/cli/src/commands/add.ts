@@ -15,14 +15,15 @@ import {
 
 import type { GlobalFlags } from "../args.js";
 import type { OutputBuffer } from "../output.js";
-import { resolveProjectDir, resolveRegistry } from "../paths.js";
+import { resolveProjectDir, resolveRegistrySelection } from "../paths.js";
+import { ensureInstalledSecrets } from "../secrets.js";
 import { printDoctor } from "./doctor.js";
 
-export function runAdd(
+export async function runAdd(
   positionals: readonly string[],
   flags: GlobalFlags,
   out: OutputBuffer,
-): number {
+): Promise<number> {
   const typeName = positionals[0];
   const name = positionals[1];
   if (!typeName || !name) {
@@ -49,7 +50,7 @@ export function runAdd(
   }
 
   const projectRoot = resolveProjectDir(flags.dir);
-  const registry = resolveRegistry(flags.registry);
+  const { registry, source } = resolveRegistrySelection(flags.registry);
   const project = readProjectDocument(projectRoot);
   const manifest = readInstalledManifest(projectRoot);
   const id = formatModuleId(typeName as ModuleType, name);
@@ -68,7 +69,7 @@ export function runAdd(
     roots: [id],
     project,
     manifest,
-    registrySource: "official",
+    registrySource: source,
   });
 
   out.log(`Plan for ${id}`);
@@ -114,6 +115,12 @@ export function runAdd(
     }
   }
 
+  await ensureInstalledSecrets({
+    projectRoot,
+    registry,
+    yes: flags.yes,
+    out,
+  });
   const report = runDoctor({ projectRoot, registry });
   printDoctor(report, out);
   return report.errorCount === 0 ? 0 : 1;

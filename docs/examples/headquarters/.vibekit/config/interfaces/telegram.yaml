@@ -1,4 +1,2 @@
-schemaVersion: 1
-enabled: true
-mode: polling
 allowFrom: []
+

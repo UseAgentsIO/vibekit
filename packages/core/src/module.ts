@@ -6,6 +6,7 @@ import type {
   DependencySet,
   FileInstall,
   ModuleDocument,
+  ModulePackages,
   PermissionGrant,
   PermissionRequest,
   SecretReference,
@@ -37,6 +38,7 @@ export interface LoadedModule {
     readonly deny: readonly PermissionGrant[];
   };
   readonly configuration?: ConfigurationContract;
+  readonly packages?: ModulePackages;
   readonly registryPath: string;
   readonly absolutePath: string;
   readonly checksum?: string;
@@ -93,6 +95,7 @@ export function loadedModuleFromDocument(
       })),
       permissionGrants: document.permissions,
       configuration: undefined,
+      packages: undefined,
       registryPath: options.registryPath,
       absolutePath: options.absolutePath,
       checksum: options.checksum,
@@ -119,6 +122,7 @@ export function loadedModuleFromDocument(
     providesCapabilities: document.providesCapabilities,
     requestsPermissions: document.requestsPermissions,
     configuration: document.configuration,
+    packages: document.packages,
     registryPath: options.registryPath,
     absolutePath: options.absolutePath,
     checksum: options.checksum,

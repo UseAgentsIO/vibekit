@@ -8,12 +8,21 @@ import {
   type RunningInterface,
 } from "@useagentsio/interface-sdk";
 
-import { newEventId } from "./ids.js";
-import { PathEscapeError, resolveInsideProject } from "./paths.js";
+import {
+  createSchedulerStore,
+  dueJobs,
+  newEventId,
+  nextRunAt,
+  parseSchedule,
+  PathEscapeError,
+  resolveInsideProject,
+  type JobStatus,
+  type ScheduleJob,
+  type SchedulerStore,
+} from "@useagentsio/schedule-core";
+
 import { isSilentOutput, runJobScript } from "./script.js";
-import { dueJobs, nextRunAt, parseSchedule } from "./schedule.js";
-import { createSchedulerStore, type SchedulerStore } from "./store.js";
-import type { JobStatus, ScheduleInterfaceConfig, ScheduleJob } from "./types.js";
+import type { ScheduleInterfaceConfig } from "./types.js";
 
 export class ScheduleInterface implements RunningInterface {
   readonly store: SchedulerStore;

@@ -4,15 +4,20 @@ import path from "node:path";
 import {
   createDefaultProject,
   emptyInstalledManifest,
+  loadRegistry,
+  OFFICIAL_REGISTRY_SOURCE,
+  resolveModule,
   stringifyYaml,
+  upsertInstalledModule,
   writeInstalledManifest,
   writeProjectDocument,
+  type InstalledModuleDocument,
 } from "@useagentsio/core";
 import { conversationKeyOf } from "@useagentsio/interface-sdk";
 import { VibeKitHost } from "@useagentsio/host";
 import { describe, expect, it } from "vitest";
 
-import { makeTempDir } from "../helpers.js";
+import { makeTempDir, officialRegistryDir } from "../helpers.js";
 
 function writeProject(dir: string) {
   const project = {
@@ -162,7 +167,13 @@ describe("VibeKitHost", () => {
       },
     };
     writeProjectDocument(dir, project);
-    writeInstalledManifest(dir, emptyInstalledManifest());
+    writeInstalledManifest(
+      dir,
+      upsertInstalledModule(
+        emptyInstalledManifest(),
+        installedStub("interface:terminal", "1.0.0", OFFICIAL_REGISTRY_SOURCE),
+      ),
+    );
     fs.mkdirSync(path.join(dir, ".vibekit/config/interfaces"), { recursive: true });
     fs.writeFileSync(path.join(dir, configPath), stringifyYaml({ interactive: false }), "utf8");
 
@@ -208,3 +219,27 @@ describe("VibeKitHost", () => {
     await host.stop();
   });
 });
+
+function installedStub(
+  id: InstalledModuleDocument["id"],
+  version: string,
+  registrySource: string,
+): InstalledModuleDocument {
+  return {
+    schemaVersion: 1,
+    id,
+    version,
+    registrySource,
+    sourceRevision: "test",
+    integrityChecksum: resolveModule(
+      loadRegistry(officialRegistryDir, OFFICIAL_REGISTRY_SOURCE),
+      id,
+      version,
+    ).checksum ?? `${id}@${version}`,
+    installedAt: "2026-08-17T12:00:00.000Z",
+    dependencies: [],
+    files: [],
+    configurationPaths: [],
+    compatibility: { vibekit: "^1.0.0", pi: ">=0.50.0" },
+  };
+}

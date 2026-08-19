@@ -32,7 +32,7 @@ VibeKit structures autonomous agent systems around four distinct primitives:
 ```
 
 ### Components (The Pieces)
-Components are atomic building blocks installed from the official registry:
+Components are atomic registry Modules. Identity is `type:name` (for example `tool:web`, `interface:telegram`), not an npm package name. Implementations may be referenced through `runtime.package` / `runtime.export`. The official registry is the default curated catalog; independently authored Modules can use a local/custom registry path.
 - **Providers**: Connection configs for model vendors (e.g., `provider:openai`, `provider:openai-codex`, `provider:xai`).
 - **Tools**: Executable toolsets (e.g., `tool:filesystem`, `tool:execution`; optional `tool:web`, `tool:github`, …).
 - **Skills**: Structured instructions for Pi (e.g., `skill:software-development`, `skill:research`).
@@ -102,6 +102,6 @@ If an agent attempts to invoke a tool, write to an ungranted path, or execute a 
 
 To maintain clarity and safety, VibeKit explicitly avoids several anti-patterns:
 - **No Orchestrator / Subagent Types**: Delegation is simply an Agent capability, not a separate runtime taxonomy.
-- **No Unsafe Marketplaces**: Only the vetted official registry is supported in V1.
+- **No Unsafe Marketplaces**: Official and local/custom registries are supported via standard schemas and deterministic manifests; there is no uncurated marketplace or hosted discovery service.
 - **No In-Prompt Security**: Permissions are checked in TypeScript code at the tool execution boundary.
 - **No Secret Persistence**: API keys are environment references only.
