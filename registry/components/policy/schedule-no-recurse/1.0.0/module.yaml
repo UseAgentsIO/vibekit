@@ -1,0 +1,42 @@
+schemaVersion: 1
+
+id: policy:schedule-no-recurse
+type: policy
+name: schedule-no-recurse
+displayName: Schedule No Recurse
+version: 1.0.0
+description: Prevent scheduled Worker Runs from creating or editing jobs in the schedule table.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - policy.schedule-no-recurse
+
+requires:
+  required: []
+  optional: []
+  recommended:
+    - interface:schedule
+  conflicts: []
+
+requestsPermissions: []
+
+secrets: []
+
+files:
+  - source: payload/policy.yaml
+    target: .vibekit/components/policies/schedule-no-recurse.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/policies/schedule-no-recurse.yaml
+  schema: config.schema.json

@@ -1,0 +1,64 @@
+schemaVersion: 1
+
+id: tool:web
+type: tool
+name: web
+displayName: Web Tool
+version: 1.0.0
+description: Fetches HTTP(S) pages as readable text. Optional web search when a Tavily or Brave secret reference is present. Fetched content is untrusted.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - web.fetch
+  - web.search
+
+requires:
+  required: []
+  optional: []
+  recommended:
+    - policy:least-privilege
+  conflicts: []
+
+requestsPermissions:
+  - capability: web.fetch
+  - capability: web.search
+
+secrets:
+  - name: TAVILY_API_KEY
+    required: false
+    source: environment
+  - name: BRAVE_API_KEY
+    required: false
+    source: environment
+
+files:
+  - source: payload/index.ts
+    target: .pi/extensions/web/index.ts
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/tools/web.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-tool
+  name: web
+
+runtime:
+  kind: pi-extension
+  package: "@useagentsio/tool-web"
+  export: createWebTool
+
+packages:
+  dependencies:
+    "@useagentsio/tool-web": "^1.0.0"

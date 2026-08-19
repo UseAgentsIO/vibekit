@@ -1,0 +1,40 @@
+id: policy:memory-write-approval
+effect: reduce-authority
+enforcement: runtime
+description: Stage tool:memory writes for Host approval. Meaningful when tool:memory is installed; the Skill does not grant write authority.
+recommendedWith:
+  - tool:memory
+configDefaults:
+  stagePath: .vibekit/runtime/memory-pending.json
+rules:
+  - id: stage-memory-writes
+    action: tool.memory.write
+    effect: require-approval
+    stage:
+      pathFromConfig: stagePath
+      default: .vibekit/runtime/memory-pending.json
+    reason: Memory writes must be staged at the configured relative path until the Host approves them.
+  - id: deny-unapproved-memory-persist
+    action: tool.memory.persist
+    effect: deny
+    when:
+      approvalStatus: pending
+    reason: Unapproved memory writes cannot become durable memory.
+  - id: apply-only-after-host-approval
+    action: tool.memory.persist
+    effect: allow
+    when:
+      approvalStatus: approved
+      stagedAtConfigPath: true
+    reason: Only Host-approved staged writes may persist.
+gates:
+  - surface: tool.memory.write
+    default: require-approval
+    stagePathFromConfig: stagePath
+    allowIf:
+      - hostApproved
+  - surface: tool.memory.persist
+    default: deny
+    allowIf:
+      - hostApproved
+      - stagedAtConfiguredPath

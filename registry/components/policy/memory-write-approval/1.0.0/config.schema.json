@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "policy:memory-write-approval configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "stagePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "pattern": "^(?![\\\\/])(?![A-Za-z]:)(?!.*\\.\\.)[^\\u0000\\\\]+$",
+      "default": ".vibekit/runtime/memory-pending.json",
+      "description": "Relative Project path for staged tool:memory writes awaiting Host approval."
+    }
+  }
+}

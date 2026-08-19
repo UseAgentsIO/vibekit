@@ -1,0 +1,42 @@
+schemaVersion: 1
+
+id: skill:memory-hygiene
+type: skill
+name: memory-hygiene
+displayName: Memory Hygiene
+version: 1.0.0
+description: Procedure for what to store in Project memory, what to skip, and how to keep notes bounded.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - skill.memory-hygiene
+
+requires:
+  required: []
+  optional: []
+  recommended:
+    - tool:memory
+  conflicts: []
+
+requestsPermissions: []
+
+secrets: []
+
+files:
+  - source: payload/SKILL.md
+    target: .pi/skills/memory-hygiene/SKILL.md
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/skills/memory-hygiene.yaml
+  schema: config.schema.json

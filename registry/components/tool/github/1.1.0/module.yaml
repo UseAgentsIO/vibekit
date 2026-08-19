@@ -1,0 +1,67 @@
+schemaVersion: 1
+
+id: tool:github
+type: tool
+name: github
+displayName: GitHub Tool
+version: 1.1.0
+description: Executable GitHub issues, pull requests, checks, and file contents. Requires a GITHUB_TOKEN reference. 1.0.0 was config-only; existing installs must run vibekit update tool:github.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.1.0"
+
+license: MIT
+
+providesCapabilities:
+  - repository.read
+  - repository.write
+  - repository.issue.read
+  - repository.issue.write
+
+requires:
+  required:
+    - policy:least-privilege
+  optional: []
+  recommended:
+    - policy:require-verification
+  conflicts: []
+
+requestsPermissions:
+  - capability: repository.read
+  - capability: repository.write
+  - capability: repository.issue.read
+  - capability: repository.issue.write
+
+secrets:
+  - name: GITHUB_TOKEN
+    required: true
+    source: environment
+
+files:
+  - source: payload/index.ts
+    target: .pi/extensions/github/index.ts
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/tools/github.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-tool
+  name: github
+
+runtime:
+  kind: pi-extension
+  package: "@useagentsio/tool-github"
+  export: createGithubTool
+  available: true
+
+packages:
+  dependencies:
+    "@useagentsio/tool-github": "^1.1.0"

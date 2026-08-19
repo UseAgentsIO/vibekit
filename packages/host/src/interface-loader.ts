@@ -14,6 +14,7 @@ import type {
 } from "@useagentsio/interface-sdk";
 
 import { hostError } from "./errors.js";
+import { importProjectModule } from "./project-import.js";
 
 export type InterfaceFactoryMap = Readonly<Record<string, InterfaceFactory>>;
 
@@ -36,7 +37,11 @@ export async function loadInterfaceFactory(
   }
 
   for (const runtime of interfaceRuntimeCandidates(definition, projectRoot)) {
-    const factory = await importInterfaceFactory(runtime.package, runtime.export);
+    const factory = await importInterfaceFactory(
+      runtime.package,
+      runtime.export,
+      projectRoot,
+    );
     if (factory !== undefined) {
       return factory;
     }
@@ -127,7 +132,15 @@ function packageExportOf(
 async function importInterfaceFactory(
   packageName: string,
   exportName: string,
+  projectRoot?: string,
 ): Promise<InterfaceFactory | undefined> {
+  if (projectRoot !== undefined) {
+    const fromProject = await importProjectModule(projectRoot, packageName);
+    const factory = asInterfaceFactory(fromProject?.[exportName]);
+    if (factory !== undefined) {
+      return factory;
+    }
+  }
   try {
     const mod = (await import(packageName)) as Record<string, unknown>;
     return asInterfaceFactory(mod[exportName]);

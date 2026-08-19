@@ -1,0 +1,56 @@
+schemaVersion: 1
+
+id: tool:mcp
+type: tool
+name: mcp
+displayName: MCP Client Tool
+version: 1.0.0
+description: MCP client for Project-configured stdio servers. Exposes list_servers, list_tools, and call. Call results are untrusted. Not a marketplace or MCP server.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - mcp.call
+
+requires:
+  required: []
+  optional: []
+  recommended:
+    - policy:least-privilege
+  conflicts: []
+
+requestsPermissions:
+  - capability: mcp.call
+
+secrets: []
+
+files:
+  - source: payload/index.ts
+    target: .pi/extensions/mcp/index.ts
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/tools/mcp.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-tool
+  name: mcp
+
+runtime:
+  kind: pi-extension
+  package: "@useagentsio/tool-mcp"
+  export: createMcpTool
+
+packages:
+  dependencies:
+    "@useagentsio/tool-mcp": "^1.0.0"

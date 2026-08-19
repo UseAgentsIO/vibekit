@@ -1,0 +1,57 @@
+schemaVersion: 1
+
+id: tool:process
+type: tool
+name: process
+displayName: Process Tool
+version: 1.0.0
+description: Background process control on top of tool:execution. Start, list, poll, wait, log, and kill processes this tool started. No new isolation backend.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - process.manage
+
+requires:
+  required: []
+  optional: []
+  recommended:
+    - policy:least-privilege
+    - tool:execution
+  conflicts: []
+
+requestsPermissions:
+  - capability: process.manage
+
+secrets: []
+
+files:
+  - source: payload/index.ts
+    target: .pi/extensions/process/index.ts
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/tools/process.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-tool
+  name: process
+
+runtime:
+  kind: pi-extension
+  package: "@useagentsio/tool-process"
+  export: createProcessTool
+
+packages:
+  dependencies:
+    "@useagentsio/tool-process": "^1.0.0"

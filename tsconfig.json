@@ -6,6 +6,18 @@
     { "path": "./packages/pi" },
     { "path": "./packages/interface-sdk" },
     { "path": "./packages/interface-terminal" },
+    { "path": "./packages/interface-http" },
+    { "path": "./packages/interface-webhook" },
+    { "path": "./packages/interface-schedule" },
+    { "path": "./packages/interface-slack" },
+    { "path": "./packages/interface-telegram" },
+    { "path": "./packages/state-memory" },
+    { "path": "./packages/tool-web" },
+    { "path": "./packages/tool-browser" },
+    { "path": "./packages/tool-github" },
+    { "path": "./packages/tool-mcp" },
+    { "path": "./packages/tool-process" },
+    { "path": "./packages/verifier-schema" },
     { "path": "./packages/host" },
     { "path": "./tests" }
   ]

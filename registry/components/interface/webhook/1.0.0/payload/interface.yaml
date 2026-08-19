@@ -1,0 +1,18 @@
+id: interface:webhook
+kind: webhook
+description: Inbound HTTP callbacks become Host messages after signature verification. Does not own Project State.
+ownsProjectState: false
+actions:
+  - accept-human-input
+  - create-tasks
+  - request-cancellation
+  - display-progress
+  - display-results
+notOwned:
+  - agent-definitions
+  - project-state
+  - permissions
+  - tasks
+  - approvals
+  - schedules
+  - verification-rules

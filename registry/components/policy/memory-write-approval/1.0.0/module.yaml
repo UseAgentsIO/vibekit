@@ -1,0 +1,42 @@
+schemaVersion: 1
+
+id: policy:memory-write-approval
+type: policy
+name: memory-write-approval
+displayName: Memory Write Approval
+version: 1.0.0
+description: Stage tool:memory writes for Host approval before they become durable memory.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - policy.memory-write-approval
+
+requires:
+  required: []
+  optional: []
+  recommended:
+    - tool:memory
+  conflicts: []
+
+requestsPermissions: []
+
+secrets: []
+
+files:
+  - source: payload/policy.yaml
+    target: .vibekit/components/policies/memory-write-approval.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/policies/memory-write-approval.yaml
+  schema: config.schema.json

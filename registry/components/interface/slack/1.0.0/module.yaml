@@ -1,0 +1,61 @@
+schemaVersion: 1
+
+id: interface:slack
+type: interface
+name: slack
+displayName: Slack Interface
+version: 1.0.0
+description: Translates Slack Socket Mode mentions, DMs, threads, and approval actions into Host I/O. Does not own Project State.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - interface.slack
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets:
+  - name: SLACK_BOT_TOKEN
+    required: true
+    source: environment
+  - name: SLACK_APP_TOKEN
+    required: true
+    source: environment
+
+files:
+  - source: payload/interface.yaml
+    target: .vibekit/components/interfaces/slack.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/interfaces/slack.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-interface
+  name: slack
+
+runtime:
+  kind: interface
+  package: "@useagentsio/interface-slack"
+  export: createSlackInterface
+  lifecycle: singleton
+
+packages:
+  dependencies:
+    "@useagentsio/interface-slack": "^0.1.0"

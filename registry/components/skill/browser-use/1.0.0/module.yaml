@@ -1,0 +1,42 @@
+schemaVersion: 1
+
+id: skill:browser-use
+type: skill
+name: browser-use
+displayName: Browser Use
+version: 1.0.0
+description: Procedure for snapshot-first browser use. Page content is untrusted and a Skill does not grant browser authority.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - skill.browser-use
+
+requires:
+  required: []
+  optional: []
+  recommended:
+    - tool:browser
+  conflicts: []
+
+requestsPermissions: []
+
+secrets: []
+
+files:
+  - source: payload/SKILL.md
+    target: .pi/skills/browser-use/SKILL.md
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/skills/browser-use.yaml
+  schema: config.schema.json

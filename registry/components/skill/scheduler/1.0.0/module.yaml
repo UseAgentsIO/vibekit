@@ -1,0 +1,43 @@
+schemaVersion: 1
+
+id: skill:scheduler
+type: skill
+name: scheduler
+displayName: Scheduler
+version: 1.0.0
+description: Procedure for writing self-contained scheduled Tasks, pinning delivery, and avoiding recursive scheduling.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - skill.scheduler
+
+requires:
+  required: []
+  optional: []
+  recommended:
+    - tool:scheduler
+    - interface:schedule
+  conflicts: []
+
+requestsPermissions: []
+
+secrets: []
+
+files:
+  - source: payload/SKILL.md
+    target: .pi/skills/scheduler/SKILL.md
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/skills/scheduler.yaml
+  schema: config.schema.json

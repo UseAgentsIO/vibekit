@@ -16,34 +16,58 @@ const officialIds = [
   "agent:project-manager",
   "agent:researcher",
   "agent:reviewer",
+  "interface:http",
+  "interface:schedule",
+  "interface:slack",
+  "interface:telegram",
   "interface:terminal",
+  "interface:webhook",
+  "policy:interface-pairing",
   "policy:least-privilege",
+  "policy:memory-write-approval",
   "policy:require-verification",
+  "policy:schedule-no-recurse",
+  "policy:untrusted-inbound",
   "provider:openai",
   "provider:openai-codex",
   "provider:opencode-go",
   "provider:openrouter",
   "provider:xai",
+  "skill:browser-use",
+  "skill:memory-hygiene",
   "skill:research",
+  "skill:scheduler",
   "skill:software-development",
+  "state:memory",
   "state:repository",
+  "tool:browser",
   "tool:execution",
   "tool:filesystem",
   "tool:github",
+  "tool:mcp",
+  "tool:memory",
+  "tool:process",
+  "tool:scheduler",
+  "tool:web",
   "verifier:command",
+  "verifier:schema",
 ] as const;
 
 describe("official registry", () => {
   it("validates every shipped module and matches registry/index.json", () => {
     const result = buildRegistryIndex(officialRegistryDir);
-    const ids = result.index.modules.map((entry) => entry.id).sort();
+    const ids = [...new Set(result.index.modules.map((entry) => entry.id))].sort();
     expect(ids).toEqual([...officialIds]);
-    expect(new Set(ids).size).toBe(ids.length);
+    expect(
+      new Set(result.index.modules.map((entry) => `${entry.id}@${entry.version}`)).size,
+    ).toBe(result.index.modules.length);
 
     const published = JSON.parse(
       fs.readFileSync(path.join(officialRegistryDir, "index.json"), "utf8"),
     ) as { modules: Array<{ id: string }> };
-    expect(published.modules.map((entry) => entry.id).sort()).toEqual([...officialIds]);
+    expect([...new Set(published.modules.map((entry) => entry.id))].sort()).toEqual([
+      ...officialIds,
+    ]);
 
     for (const entry of result.index.modules) {
       expect(entry.checksum).toMatch(/^sha256:[0-9a-f]{64}$/);

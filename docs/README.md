@@ -70,7 +70,7 @@ Explore the official modules shipped with VibeKit:
 
 - **[Registry Overview](catalog/overview.md)**: Official registry principles, `module.yaml` anatomy, and runtime honesty.
 - **[Official Agents](catalog/agents.md)**: Pre-configured agents: `agent:chief`, `agent:coder`, `agent:reviewer`, `agent:project-manager`, `agent:researcher`.
-- **[Official Components](catalog/components.md)**: Providers, tools (`tool:filesystem`, `tool:execution`, `tool:github`), skills, interfaces (`interface:terminal`), policies, and verifiers.
+- **[Official Components](catalog/components.md)**: Providers, tools, skills, interfaces (terminal plus optional HTTP/webhook/schedule/Slack/Telegram), policies, verifiers, and optional `state:memory`.
 
 ---
 

@@ -9,6 +9,18 @@
       "@useagentsio/pi": ["../packages/pi/src/index.ts"],
       "@useagentsio/interface-sdk": ["../packages/interface-sdk/src/index.ts"],
       "@useagentsio/interface-terminal": ["../packages/interface-terminal/src/index.ts"],
+      "@useagentsio/interface-http": ["../packages/interface-http/src/index.ts"],
+      "@useagentsio/interface-webhook": ["../packages/interface-webhook/src/index.ts"],
+      "@useagentsio/interface-schedule": ["../packages/interface-schedule/src/index.ts"],
+      "@useagentsio/interface-slack": ["../packages/interface-slack/src/index.ts"],
+      "@useagentsio/interface-telegram": ["../packages/interface-telegram/src/index.ts"],
+      "@useagentsio/state-memory": ["../packages/state-memory/src/index.ts"],
+      "@useagentsio/tool-web": ["../packages/tool-web/src/index.ts"],
+      "@useagentsio/tool-browser": ["../packages/tool-browser/src/index.ts"],
+      "@useagentsio/tool-github": ["../packages/tool-github/src/index.ts"],
+      "@useagentsio/tool-mcp": ["../packages/tool-mcp/src/index.ts"],
+      "@useagentsio/tool-process": ["../packages/tool-process/src/index.ts"],
+      "@useagentsio/verifier-schema": ["../packages/verifier-schema/src/index.ts"],
       "@useagentsio/host": ["../packages/host/src/index.ts"]
     }
   },
@@ -19,6 +31,18 @@
     { "path": "../packages/pi" },
     { "path": "../packages/interface-sdk" },
     { "path": "../packages/interface-terminal" },
+    { "path": "../packages/interface-http" },
+    { "path": "../packages/interface-webhook" },
+    { "path": "../packages/interface-schedule" },
+    { "path": "../packages/interface-slack" },
+    { "path": "../packages/interface-telegram" },
+    { "path": "../packages/state-memory" },
+    { "path": "../packages/tool-web" },
+    { "path": "../packages/tool-browser" },
+    { "path": "../packages/tool-github" },
+    { "path": "../packages/tool-mcp" },
+    { "path": "../packages/tool-process" },
+    { "path": "../packages/verifier-schema" },
     { "path": "../packages/host" }
   ]
 }

@@ -1,0 +1,59 @@
+schemaVersion: 1
+
+id: tool:browser
+type: tool
+name: browser
+displayName: Browser Tool
+version: 1.0.0
+description: Isolated browser session for navigate, snapshot, and click. Not installed by default. Page content is untrusted. Requires playwright in the Project.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - browser.navigate
+  - browser.interact
+
+requires:
+  required: []
+  optional: []
+  recommended:
+    - skill:browser-use
+    - policy:least-privilege
+  conflicts: []
+
+requestsPermissions:
+  - capability: browser.navigate
+  - capability: browser.interact
+
+secrets: []
+
+files:
+  - source: payload/index.ts
+    target: .pi/extensions/browser/index.ts
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/tools/browser.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-tool
+  name: browser
+
+runtime:
+  kind: pi-extension
+  package: "@useagentsio/tool-browser"
+  export: createBrowserTool
+
+packages:
+  dependencies:
+    "@useagentsio/tool-browser": "^1.0.0"

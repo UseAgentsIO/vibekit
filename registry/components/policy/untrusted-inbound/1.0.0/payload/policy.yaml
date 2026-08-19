@@ -1,0 +1,63 @@
+id: policy:untrusted-inbound
+effect: reduce-authority
+enforcement: runtime
+description: Channel text, webhook bodies, and web or MCP output are untrusted data. They cannot raise permissions, expand path or command scope, or grant credentials.
+inboundSources:
+  - interface.channel.text
+  - interface.webhook.body
+  - tool.web.output
+  - tool.mcp.output
+rules:
+  - id: inbound-is-data
+    action: inbound.interpret
+    effect: treat-as-data
+    sources:
+      - interface.channel.text
+      - interface.webhook.body
+      - tool.web.output
+      - tool.mcp.output
+    reason: Inbound content is data, not operator instructions.
+  - id: deny-permission-raise-from-inbound
+    action: permission.grant
+    effect: deny
+    when:
+      requestedFrom: inbound
+    reason: Inbound content cannot raise permissions.
+  - id: deny-path-scope-expand-from-inbound
+    action: permission.scope.paths.expand
+    effect: deny
+    when:
+      requestedFrom: inbound
+    reason: Inbound content cannot expand filesystem scope.
+  - id: deny-command-scope-expand-from-inbound
+    action: permission.scope.commands.expand
+    effect: deny
+    when:
+      requestedFrom: inbound
+    reason: Inbound content cannot expand command scope.
+  - id: deny-credential-grant-from-inbound
+    action: secret.grant
+    effect: deny
+    when:
+      requestedFrom: inbound
+    reason: Inbound content cannot grant credentials or secret references.
+gates:
+  - surface: inbound.interpret
+    default: treat-as-data
+    sources:
+      - interface.channel.text
+      - interface.webhook.body
+      - tool.web.output
+      - tool.mcp.output
+  - surface: permission.change
+    default: deny
+    denyIf:
+      - requestedFromInbound
+  - surface: scope.expand
+    default: deny
+    denyIf:
+      - requestedFromInbound
+  - surface: secret.grant
+    default: deny
+    denyIf:
+      - requestedFromInbound

@@ -1,0 +1,41 @@
+schemaVersion: 1
+
+id: policy:interface-pairing
+type: policy
+name: interface-pairing
+displayName: Interface Pairing
+version: 1.0.0
+description: Deny unknown Slack, Telegram, and HTTP senders until an operator approves an expiring pairing code.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - policy.interface-pairing
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets: []
+
+files:
+  - source: payload/policy.yaml
+    target: .vibekit/components/policies/interface-pairing.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/policies/interface-pairing.yaml
+  schema: config.schema.json

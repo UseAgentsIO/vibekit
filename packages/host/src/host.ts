@@ -11,7 +11,7 @@ import {
   type RepositoryState,
   type RuntimeId,
 } from "@useagentsio/core";
-import type { CreatePiSession } from "@useagentsio/pi";
+import { loadAgentDocument, type CreatePiSession } from "@useagentsio/pi";
 import type {
   HostOutput,
   InboundMessage,
@@ -34,6 +34,12 @@ import {
 import { hostError } from "./errors.js";
 import type { HostHealth, HostStatusFile } from "./health.js";
 import { startInterface, type InterfaceFactoryMap } from "./interface-loader.js";
+import {
+  bindOptionalStateAdapter,
+  optionalSessionContext,
+  type OptionalStateAdapter,
+} from "./state-binder.js";
+import { bindInstalledTools } from "./tool-binder.js";
 import { startHostIpc, stopHostIpc, type HostIpcServer } from "./ipc.js";
 import { KeyedWorkPool } from "./keyed-work-pool.js";
 import { PersistentSessionManager } from "./persistent-session-manager.js";
@@ -115,6 +121,7 @@ export class VibeKitHost {
   private lastFatalError?: string;
   private lockHeld = false;
   private ipc: HostIpcServer | undefined;
+  private optionalState?: OptionalStateAdapter;
 
   private constructor(options: HostOptions, project: ProjectRuntime) {
     this.projectRoot = path.resolve(options.projectRoot);
@@ -178,6 +185,10 @@ export class VibeKitHost {
     this.acquireLock();
     this.startedAt = this.now().toISOString();
     this.state.recoverStale();
+    this.optionalState = await bindOptionalStateAdapter(
+      this.projectRoot,
+      this.project.state.backend,
+    );
     if (startInterfaces) {
       await this.startEnabledInterfaces();
     }
@@ -208,6 +219,8 @@ export class VibeKitHost {
     );
     await stopHostIpc(this.ipc);
     this.ipc = undefined;
+    await this.optionalState?.close?.();
+    this.optionalState = undefined;
     this.releaseLock();
     this.state.close();
     if (fs.existsSync(this.statusPath)) {
@@ -415,11 +428,25 @@ export class VibeKitHost {
       now: this.now(),
     });
 
+    const agent = loadAgentDocument({
+      projectRoot: this.projectRoot,
+      project: request.project,
+      bindingName: conversation.agentBinding,
+    });
+    const granted = agent.document.capabilities.requires;
+    const sessionContext = await optionalSessionContext(this.optionalState, granted);
+    const customTools = await bindInstalledTools(this.projectRoot, {
+      resolveSecret: (name) => this.secrets.resolve(name),
+      grantedCapabilities: granted,
+      scheduledRun: request.message.accountId === "schedule",
+    });
+
     if (this.createSession !== undefined) {
-      const prepared = prepareAgentTurn({ ...request, task });
+      const prepared = prepareAgentTurn({ ...request, task, sessionContext });
       const session = await this.createSession({
         cwd: this.projectRoot,
         tools: prepared.tools,
+        customTools,
         systemPrompt: prepared.systemPrompt,
         model: prepared.model,
       });
@@ -460,11 +487,12 @@ export class VibeKitHost {
         "Persistent Pi conversation API is not available",
       );
     }
-    const prepared = prepareAgentTurn({ ...request, task });
+    const prepared = prepareAgentTurn({ ...request, task, sessionContext });
     const result = await pi.runConversationTurn({
       cwd: this.projectRoot,
       sessionPath,
       tools: prepared.tools,
+      customTools,
       systemPrompt: prepared.systemPrompt,
       model: prepared.model,
       text: request.message.text,
@@ -501,7 +529,12 @@ export class VibeKitHost {
       if (!binding.enabled) {
         continue;
       }
-      const config = loadBindingConfig(this.projectRoot, binding.config);
+      const config = {
+        ...loadBindingConfig(this.projectRoot, binding.config),
+        projectRoot: this.projectRoot,
+        interfaceBinding: name,
+        knownInterfaces: Object.keys(bindings),
+      };
       const running = await startInterface(
         binding.definition,
         config,

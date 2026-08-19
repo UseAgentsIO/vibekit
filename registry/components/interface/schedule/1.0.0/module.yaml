@@ -1,0 +1,57 @@
+schemaVersion: 1
+
+id: interface:schedule
+type: interface
+name: schedule
+displayName: Schedule Interface
+version: 1.0.0
+description: Turns installed Project job tables into Host Tasks on a tick. Does not own Project State. Ticks only while this Interface is installed and the Host is running.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - interface.schedule
+
+requires:
+  required: []
+  optional: []
+  recommended:
+    - policy:schedule-no-recurse
+    - skill:scheduler
+  conflicts: []
+
+requestsPermissions: []
+
+secrets: []
+
+files:
+  - source: payload/interface.yaml
+    target: .vibekit/components/interfaces/schedule.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/interfaces/schedule.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-interface
+  name: schedule
+
+runtime:
+  kind: interface
+  package: "@useagentsio/interface-schedule"
+  export: createScheduleInterface
+  lifecycle: singleton
+
+packages:
+  dependencies:
+    "@useagentsio/interface-schedule": "^0.1.0"

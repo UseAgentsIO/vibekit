@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "interface:telegram configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "allowFrom": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "interfaceBinding": {
+      "type": "string",
+      "minLength": 1
+    },
+    "optionalStart": {
+      "type": "boolean"
+    }
+  }
+}

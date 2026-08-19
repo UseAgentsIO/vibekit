@@ -1,0 +1,60 @@
+schemaVersion: 1
+
+id: tool:memory
+type: tool
+name: memory
+displayName: Memory Tool
+version: 1.0.0
+description: Agent-facing memory tool over state:memory. Store, search, replace, forget, and search prior conversations.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - memory.read
+  - memory.write
+
+requires:
+  required:
+    - state:memory
+  optional: []
+  recommended:
+    - skill:memory-hygiene
+    - policy:memory-write-approval
+  conflicts: []
+
+requestsPermissions:
+  - capability: memory.read
+  - capability: memory.write
+
+secrets: []
+
+files:
+  - source: payload/index.ts
+    target: .pi/extensions/memory/index.ts
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/tools/memory.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-tool
+  name: memory
+
+runtime:
+  kind: pi-extension
+  package: "@useagentsio/state-memory"
+  export: createMemoryTool
+
+packages:
+  dependencies:
+    "@useagentsio/state-memory": "^0.1.0"

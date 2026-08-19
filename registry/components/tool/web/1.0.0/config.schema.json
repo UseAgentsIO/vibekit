@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "tool:web configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "allowHosts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "searchSecretName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timeoutMs": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "maxBytes": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}

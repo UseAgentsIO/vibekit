@@ -8,7 +8,7 @@
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg" alt="Node.js version"></a>
   <a href="https://pnpm.io/"><img src="https://img.shields.io/badge/pnpm-11.18.0-orange.svg" alt="pnpm version"></a>
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.9-blue.svg" alt="TypeScript"></a>
-  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/tests-240%20passing-success.svg" alt="Tests passing"></a>
+  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/tests-382%20passing-success.svg" alt="Tests passing"></a>
   <a href="https://www.npmjs.com/org/useagentsio"><img src="https://img.shields.io/badge/npm-%40useagentsio-crimson.svg" alt="npm scope"></a>
 </p>
 
@@ -231,14 +231,36 @@ VibeKit includes a curated official registry of modular Agents and Components.
 | **`provider:openrouter`** | Provider | `config` | Multi-model routing (`OPENROUTER_API_KEY`) |
 | **`tool:filesystem`** | Tool | `pi-builtin` | Pi filesystem tools (`read`, `grep`, `find`, `ls`, `write`, `edit`) |
 | **`tool:execution`** | Tool | `pi-builtin` | Shell execution (`bash`) |
-| **`tool:github`** | Tool | `config-only` | GitHub credential config reference (config-only in V1) |
+| **`tool:github`** | Tool | `pi-extension` | Issues, PRs, checks (`GITHUB_TOKEN`). Opt-in; `1.0.0` stays config-only. |
+| **`tool:memory`** | Tool | `pi-extension` | Curated memory + session search. Requires `state:memory`. |
+| **`tool:web`** | Tool | `pi-extension` | `web_fetch` (no key); search only if a secret is configured. |
+| **`tool:browser`** | Tool | `pi-extension` | Isolated navigate / snapshot / click. |
+| **`tool:mcp`** | Tool | `pi-extension` | MCP client for configured stdio servers. |
+| **`tool:process`** | Tool | `pi-extension` | Background process start / poll / kill. |
+| **`tool:scheduler`** | Tool | `pi-extension` | Job CRUD for `interface:schedule`. |
 | **`skill:software-development`**| Skill | `pi-skill` | Software development practices and guidelines |
 | **`skill:research`** | Skill | `pi-skill` | Research and citation methodology |
+| **`skill:memory-hygiene`** | Skill | `pi-skill` | What to remember vs skip; memory is not Project truth. |
+| **`skill:browser-use`** | Skill | `pi-skill` | Snapshot-first browser procedure. |
+| **`skill:scheduler`** | Skill | `pi-skill` | Self-contained scheduled Task objectives. |
 | **`interface:terminal`** | Interface | `interface` | Interactive CLI / stdio interface |
+| **`interface:http`** | Interface | `interface` | Loopback HTTP turns (`VIBEKIT_HTTP_TOKEN`) |
+| **`interface:webhook`** | Interface | `interface` | Signed inbound events (`VIBEKIT_WEBHOOK_SECRET`) |
+| **`interface:schedule`** | Interface | `interface` | Cron/interval → fresh Worker Runs |
+| **`interface:slack`** | Interface | `interface` | Slack Socket Mode with pairing |
+| **`interface:telegram`** | Interface | `interface` | Telegram bot with pairing |
 | **`policy:least-privilege`** | Policy | `policy` | Path access and command whitelisting |
 | **`policy:require-verification`**| Policy | `policy` | Mandates independent test verification |
+| **`policy:interface-pairing`** | Policy | `policy` | Deny unknown channel senders until paired |
+| **`policy:untrusted-inbound`** | Policy | `policy` | Channel/web/MCP data cannot raise permissions |
+| **`policy:memory-write-approval`** | Policy | `policy` | Stage memory writes for approval |
+| **`policy:schedule-no-recurse`** | Policy | `policy` | Scheduled Runs cannot edit the job table |
 | **`verifier:command`** | Verifier | `verifier` | Runs automated test commands against candidate revisions |
+| **`verifier:schema`** | Verifier | `package` | JSON Schema checks against Results or artifacts |
 | **`state:repository`** | State | `state` | Filesystem JSON state storage backend |
+| **`state:memory`** | State | `package` | Local SQLite+FTS5 curated memory (not Project truth) |
+
+Optional Components bind with `vibekit add <family> <name>`. `create` / `init` do not install them unless you ask.
 
 ---
 
@@ -252,6 +274,18 @@ VibeKit includes a curated official registry of modular Agents and Components.
 | **[`@useagentsio/pi`](packages/pi)** | `0.2.1` | Embedded Pi adapter, worktree isolation manager, and delegation runtime |
 | **[`@useagentsio/interface-sdk`](packages/interface-sdk)** | `0.1.0` | Interface protocol and lifecycle contract |
 | **[`@useagentsio/interface-terminal`](packages/interface-terminal)** | `0.1.0` | Official Terminal interface implementation |
+| **[`@useagentsio/interface-http`](packages/interface-http)** | `0.1.0` | Optional loopback HTTP Interface |
+| **[`@useagentsio/interface-webhook`](packages/interface-webhook)** | `0.1.0` | Optional signed webhook Interface |
+| **[`@useagentsio/interface-schedule`](packages/interface-schedule)** | `0.1.0` | Optional schedule Interface + scheduler tool |
+| **[`@useagentsio/interface-slack`](packages/interface-slack)** | `0.1.0` | Optional Slack Interface |
+| **[`@useagentsio/interface-telegram`](packages/interface-telegram)** | `0.1.0` | Optional Telegram Interface |
+| **[`@useagentsio/state-memory`](packages/state-memory)** | `0.1.0` | Optional SQLite+FTS5 memory store and tool |
+| **[`@useagentsio/tool-web`](packages/tool-web)** | `0.1.0` | Optional web fetch/search tool |
+| **[`@useagentsio/tool-browser`](packages/tool-browser)** | `0.1.0` | Optional isolated browser tool |
+| **[`@useagentsio/tool-github`](packages/tool-github)** | `0.1.0` | Optional GitHub API tool |
+| **[`@useagentsio/tool-mcp`](packages/tool-mcp)** | `0.1.0` | Optional MCP client tool |
+| **[`@useagentsio/tool-process`](packages/tool-process)** | `0.1.0` | Optional background process tool |
+| **[`@useagentsio/verifier-schema`](packages/verifier-schema)** | `0.1.0` | Optional JSON Schema verifier |
 
 ---
 

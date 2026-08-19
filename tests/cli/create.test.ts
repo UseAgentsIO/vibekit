@@ -97,4 +97,53 @@ describe("create", () => {
     expect(listed.stdout).toMatch(/provider:openai\s+\S+\s+\S+\s+yes\b/);
     expect(listed.stdout).toMatch(/interface:terminal\s+\S+\s+\S+\s+yes\b/);
   });
+
+  it("does not auto-install optional catalog Components", async () => {
+    const dir = makeTempDir("vibekit-create-optional-");
+    const created = await runCli([
+      "create",
+      dir,
+      "--agent",
+      "chief",
+      "--provider",
+      "openai",
+      "--interface",
+      "terminal",
+      "--yes",
+      "--registry",
+      officialRegistryDir,
+    ]);
+    expect(created.exitCode, created.stderr).toBe(0);
+    const installed = parseAndValidateJson(
+      "installed",
+      fs.readFileSync(path.join(dir, ".vibekit/installed.json"), "utf8"),
+    );
+    const ids = new Set<string>(installed.data?.modules.map((module) => module.id) ?? []);
+    for (const optional of [
+      "state:memory",
+      "tool:memory",
+      "interface:http",
+      "interface:webhook",
+      "interface:schedule",
+      "interface:slack",
+      "interface:telegram",
+      "tool:web",
+      "tool:browser",
+      "tool:mcp",
+      "tool:process",
+      "tool:scheduler",
+      "policy:interface-pairing",
+      "policy:untrusted-inbound",
+      "policy:memory-write-approval",
+      "policy:schedule-no-recurse",
+      "skill:memory-hygiene",
+      "skill:browser-use",
+      "skill:scheduler",
+      "verifier:schema",
+    ]) {
+      expect(ids.has(optional), optional).toBe(false);
+    }
+    expect(fs.existsSync(path.join(dir, ".vibekit/state/memory.sqlite"))).toBe(false);
+    expect(fs.existsSync(path.join(dir, ".vibekit/state/schedules"))).toBe(false);
+  });
 });

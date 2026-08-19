@@ -1,0 +1,60 @@
+id: policy:interface-pairing
+effect: reduce-authority
+enforcement: runtime
+description: Unknown Slack, Telegram, and HTTP senders are denied until an operator approves a pairing code. Pairing codes expire and cannot raise permissions.
+appliesTo:
+  channels:
+    - slack
+    - telegram
+    - http
+configDefaults:
+  pairingTtlSeconds: 600
+  storePath: .vibekit/runtime/interface-pairing.json
+rules:
+  - id: deny-unknown-inbound-sender
+    action: interface.inbound
+    effect: deny
+    channels:
+      - slack
+      - telegram
+      - http
+    when:
+      senderAllowlisted: false
+      senderPaired: false
+    reason: Unknown channel senders cannot reach the Host.
+  - id: issue-expiring-pairing-code
+    action: interface.pair.request
+    effect: issue-code
+    ttlFromConfig: pairingTtlSeconds
+    persistToConfig: storePath
+    reason: Unknown senders receive a pairing code instead of Host access.
+  - id: require-operator-approval
+    action: interface.pair.redeem
+    effect: require-approval
+    when:
+      pairingCodeValid: true
+      pairingCodeExpired: false
+    reason: Only an operator can allowlist a sender after a valid pairing code.
+  - id: expire-pairing-codes
+    action: interface.pair.redeem
+    effect: deny
+    when:
+      pairingCodeExpired: true
+    reason: Expired pairing codes cannot be redeemed.
+gates:
+  - surface: interface.inbound
+    default: deny
+    channels:
+      - slack
+      - telegram
+      - http
+    allowIf:
+      - senderAllowlisted
+      - senderPaired
+  - surface: interface.pair
+    default: deny
+    allowIf:
+      - pairingCodeValid
+      - operatorApproved
+    pairingTtlSecondsFromConfig: pairingTtlSeconds
+    storePathFromConfig: storePath

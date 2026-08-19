@@ -57,6 +57,50 @@
       "path": "agents/reviewer/1.0.0"
     },
     {
+      "id": "interface:http",
+      "version": "1.0.0",
+      "checksum": "sha256:5afd54c5465423b1ccb0237d4db5698b7e380fc339042958be2a289a2ffcf185",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/interface/http/1.0.0"
+    },
+    {
+      "id": "interface:schedule",
+      "version": "1.0.0",
+      "checksum": "sha256:c0c82abe83f646e2b61c6fcebf7ec18060947a8010fdd3587450fc8a6f14a5b6",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/interface/schedule/1.0.0"
+    },
+    {
+      "id": "interface:slack",
+      "version": "1.0.0",
+      "checksum": "sha256:c66afa4586632c3d36b67bf8a75b819209c0a76f352a038589467cff2d561fab",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/interface/slack/1.0.0"
+    },
+    {
+      "id": "interface:telegram",
+      "version": "1.0.0",
+      "checksum": "sha256:05ea3961a24f66bfaafb2a2711f393b501c1e4931907e7bc937ed4c54f6a8fa7",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/interface/telegram/1.0.0"
+    },
+    {
       "id": "interface:terminal",
       "version": "1.0.0",
       "checksum": "sha256:3cb09445fe462699e111344601847c5ce66fb523d79938450a8685981567d363",
@@ -66,6 +110,28 @@
         "node": ">=20"
       },
       "path": "components/interface/terminal/1.0.0"
+    },
+    {
+      "id": "interface:webhook",
+      "version": "1.0.0",
+      "checksum": "sha256:ee2424971105facb1fba2e8371ea6b83c8898a981a9e1c4dd306f6df3c2bdfce",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/interface/webhook/1.0.0"
+    },
+    {
+      "id": "policy:interface-pairing",
+      "version": "1.0.0",
+      "checksum": "sha256:22bb83c01c8bebe43598850cc11b40c19c68bc119ebb06fa5c914d1b42482526",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/policy/interface-pairing/1.0.0"
     },
     {
       "id": "policy:least-privilege",
@@ -79,6 +145,17 @@
       "path": "components/policy/least-privilege/1.0.0"
     },
     {
+      "id": "policy:memory-write-approval",
+      "version": "1.0.0",
+      "checksum": "sha256:7dca4efaa031e19a7da6a98a6ec7c5bb4a30313300eb9f6b9527d3d51dc19aaf",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/policy/memory-write-approval/1.0.0"
+    },
+    {
       "id": "policy:require-verification",
       "version": "1.0.0",
       "checksum": "sha256:b9e4a3b62ceeb613ea08bb9da3a5ddd67a09305c5ee794741727175e6ff19f50",
@@ -88,6 +165,28 @@
         "node": ">=20"
       },
       "path": "components/policy/require-verification/1.0.0"
+    },
+    {
+      "id": "policy:schedule-no-recurse",
+      "version": "1.0.0",
+      "checksum": "sha256:027be37c13284d1aa2223d29529a11019c94a9d2a515b041727db6205b6debbf",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/policy/schedule-no-recurse/1.0.0"
+    },
+    {
+      "id": "policy:untrusted-inbound",
+      "version": "1.0.0",
+      "checksum": "sha256:28c3069f2ddde2fb95f5d26a0f03fb31f8c75326533560e1deee746dc76e645d",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/policy/untrusted-inbound/1.0.0"
     },
     {
       "id": "provider:openai",
@@ -145,6 +244,28 @@
       "path": "components/provider/xai/1.0.0"
     },
     {
+      "id": "skill:browser-use",
+      "version": "1.0.0",
+      "checksum": "sha256:e4a0c2163c0c7d5c2fa3a5fc768563a5516d5fd2c06711625d4ff4318062e4bb",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/skill/browser-use/1.0.0"
+    },
+    {
+      "id": "skill:memory-hygiene",
+      "version": "1.0.0",
+      "checksum": "sha256:ddb6e288196acb22b67accd98abbb1b08683a57e4a079af32f014b6728a02f63",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/skill/memory-hygiene/1.0.0"
+    },
+    {
       "id": "skill:research",
       "version": "1.0.0",
       "checksum": "sha256:d7464b355faa23a0001ece90efe0d636710a323be3d2b608b6cc70fc75f68c2d",
@@ -154,6 +275,17 @@
         "node": ">=20"
       },
       "path": "components/skill/research/1.0.0"
+    },
+    {
+      "id": "skill:scheduler",
+      "version": "1.0.0",
+      "checksum": "sha256:bb1632fe3f978e9dde997a46f2dd7f9abd0da9c7f7f6acc79af5715e66905bbb",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/skill/scheduler/1.0.0"
     },
     {
       "id": "skill:software-development",
@@ -167,6 +299,17 @@
       "path": "components/skill/software-development/1.0.0"
     },
     {
+      "id": "state:memory",
+      "version": "1.0.0",
+      "checksum": "sha256:63cb77d2834e5da5b53b635d66a4605a3dd1bb225120cf877e7e7ca6bff088fc",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/state/memory/1.0.0"
+    },
+    {
       "id": "state:repository",
       "version": "1.0.0",
       "checksum": "sha256:3c1f8344ef676063d2da8045744dd769ba3bbc5e0e8a3e7c4ae13bb8b527972b",
@@ -176,6 +319,17 @@
         "node": ">=20"
       },
       "path": "components/state/repository/1.0.0"
+    },
+    {
+      "id": "tool:browser",
+      "version": "1.0.0",
+      "checksum": "sha256:46d05f860c826efb484f01f440974536cd7fda35821bea329fbab60e3dc85dbc",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/tool/browser/1.0.0"
     },
     {
       "id": "tool:execution",
@@ -211,6 +365,72 @@
       "path": "components/tool/github/1.0.0"
     },
     {
+      "id": "tool:github",
+      "version": "1.1.0",
+      "checksum": "sha256:8c7e0fc201943270bed6aa7968af4b5fe82607869f746bfef3d551c5a3fe74a9",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/tool/github/1.1.0"
+    },
+    {
+      "id": "tool:mcp",
+      "version": "1.0.0",
+      "checksum": "sha256:48325bc0f57252a74e2bd46ba95d4ca0e9f846ff52bd23d6efbd4f8a18a58f05",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/tool/mcp/1.0.0"
+    },
+    {
+      "id": "tool:memory",
+      "version": "1.0.0",
+      "checksum": "sha256:ea38d85d2324ed8596490b443f80bbdaf5258919740cd6997df8ccccf7fe619c",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/tool/memory/1.0.0"
+    },
+    {
+      "id": "tool:process",
+      "version": "1.0.0",
+      "checksum": "sha256:7dc8439ac22b18f149e569eb71046412b11b8d8e8a399c504903a14329b02943",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/tool/process/1.0.0"
+    },
+    {
+      "id": "tool:scheduler",
+      "version": "1.0.0",
+      "checksum": "sha256:e698a66cbe702513cc1887418a380a89c323f60a48c7f8593e07dcbd036d1a87",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/tool/scheduler/1.0.0"
+    },
+    {
+      "id": "tool:web",
+      "version": "1.0.0",
+      "checksum": "sha256:9088053589417f95c0be0a6bd2a6e2bbfd4abbdbb893c672f2b38f7efe836364",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/tool/web/1.0.0"
+    },
+    {
       "id": "verifier:command",
       "version": "1.0.0",
       "checksum": "sha256:40239c1a303b439fc5fd703b71f048bffbde6b2c6537a353478c38fb8cbf20c0",
@@ -220,6 +440,17 @@
         "node": ">=20"
       },
       "path": "components/verifier/command/1.0.0"
+    },
+    {
+      "id": "verifier:schema",
+      "version": "1.0.0",
+      "checksum": "sha256:bede1ba5531d3abb60bfae0b3512a79b006ce24c4fa70e6ac6a226e2a9de5165",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/verifier/schema/1.0.0"
     }
   ]
 }

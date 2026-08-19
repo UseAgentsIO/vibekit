@@ -12,5 +12,12 @@ export {
   writeDeploymentSecret,
 } from "./secret-resolver.js";
 export { ConversationStore, conversationsDirectory } from "./conversation-store.js";
-export { createInboundTask, type RunTurn, type TurnOutcome } from "./turn-runner.js";
+export { createInboundTask, prepareAgentTurn, type RunTurn, type TurnOutcome } from "./turn-runner.js";
+export { bindInstalledTools, loadToolFactory } from "./tool-binder.js";
+export {
+  bindOptionalStateAdapter,
+  optionalSessionContext,
+  type OptionalStateAdapter,
+} from "./state-binder.js";
+export { importProjectModule } from "./project-import.js";
 export type { HostHealth } from "./health.js";
