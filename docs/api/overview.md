@@ -35,7 +35,10 @@ VibeKit is architected as a modular TypeScript monorepo published under the `@us
 | [`@useagentsio/pi`](pi.md) | Embedded Pi runtime adapter, worktree manager, and delegation executor | `prepareIsolatedRun`, `runIsolated`, `createPiIsolatedSession` |
 | [`@useagentsio/interface-sdk`](interface-sdk.md) | Standard interface contract for building custom I/O adapters | `RunningInterface`, `InboundMessage`, `HostOutput`, `InterfaceServices` |
 | `@useagentsio/interface-terminal` | Official Terminal interface implementation | `createTerminalInterface` |
-| `@useagentsio/cli` | CLI commands and registry distribution | `runCli` |
+| `@useagentsio/cli` | CLI commands and official-registry distribution | `runCli` |
+| Optional `interface-*`, `tool-*`, `state-memory`, `verifier-schema` | Optional Components (`vibekit add`) | See each package and [Official Components](../catalog/components.md) |
+
+New packages and registry modules must follow [CONTRIBUTING.md](../../CONTRIBUTING.md). Interfaces implement `@useagentsio/interface-sdk` and must not own Project State.
 
 ---
 

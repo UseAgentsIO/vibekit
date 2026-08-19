@@ -327,8 +327,9 @@ Explore comprehensive documentation and guides in the **[`docs/`](docs/)** direc
   - [Parallel Coding Worktrees](docs/patterns/parallel-coding-worktrees.md)
   - [Proposal → Verification → Approval → Apply](docs/patterns/proposal-verification-approval-apply.md)
 - **Contributing & Specifications**:
-  - [Contributing Guidelines](docs/contributing/guide.md)
-  - [Module Authoring](docs/contributing/module-authoring.md)
+  - [Contributing](CONTRIBUTING.md)
+  - [Development Guide](docs/contributing/guide.md)
+  - [Module Authoring (official registry)](docs/contributing/module-authoring.md)
   - [V1 Implementation Specification](docs/spec/V1-Implementation-Specification.md)
   - [V1 Runtime Correction](docs/spec/V1-Runtime-Correction.md)
 
@@ -363,6 +364,8 @@ pnpm typecheck
 # Rebuild official registry index
 pnpm registry:index
 ```
+
+To add official Agents or Components, or to change Host/CLI packages, follow **[CONTRIBUTING.md](CONTRIBUTING.md)**.
 
 ---
 

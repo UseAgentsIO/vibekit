@@ -33,13 +33,15 @@ VibeKit structures autonomous agent systems around four distinct primitives:
 
 ### Components (The Pieces)
 Components are atomic building blocks installed from the official registry:
-- **Providers**: Connection configs for model vendors (e.g., `provider:openai`, `provider:opencode-go`, `provider:xai`).
-- **Tools**: Executable toolsets for interacting with systems (e.g., `tool:filesystem`, `tool:execution`).
-- **Skills**: Structured instructions and domain knowledge for Pi (e.g., `skill:software-development`, `skill:research`).
-- **Interfaces**: I/O adapters that connect humans and external channels to the Host (e.g., `interface:terminal`).
+- **Providers**: Connection configs for model vendors (e.g., `provider:openai`, `provider:openai-codex`, `provider:xai`).
+- **Tools**: Executable toolsets (e.g., `tool:filesystem`, `tool:execution`; optional `tool:web`, `tool:github`, …).
+- **Skills**: Structured instructions for Pi (e.g., `skill:software-development`, `skill:research`).
+- **Interfaces**: I/O adapters (V1 ships `interface:terminal`; HTTP, webhook, schedule, Slack, and Telegram are optional).
 - **Policies**: Invariant governance rules (e.g., `policy:least-privilege`, `policy:require-verification`).
-- **Verifiers**: Deterministic check runners that validate work (e.g., `verifier:command`).
-- **State Backends**: Storage drivers for project records (e.g., `state:repository`).
+- **Verifiers**: Deterministic check runners (e.g., `verifier:command`, optional `verifier:schema`).
+- **State Backends**: Storage drivers (`state:repository`; optional `state:memory` is curated notes, not Project truth).
+
+The full official list is in [Official Agents](../catalog/agents.md) and [Official Components](../catalog/components.md). To add a module, see [Module authoring](../contributing/module-authoring.md).
 
 ### Agents (The Compositions)
 Agents are useful recipes composed of Components. An agent definition (`agent.yaml` + `instructions.md`) declares:
@@ -68,7 +70,7 @@ VibeKit embeds [Pi](https://github.com/earendil-works/pi) as its internal model 
 ## 3. Human Interaction via Interfaces
 
 Users communicate with a Project through **Interfaces**:
-- In this release, **`interface:terminal`** is the standard interface providing both single-turn CLI messaging (`vibekit msg`) and interactive terminal sessions (`vibekit start`).
+- **`interface:terminal`** is the Interface that ships on the first path (`vibekit msg` / `vibekit start`). Optional Interfaces (HTTP, webhook, schedule, Slack, Telegram) attach the same Host without changing Agents.
 - Interfaces are strictly **I/O adapters**. They translate inbound text into Host Tasks or conversation turns, and render outbound Progress, Results, and Approval requests.
 - Interfaces **never** own project state, permissions, or agent definitions.
 

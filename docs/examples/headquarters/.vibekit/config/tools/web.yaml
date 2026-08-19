@@ -1,0 +1,7 @@
+secrets:
+  - name: TAVILY_API_KEY
+    source: environment
+    required: false
+  - name: BRAVE_API_KEY
+    source: environment
+    required: false

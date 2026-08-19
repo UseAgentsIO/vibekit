@@ -20,7 +20,7 @@ Generates a schemaVersion 2 project, installs the selected Agent (default: `chie
 - `[dir]`: Target directory (default: current directory).
 - `--agent <name>`: Starter Agent to install (default: `chief`).
 - `--provider <name>`: Provider ID (default: `openai`).
-- `--model <id>`: Model ID (required with `--yes`; otherwise selected interactively).
+- `--model <id>`: Model ID. Interactive create can pick from Pi’s catalog. With `--yes` and no `--model`, the CLI uses the first catalog model or a known-provider default (`openai` → `gpt-4.1`).
 - `--interface <name>`: Interface component to bind (default: `terminal`).
 - `-y, --yes`: Skip confirmation prompts.
 - `--dir <path>`: Project directory override.
@@ -47,7 +47,7 @@ vibekit msg [options] <text>
 ```
 
 ### Description
-Starts an in-process Agent Host, sends one turn on the local CLI conversation, prints the agent's response, commits state, and stops cleanly.
+Sends one turn on the local CLI conversation and prints the Agent’s response. If a Host daemon is already running for the Project (`.vibekit/runtime/host.sock`), the turn is submitted over local IPC. Otherwise the CLI starts a short-lived in-process Host, then stops it.
 
 ### Examples
 ```bash

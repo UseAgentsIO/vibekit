@@ -14,7 +14,7 @@ pnpm add @useagentsio/host @useagentsio/core
 
 ## `VibeKitHost` Class
 
-The primary orchestrator class managing project lifecycles, sessions, interfaces, and state.
+The Host class that loads a Project, attaches Interfaces, runs conversation turns and Worker Runs, and persists State. Delegation is an Agent capability — this class is not an `orchestrator` type.
 
 ### Constructor
 ```ts

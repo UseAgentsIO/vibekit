@@ -1,6 +1,6 @@
 # Official Catalog & Registry Overview
 
-VibeKit ships with an **official, curated registry** of Agents and Components.
+VibeKit ships with an **official, curated registry** of Agents and Components. Contribution rules: [CONTRIBUTING.md](../../CONTRIBUTING.md) and [Module authoring](../contributing/module-authoring.md).
 
 ---
 
@@ -14,33 +14,35 @@ VibeKit ships with an **official, curated registry** of Agents and Components.
 
 ## 2. Anatomy of a `module.yaml`
 
-Every entry in the registry is defined by a `module.yaml` manifest conforming to `module.schema.json`:
+Every entry in the registry is defined by a `module.yaml` manifest conforming to `schemas/component.schema.json` or `schemas/agent.schema.json`. Official modules live in versioned directories (`registry/components/tool/filesystem/1.0.0/`). See [Module authoring](../contributing/module-authoring.md) for the full contribution contract.
 
 ```yaml
 schemaVersion: 1
 id: tool:filesystem
-name: Filesystem Tools
+type: tool
+name: filesystem
+displayName: Filesystem Tool
 version: 1.0.0
-type: component
-family: tool
-license: UNLICENSED
-description: Pi filesystem built-ins for reading, listing, and writing files.
+description: Gives authorized Agents scoped read and write access to Project files.
+license: MIT
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
 
 runtime:
   kind: pi-builtin
-  tools:
-    - read
-    - grep
-    - find
-    - ls
-    - write
-    - edit
+  tools: [read, grep, find, ls, write, edit]
 
 files:
-  - source: filesystem.yaml
-    target: .vibekit/components/tools/filesystem.yaml
-
-requiredDependencies: []
+  - source: payload/index.ts
+    target: .pi/extensions/filesystem/index.ts
+    ownership: exclusive
 ```
 
 ---
@@ -55,7 +57,7 @@ Modules declare how they execute or attach at runtime using the `runtime.kind` p
 | `pi-builtin` | Maps to Pi's native built-in tools (`read`, `write`, `bash`). | `tool:filesystem`, `tool:execution` |
 | `pi-extension` | Loads an external Pi extension. | Extension modules |
 | `package` | Standard Node.js package dependency. | Host adapter modules |
-| `config-only` | Configuration and metadata declaration without direct executable code. | `tool:github` (configures `GITHUB_TOKEN` reference) |
+| `config-only` | Configuration and metadata only; set `available: false`. | Older `tool:github@1.0.0` (configures `GITHUB_TOKEN`). `1.1.0` is `pi-extension`. |
 
 ---
 
@@ -67,4 +69,4 @@ When contributing or adding new modules to the repository, rebuild the registry 
 pnpm registry:index
 ```
 
-This validates all module manifests against schemas, checks file target safety, and regenerates `registry/index.json`.
+This validates all module manifests against schemas, checks file target safety, and regenerates `registry/index.json`. Commit the index with the module. Add new IDs to `tests/registry/official.test.ts` and the catalog tables. Full checklist: [Module authoring](../contributing/module-authoring.md).

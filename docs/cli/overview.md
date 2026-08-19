@@ -40,7 +40,7 @@ The following flags are accepted across all commands or where applicable:
 
 | Variable | Description |
 | :--- | :--- |
-| `VIBEKIT_REGISTRY` | Overrides the default registry search path. |
+| `VIBEKIT_REGISTRY` | Path to a local official-catalog tree (this repo’s `registry/`) for unpublished modules. Not a third-party marketplace. |
 | `OPENAI_API_KEY` | API key used when configured with `provider:openai`. |
 | `OPENCODE_API_KEY` | API key used when configured with `provider:opencode-go`. |
 | `XAI_API_KEY` | API key used when configured with `provider:xai`. |

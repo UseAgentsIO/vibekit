@@ -1,0 +1,21 @@
+{
+  "name": "headquarters",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "vibekit start",
+    "doctor": "vibekit doctor"
+  },
+  "dependencies": {
+    "@useagentsio/core": "workspace:*",
+    "@useagentsio/host": "workspace:*",
+    "@useagentsio/pi": "workspace:*",
+    "@useagentsio/interface-sdk": "workspace:*",
+    "@useagentsio/interface-terminal": "workspace:*",
+    "@useagentsio/interface-telegram": "workspace:*",
+    "@useagentsio/interface-schedule": "workspace:*",
+    "@useagentsio/state-memory": "workspace:*",
+    "@useagentsio/tool-web": "workspace:*"
+  }
+}

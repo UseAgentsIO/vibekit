@@ -39,7 +39,7 @@ VibeKit operates as an always-running Host that bridges human communication inte
 ### 1. The Agent Host (`@useagentsio/host`)
 The Host is the central process manager. It performs the following roles:
 - **Project Loader**: Loads `.vibekit/project.yaml` and `installed.json` on startup.
-- **Interface Manager**: Initializes configured interfaces (e.g., `interface:terminal`), binds inbound/outbound event channels, and monitors connection health.
+- **Interface Manager**: Initializes configured Interfaces (`interface:terminal` plus any optional bindings), binds inbound/outbound event channels, and monitors connection health.
 - **Turn Runner**: Ingests inbound user messages, resolves agent bindings, verifies permission limits, and schedules execution.
 - **Session Manager**: Manages persistent conversation sessions across turns and spins up isolated worker sessions for task execution.
 - **State Coordinator**: Atomically writes turn state, task results, approvals, and events to the repository state backend.

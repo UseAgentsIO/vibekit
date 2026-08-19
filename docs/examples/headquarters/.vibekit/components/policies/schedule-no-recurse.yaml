@@ -1,0 +1,54 @@
+id: policy:schedule-no-recurse
+effect: reduce-authority
+enforcement: runtime
+description: Scheduled Worker Runs cannot mutate the job table. Recommended with interface:schedule; treat as required whenever that Interface is bound so cron sessions cannot recurse.
+recommendedWith:
+  - interface:schedule
+requiredStyle: recommended-when-schedule-bound
+rules:
+  - id: deny-job-create-from-scheduled-run
+    action: schedule.job.create
+    effect: deny
+    when:
+      runKind: scheduled-worker
+    reason: A scheduled Worker Run cannot create jobs.
+  - id: deny-job-edit-from-scheduled-run
+    action: schedule.job.edit
+    effect: deny
+    when:
+      runKind: scheduled-worker
+    reason: A scheduled Worker Run cannot edit jobs.
+  - id: deny-job-pause-resume-from-scheduled-run
+    action: schedule.job.pause-or-resume
+    effect: deny
+    when:
+      runKind: scheduled-worker
+    reason: A scheduled Worker Run cannot pause or resume jobs.
+  - id: deny-job-remove-from-scheduled-run
+    action: schedule.job.remove
+    effect: deny
+    when:
+      runKind: scheduled-worker
+    reason: A scheduled Worker Run cannot remove jobs.
+  - id: deny-scheduler-tool-on-scheduled-run
+    action: tool.scheduler
+    effect: deny
+    when:
+      runKind: scheduled-worker
+    reason: Cron-run sessions do not receive the scheduler tool unless this policy is absent and Project config explicitly allows it.
+gates:
+  - surface: schedule.job.table
+    default: deny
+    when:
+      runKind: scheduled-worker
+    deny:
+      - create
+      - edit
+      - pause
+      - resume
+      - run
+      - remove
+  - surface: tool.scheduler
+    default: deny
+    when:
+      runKind: scheduled-worker

@@ -1,0 +1,5 @@
+id: provider:openai
+piProvider: openai
+description: Maps to the OpenAI provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: OPENAI_API_KEY
+defaultModel: gpt-4.1

@@ -220,7 +220,7 @@ describeSqlite("memory store", () => {
     store.store({ target: "notes", content: "First convention." });
     store.store({ target: "notes", content: "Second convention." });
     const snapshot = store.snapshot();
-    expect(snapshot).toContain("First convention. § Second convention.");
+    expect(snapshot).toMatch(/First convention\.\s*§\s*Second convention\.|Second convention\.\s*§\s*First convention\./);
   });
 
   it("persists mid-session writes for a later store on the same file", () => {

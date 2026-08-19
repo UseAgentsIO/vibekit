@@ -21,6 +21,7 @@ This guide details the system requirements, installation methods, and environmen
 > - CLI package: `@useagentsio/cli` (provides the `vibekit` binary)
 > - Host package: `@useagentsio/host` (provides the `vibekit-host` binary)
 > - Core libraries: `@useagentsio/core`, `@useagentsio/pi`, `@useagentsio/interface-sdk`, `@useagentsio/interface-terminal`
+> - Optional packages: `@useagentsio/interface-http`, `interface-webhook`, `interface-schedule`, `interface-slack`, `interface-telegram`, `tool-web`, `tool-browser`, `tool-github`, `tool-mcp`, `tool-process`, `state-memory`, `verifier-schema`
 
 ---
 
@@ -95,12 +96,15 @@ export XAI_API_KEY="xai-..."
 export OPENROUTER_API_KEY="sk-or-..."
 ```
 
-### Custom / Self-Hosted Registry Path (Optional)
-By default, the CLI uses the official registry embedded inside `@useagentsio/cli`. You can point to an alternative registry directory by setting:
+### Local / unpublished registry path (development)
+
+By default the CLI uses the official registry bundled inside `@useagentsio/cli`. V1 does not support third-party registries. `--registry` / `VIBEKIT_REGISTRY` exist so you can test modules from this repo (or a clone) before they ship:
+
 ```bash
-export VIBEKIT_REGISTRY="/path/to/custom/registry"
+export VIBEKIT_REGISTRY="/path/to/vibekit/registry"
 ```
-Or passing `--registry <path>` to any CLI command.
+
+To add official modules, see [CONTRIBUTING.md](../../CONTRIBUTING.md) and [Module authoring](../contributing/module-authoring.md).
 
 ---
 

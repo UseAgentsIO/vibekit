@@ -1,7 +1,7 @@
 schemaVersion: 2
 
 id: project:headquarters
-name: Headquarters
+name: Headquarters Life Coordinator
 root: .
 
 runtime:
@@ -11,7 +11,7 @@ runtime:
 defaults:
   model:
     provider: openai
-    id: gpt-5.6-sol
+    id: gpt-4.1
 
 defaultAgent: chief
 
@@ -22,22 +22,22 @@ host:
   shutdownGraceMs: 30000
 
 interfaceBindings:
-  slack-main:
-    definition: interface:slack
+  telegram-main:
+    definition: interface:telegram
     enabled: true
     defaultAgent: chief
-    config: .vibekit/config/interfaces/slack-main.yaml
+    config: .vibekit/config/interfaces/telegram.yaml
   terminal-main:
     definition: interface:terminal
     enabled: true
     defaultAgent: chief
-    config: .vibekit/config/interfaces/terminal-main.yaml
+    config: .vibekit/config/interfaces/terminal.yaml
 
 agentBindings:
   chief:
-    definition: agent:chief-of-staff
+    definition: agent:chief
   personal:
-    definition: agent:director-personal
+    definition: agent:personal
 
 delegation:
   chief:
@@ -52,9 +52,11 @@ capabilityBindings:
   memory.read: tool:memory
   memory.write: tool:memory
   schedule.manage: tool:scheduler
+  web.fetch: tool:web
 
 policies:
   - policy:least-privilege
+  - policy:schedule-no-recurse
 
 execution:
   maxParallelRuns: 4

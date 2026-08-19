@@ -23,3 +23,5 @@ You compose patterns using standard Agent recipes, delegation permissions, proje
 1. **No Orchestrator Abstraction**: Orchestration is accomplished by normal agent delegation (`agent_delegate`).
 2. **Explicit Delegation Whitelist**: Parent agents can only delegate to agents explicitly listed in `.vibekit/project.yaml` under `delegation.<agent>`.
 3. **Strict Separation of Duties**: Agents that generate code should not possess permissions to self-approve or self-review.
+
+New patterns are documentation under `docs/patterns/` plus ordinary Agent/Project composition. Do not add a workflow DSL. Contribution contract: [CONTRIBUTING.md](../../CONTRIBUTING.md).

@@ -1,0 +1,393 @@
+{
+  "schemaVersion": 1,
+  "modules": [
+    {
+      "schemaVersion": 1,
+      "id": "agent:chief",
+      "version": "1.0.0",
+      "registrySource": "official",
+      "sourceRevision": "v1.0.0",
+      "integrityChecksum": "sha256:aff9fa0dff1a6c77904455cdfdba22470f5bc04b4a2e50af181fbe500d62d8c6",
+      "installedAt": "2026-08-19T04:59:53.533Z",
+      "dependencies": [
+        "state:repository"
+      ],
+      "files": [
+        {
+          "path": ".vibekit/agents/chief/agent.yaml",
+          "hash": "sha256:fdc37670b9fe8a12558eb4a6e66ea765af70ff88c7d7af44da063ee089b82634",
+          "ownership": "exclusive"
+        },
+        {
+          "path": ".vibekit/agents/chief/instructions.md",
+          "hash": "sha256:e4057792a04c76cf71d711f7dc8e1cb3ff881f38bc10dbb29c2323c3f857cf5d",
+          "ownership": "exclusive"
+        }
+      ],
+      "configurationPaths": [],
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "agent:personal",
+      "version": "1.0.0",
+      "registrySource": "project-local",
+      "sourceRevision": "unspecified",
+      "integrityChecksum": "sha256:67a9ddecb6ac12bc9e31f5bdf01f761b699e27bca5b37468148a86db03b32f4b",
+      "installedAt": "2026-08-19T05:00:34.618Z",
+      "dependencies": [
+        "state:repository"
+      ],
+      "files": [
+        {
+          "path": ".vibekit/agents/personal/agent.yaml",
+          "hash": "sha256:301f92c9456cde8615871d832edf1b11ec37fc36ea4864e858437fdafd78ba64",
+          "ownership": "exclusive"
+        },
+        {
+          "path": ".vibekit/agents/personal/instructions.md",
+          "hash": "sha256:22916ef68aefed87e1161ed320ead61d2a9d6b817040e135313697d4f1f49335",
+          "ownership": "exclusive"
+        }
+      ],
+      "configurationPaths": [],
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "interface:schedule",
+      "version": "1.0.0",
+      "registrySource": "official",
+      "sourceRevision": "v1.0.0",
+      "integrityChecksum": "sha256:c0c82abe83f646e2b61c6fcebf7ec18060947a8010fdd3587450fc8a6f14a5b6",
+      "installedAt": "2026-08-19T04:59:53.533Z",
+      "dependencies": [],
+      "files": [
+        {
+          "path": ".vibekit/components/interfaces/schedule.yaml",
+          "hash": "sha256:29ee8ee5fab8fc3b3090ff3cbde95da093c4848a2166676a2328f979cf5e5ffa",
+          "ownership": "exclusive"
+        }
+      ],
+      "configurationPaths": [
+        ".vibekit/config/interfaces/schedule.yaml"
+      ],
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "interface:telegram",
+      "version": "1.0.0",
+      "registrySource": "official",
+      "sourceRevision": "unspecified",
+      "integrityChecksum": "sha256:05ea3961a24f66bfaafb2a2711f393b501c1e4931907e7bc937ed4c54f6a8fa7",
+      "installedAt": "2026-08-19T05:03:09.086Z",
+      "dependencies": [],
+      "files": [
+        {
+          "path": ".vibekit/components/interfaces/telegram.yaml",
+          "hash": "sha256:05ea3961a24f66bfaafb2a2711f393b501c1e4931907e7bc937ed4c54f6a8fa7",
+          "ownership": "exclusive"
+        }
+      ],
+      "configurationPaths": [
+        ".vibekit/config/interfaces/telegram.yaml"
+      ],
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "interface:terminal",
+      "version": "1.0.0",
+      "registrySource": "official",
+      "sourceRevision": "v1.0.0",
+      "integrityChecksum": "sha256:3cb09445fe462699e111344601847c5ce66fb523d79938450a8685981567d363",
+      "installedAt": "2026-08-19T04:59:53.533Z",
+      "dependencies": [],
+      "files": [
+        {
+          "path": ".vibekit/components/interfaces/terminal.yaml",
+          "hash": "sha256:0396502cf60ef496003d2abb38ea4ef352ad3fff61533467cf128f62b2b44bd0",
+          "ownership": "exclusive"
+        }
+      ],
+      "configurationPaths": [
+        ".vibekit/config/interfaces/terminal.yaml"
+      ],
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "policy:least-privilege",
+      "version": "1.0.0",
+      "registrySource": "official",
+      "sourceRevision": "v1.0.0",
+      "integrityChecksum": "sha256:c3683db4a9d015fc5e6c2987cf92ab98f613afa104b83df4d8ff4d5847dd9bfb",
+      "installedAt": "2026-08-19T04:59:53.533Z",
+      "dependencies": [],
+      "files": [
+        {
+          "path": ".vibekit/components/policies/least-privilege.yaml",
+          "hash": "sha256:e9f3dc22693ba9c9d32b982cea7df45d4038303d4588e674b593f455aa79a621",
+          "ownership": "exclusive"
+        }
+      ],
+      "configurationPaths": [
+        ".vibekit/config/policies/least-privilege.yaml"
+      ],
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "policy:schedule-no-recurse",
+      "version": "1.0.0",
+      "registrySource": "official",
+      "sourceRevision": "v1.0.0",
+      "integrityChecksum": "sha256:027be37c13284d1aa2223d29529a11019c94a9d2a515b041727db6205b6debbf",
+      "installedAt": "2026-08-19T04:59:53.533Z",
+      "dependencies": [],
+      "files": [
+        {
+          "path": ".vibekit/components/policies/schedule-no-recurse.yaml",
+          "hash": "sha256:b90908b6debaec0264a031248201a78d00f52a6da5bba4dcd8beaa0f9b4a356a",
+          "ownership": "exclusive"
+        }
+      ],
+      "configurationPaths": [
+        ".vibekit/config/policies/schedule-no-recurse.yaml"
+      ],
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "provider:openai",
+      "version": "1.0.0",
+      "registrySource": "official",
+      "sourceRevision": "v1.0.0",
+      "integrityChecksum": "sha256:356dc379f6927e7d502af9134329b226df2218068cb57ab17f77f89744d33c49",
+      "installedAt": "2026-08-19T04:59:53.533Z",
+      "dependencies": [],
+      "files": [
+        {
+          "path": ".vibekit/components/providers/openai.yaml",
+          "hash": "sha256:e3587112e233650f1805787cf064559ad7f5d0e3248fde2d8b857af5362d4791",
+          "ownership": "exclusive"
+        }
+      ],
+      "configurationPaths": [
+        ".vibekit/config/providers/openai.yaml"
+      ],
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "skill:memory-hygiene",
+      "version": "1.0.0",
+      "registrySource": "official",
+      "sourceRevision": "v1.0.0",
+      "integrityChecksum": "sha256:ddb6e288196acb22b67accd98abbb1b08683a57e4a079af32f014b6728a02f63",
+      "installedAt": "2026-08-19T04:59:53.533Z",
+      "dependencies": [],
+      "files": [
+        {
+          "path": ".pi/skills/memory-hygiene/SKILL.md",
+          "hash": "sha256:e68a043b4d6b05a666d4202946fec442bf695de435d1846840540d38984b743f",
+          "ownership": "exclusive"
+        }
+      ],
+      "configurationPaths": [
+        ".vibekit/config/skills/memory-hygiene.yaml"
+      ],
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "skill:scheduler",
+      "version": "1.0.0",
+      "registrySource": "official",
+      "sourceRevision": "v1.0.0",
+      "integrityChecksum": "sha256:bb1632fe3f978e9dde997a46f2dd7f9abd0da9c7f7f6acc79af5715e66905bbb",
+      "installedAt": "2026-08-19T04:59:53.533Z",
+      "dependencies": [],
+      "files": [
+        {
+          "path": ".pi/skills/scheduler/SKILL.md",
+          "hash": "sha256:8182bf5fdb2ebd140beb5cc77b359ad294e020a0ac3c0229cca1d0813631c808",
+          "ownership": "exclusive"
+        }
+      ],
+      "configurationPaths": [
+        ".vibekit/config/skills/scheduler.yaml"
+      ],
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "state:memory",
+      "version": "1.0.0",
+      "registrySource": "official",
+      "sourceRevision": "v1.0.0",
+      "integrityChecksum": "sha256:63cb77d2834e5da5b53b635d66a4605a3dd1bb225120cf877e7e7ca6bff088fc",
+      "installedAt": "2026-08-19T04:59:53.533Z",
+      "dependencies": [],
+      "files": [
+        {
+          "path": ".vibekit/components/state/memory.yaml",
+          "hash": "sha256:9e1de27ff37525d2b70aabc499fd8b49f50f519a3aa487bd7ca2f3665c63163f",
+          "ownership": "exclusive"
+        }
+      ],
+      "configurationPaths": [
+        ".vibekit/config/state/memory.yaml"
+      ],
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "state:repository",
+      "version": "1.0.0",
+      "registrySource": "official",
+      "sourceRevision": "v1.0.0",
+      "integrityChecksum": "sha256:3c1f8344ef676063d2da8045744dd769ba3bbc5e0e8a3e7c4ae13bb8b527972b",
+      "installedAt": "2026-08-19T04:59:53.533Z",
+      "dependencies": [],
+      "files": [
+        {
+          "path": ".vibekit/components/state/repository.yaml",
+          "hash": "sha256:74f5239a0ffc2a7675323a6b4206787e5ec3e86519701f24cc85f4f16dc9d56a",
+          "ownership": "exclusive"
+        }
+      ],
+      "configurationPaths": [
+        ".vibekit/config/state/repository.yaml"
+      ],
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "tool:memory",
+      "version": "1.0.0",
+      "registrySource": "official",
+      "sourceRevision": "v1.0.0",
+      "integrityChecksum": "sha256:ea38d85d2324ed8596490b443f80bbdaf5258919740cd6997df8ccccf7fe619c",
+      "installedAt": "2026-08-19T04:59:53.533Z",
+      "dependencies": [
+        "state:memory"
+      ],
+      "files": [
+        {
+          "path": ".pi/extensions/memory/index.ts",
+          "hash": "sha256:3dbd01ad823abb19c6596c978aeeb97f61ad6f34b85318c85ebd562da5f7f658",
+          "ownership": "exclusive"
+        }
+      ],
+      "configurationPaths": [
+        ".vibekit/config/tools/memory.yaml"
+      ],
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "tool:scheduler",
+      "version": "1.0.0",
+      "registrySource": "official",
+      "sourceRevision": "v1.0.0",
+      "integrityChecksum": "sha256:e698a66cbe702513cc1887418a380a89c323f60a48c7f8593e07dcbd036d1a87",
+      "installedAt": "2026-08-19T04:59:53.533Z",
+      "dependencies": [
+        "interface:schedule"
+      ],
+      "files": [
+        {
+          "path": ".pi/extensions/scheduler/index.ts",
+          "hash": "sha256:c8568e093903227f4332b6dbc445e50dd43164754b921243b40f23d7afe02e75",
+          "ownership": "exclusive"
+        }
+      ],
+      "configurationPaths": [
+        ".vibekit/config/tools/scheduler.yaml"
+      ],
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "id": "tool:web",
+      "version": "1.0.0",
+      "registrySource": "official",
+      "sourceRevision": "v1.0.0",
+      "integrityChecksum": "sha256:9088053589417f95c0be0a6bd2a6e2bbfd4abbdbb893c672f2b38f7efe836364",
+      "installedAt": "2026-08-19T04:59:53.533Z",
+      "dependencies": [],
+      "files": [
+        {
+          "path": ".pi/extensions/web/index.ts",
+          "hash": "sha256:c7d3b10a91a3ef53949c96923d5ee4d4a7f69520a21f7d7a55345c952b4d4af6",
+          "ownership": "exclusive"
+        }
+      ],
+      "configurationPaths": [
+        ".vibekit/config/tools/web.yaml"
+      ],
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      }
+    }
+  ]
+}

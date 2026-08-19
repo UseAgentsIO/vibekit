@@ -30,6 +30,8 @@ This command automatically:
 3. Binds the **OpenAI** provider (`provider:openai`) and the **Terminal** interface (`interface:terminal`).
 4. Generates an embedded `.pi/` settings directory.
 
+`--yes` without `--model` picks a default (catalog first, then `gpt-4.1` for OpenAI). After create, `vibekit list` should show the Agent, provider, and Interface as installed. To extend the official catalog, see [CONTRIBUTING.md](../../CONTRIBUTING.md).
+
 ---
 
 ## 2. Navigate and Send a Message

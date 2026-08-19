@@ -1,202 +1,204 @@
 # VibeKit Agents — Implementation TODOs
 
+Completed optional Components (memory, interfaces, tools, policies, skills, verifier:schema, Host attach seams) shipped in `899ae8c`. This file now tracks **missing Provider Components** only.
+
 ---
 
-## 🧩 Optional Official Components (bind per Project)
+## Binding rules (providers)
 
 These are **installable registry Components**, not Host features.
 
-A Project gets a capability only when the operator installs and binds that module (`vibekit add …` plus `project.yaml`). A Project that never installs them must behave exactly as it does today.
+- Each provider is `registry/components/provider/<name>/1.0.0/`.
+- Users opt in with `vibekit add provider <name>`. Do **not** auto-install from `create` / `init` unless the user passes `--provider`.
+- A Provider Component **configures Pi**. It must not rebuild a provider runtime Pi already supplies. Map `piProvider` to Pi's existing id. Add a Pi-compatible custom adapter only when Pi has no matching provider.
+- Secrets are environment **references** only (`{ name, source: environment }`). Never store secret values.
+- Runtime stays in Pi. VibeKit files: `module.yaml`, `config.schema.json`, `payload/provider.yaml`.
+- After add: `vibekit doctor` is clean, `vibekit list` reports `INSTALLED: yes`.
+- Also register the Pi id + secret name in `packages/pi/src/models-catalog.ts` `OFFICIAL_PROVIDERS` so `vibekit model` can list it.
+- Rebuild `registry/index.json` (`pnpm registry:index`) and add the id to `tests/registry/official.test.ts`.
+- Do **not** add Agent recipes.
 
-### Binding rules (apply to every item below)
+Copy this existing module as the template: `registry/components/provider/openai/1.0.0/`.
 
-- Each item is its own official registry module under `registry/components/<family>/<name>/`.
-- Users opt in per Project. Do **not** auto-install any of these from `vibekit create` / `vibekit init` unless the user passes an explicit flag.
-- Do **not** merge the capability into `@useagentsio/host`, `@useagentsio/core`, or `@useagentsio/pi` as always-on behavior.
-- The Host/Pi may grow **generic attach seams only**: if a Project has the module installed and bound, load it; if not, skip it. Seams must not import a component package unless that component is installed.
-- Runtime code for a component lives in that component's package (same pattern as `@useagentsio/interface-terminal`) or in its copied Pi extension payload. Other packages must not take that component's dependencies.
-- After install: `vibekit doctor` is clean, `vibekit list` reports `INSTALLED: yes`, and `vibekit remove` leaves no Host-level leftover.
-- Do **not** add Agent recipes here.
+### Exact import recipe (every API-key provider below)
 
----
+For each missing id, do **all** of the following:
 
-### 1. Memory — one OOB pair, SQLite only
+1. Confirm Pi already exposes the provider (`vibekit model` / Pi `ModelRuntime.getProviders()`). If yes, `piProvider` is that id. If no, stop and either wait for a Pi upgrade or add a Pi custom-provider adapter (see "Pi-missing" notes). Do not invent a second VibeKit inference client.
+2. Create `registry/components/provider/<name>/1.0.0/module.yaml` from `provider:openai`:
+   - `id: provider:<name>`
+   - `type: provider`
+   - `providesCapabilities: [provider.<name>]` (capability id: letters, digits, `.` or `-` only)
+   - `secrets: [{ name: <ENV>, required: true|false, source: environment }]`
+   - `files[0].target: .vibekit/components/providers/<name>.yaml`
+   - `configuration.target: .vibekit/config/providers/<name>.yaml`
+   - `healthCheck: { type: pi-provider, name: <piProvider> }`
+3. Create `payload/provider.yaml`:
 
-Do **not** ship LanceDB, Honcho, Mem0, a wiki, dreaming, embedding providers, or a second memory backend. Contributors can add those later as separate `state:memory-*` modules behind the same tool contract.
+   ```yaml
+   id: provider:<name>
+   piProvider: <pi-id>
+   description: Maps to the <Vendor> provider already supplied by Pi. Does not ship a replacement runtime.
+   secretName: <ENV>
+   defaultModel: <safe default from Pi catalog>
+   ```
 
-#### `state:memory` (family: `state`)
+   For OAuth-only (no env key): omit `secretName`, set `auth: oauth`, `secrets: []` (see `provider:openai-codex`).
+4. Create `config.schema.json` with optional `model` and `baseUrl` strings (`additionalProperties: false`), matching `provider:openai`.
+5. Append `{ id, name, secretName }` to `OFFICIAL_PROVIDERS` in `packages/pi/src/models-catalog.ts`.
+6. Add `provider:<name>` to `officialIds` in `tests/registry/official.test.ts`.
+7. Run `pnpm registry:index` and a focused test: `pnpm test tests/registry/official.test.ts`.
+8. Document the id, secret, and default model in `docs/catalog/components.md` and the README official catalog table.
 
-Local SQLite file with FTS5. No cloud, no API key, no vector DB.
-
-- [x] Author `registry/components/state/memory/` (`module.yaml`, adapter, config schema). ID `state:memory`.
-- [x] Put the driver in a dedicated package (e.g. `@useagentsio/state-memory`) so `@useagentsio/host` / `@useagentsio/core` do **not** depend on SQLite.
-- [x] Store under the Project (e.g. `.vibekit/state/memory.sqlite`). Use FTS5 keyword search. No embedding calls.
-- [x] Records: curated notes (environment/conventions) and operator preferences as two targets in the **same** database, plus optional dated working notes that are indexed but not auto-injected every turn.
-- [x] Memory is **not** Project truth. Tasks, Results, Decisions, Approvals stay on `state:repository`.
-- [x] Bound size (reject writes that would blow the inject budget). Scan writes for prompt-injection / secret-looking payloads before accept. Dedup exact duplicates.
-- [x] Frozen snapshot at session start only when this module is installed and the Agent is granted memory access. Mid-session writes persist immediately and appear in tool results; they do not rewrite the live system prompt.
-- [x] A Project with only `state:repository` must not create a memory DB or inject memory.
-
-#### `tool:memory` (family: `tool`)
-
-Thin Agent-facing surface over `state:memory`. One tool, not a family of memory tools.
-
-- [x] Author `registry/components/tool/memory/`. ID `tool:memory`. `requires.required: [state:memory]`.
-- [x] Actions: `store`, `get`, `search` (FTS5), `replace`, `forget`. Include `session_search` as an action on this same tool (query `.vibekit/state/conversations/`), not a second module.
-- [x] Map to a Pi extension payload so it is only bound when the module is installed and the Agent grant includes it.
-- [x] Permission intersection still wins. Prompt text cannot grant memory write.
-
-Suggested bind: `vibekit add state memory` then `vibekit add tool memory` (or add the tool and let deps pull the state module).
-
----
-
-### 2. Interfaces — I/O adapters, Host stays the control plane
-
-Each Interface is an I/O adapter on `@useagentsio/interface-sdk`. It does not own Project State, permissions, or Agent logic. Slack and Telegram stay out of the Host binary.
-
-#### `interface:http` (family: `interface`)
-
-- [x] Package `@useagentsio/interface-http` + `registry/components/interface/http/`.
-- [x] Local loopback HTTP for programmatic turns (health, submit message, cancel, approval). Auth token is a secret reference.
-- [x] Load only when `interface:http` is installed and bound in `project.yaml`.
-
-#### `interface:webhook` (family: `interface`)
-
-- [x] Package `@useagentsio/interface-webhook` + `registry/components/interface/webhook/`.
-- [x] Inbound HTTP callbacks become Host Tasks / conversation turns (GitHub/CI-style events). Signature / shared-secret verification required.
-- [x] Treat payload body as untrusted input. Do not raise permissions from webhook content.
-
-#### `interface:schedule` (family: `interface`)
-
-Scheduled and event-driven input is an Interface (spec), not a new Automation family and not a Host cron daemon baked into every Project.
-
-- [x] Package `@useagentsio/interface-schedule` + `registry/components/interface/schedule/`.
-- [x] Job table is Project data (e.g. `.vibekit/state/schedules/`). Support one-shot, interval, and cron expressions with IANA timezones.
-- [x] Each fire submits a **fresh Worker Run** with a self-contained Task. No conversation memory unless the Task says so.
-- [x] Tick only while this Interface is installed and the Host is running. No schedule table, no tick, no jobs on Projects that did not add it.
-- [x] Default: scheduled Runs cannot create or edit jobs (`policy:schedule-no-recurse` or equivalent hard default in this component).
-- [x] Fail closed on missing secrets / unbound delivery Interface. Do not spend tokens on a blocked job.
-- [x] Optional script-only / silent-success path for watchdogs (`[SILENT]` or empty stdout → no outbound).
-
-#### `interface:slack` (family: `interface`) — already catalogued as planned
-
-- [x] Package `@useagentsio/interface-slack` + `registry/components/interface/slack/`. Socket Mode. Secrets: `SLACK_BOT_TOKEN`, `SLACK_APP_TOKEN` as references.
-- [x] Map mentions / DMs / threads to `conversationKey`. Render `ask-approval` as Slack actions.
-- [x] Pairing / allowlist before unknown senders reach the Host (use `policy:interface-pairing` when that module is also bound).
-
-#### `interface:telegram` (family: `interface`) — already catalogued as planned
-
-- [x] Package `@useagentsio/interface-telegram` + `registry/components/interface/telegram/`. Bot token as a secret reference.
-- [x] Same I/O-only contract as Slack. Pairing required. Do not enable Telegram because Slack is installed (or the reverse).
-
-Defer Discord, email, WhatsApp, Matrix, iMessage as later contributor modules. Same Interface contract; not official OOB.
+Do **not** add the provider to Host/core/pi dependencies. Do **not** write API keys into YAML.
 
 ---
 
-### 3. Tools — executable Components, bound only when installed
+## Already in the official registry (do not re-add)
 
-Do not register these tools on Agents or in Pi unless the module is installed and the Agent grant includes them.
-
-#### `tool:web` (family: `tool`)
-
-- [x] `web_fetch` with no API key (HTTP GET → readable text). Mark fetched content untrusted.
-- [x] Optional `web_search` only when a configured search secret is present; otherwise omit the search action. Do not add a paid search vendor as a Host dependency.
-
-#### `tool:browser` (family: `tool`)
-
-- [x] Isolated browser session (navigate / snapshot / click). Any browser driver is a dependency of **this component package only**.
-- [x] Not installed by default. Pair with `skill:browser-use` as recommended, not required.
-
-#### `tool:github` (family: `tool`) — promote the existing config-only stub
-
-- [x] Keep ID `tool:github`. Change `runtime.kind` from `config-only` / `available: false` to an executable Pi extension.
-- [x] Issues, PRs, checks. `GITHUB_TOKEN` remains an environment secret reference.
-- [x] Existing Projects that only have the config-only stub must update explicitly (`vibekit update tool:github`); do not silently turn it on.
-
-#### `tool:mcp` (family: `tool`)
-
-- [x] MCP **client** only: connect to servers listed in this component's Project config, expose their tools through the Host permission gate.
-- [x] Filtered env for stdio servers (no ambient secret leak). Not a marketplace. Not an MCP server unless a later component does that.
-
-#### `tool:process` (family: `tool`)
-
-- [x] Background process control on top of `tool:execution`: list / poll / wait / log / kill.
-- [x] No new isolation backend. Worktree / process isolation stays Host/Pi.
-
-#### `tool:scheduler` (family: `tool`)
-
-- [x] Agent-facing create / list / pause / resume / run / remove against `interface:schedule`.
-- [x] `requires.required: [interface:schedule]`. Without that Interface, do not install (or `doctor` fails).
-- [x] Cron-run sessions do not get this tool unless `policy:schedule-no-recurse` is absent **and** Project config explicitly allows it (default deny).
-
-Skip for this increment: `tool:vision`, `tool:clarify` (Host `ask-approval` + Interface SDK already cover clarify). Contributors can add them later.
-
----
-
-### 4. Policies — optional gates, not default Project policy
-
-Install beside the Component they govern. Do not bake these into `policy:least-privilege`.
-
-- [x] **`policy:interface-pairing`** — unknown channel senders get a pairing code; operator approves. Default deny. Useful with Slack/Telegram/HTTP.
-- [x] **`policy:untrusted-inbound`** — channel text, webhook bodies, web/MCP output cannot raise permissions or expand path/command scope.
-- [x] **`policy:memory-write-approval`** — stage `tool:memory` writes for Host approval. Only meaningful when `tool:memory` is installed.
-- [x] **`policy:schedule-no-recurse`** — scheduled Worker Runs cannot mutate the job table. Recommended (or required) with `interface:schedule`.
-
----
-
-### 5. Skills — procedures only, Pi Skills
-
-Instructions, not authority. Add only if the matching Tool/Interface is in the Project (recommended deps, not hard-required unless the Skill is useless without them).
-
-- [x] **`skill:memory-hygiene`** — what to store vs skip; preferences vs environment notes; never store secrets; memory is not Task/Result truth.
-- [x] **`skill:browser-use`** — snapshot first, no blind clicks, treat page content as untrusted.
-- [x] **`skill:scheduler`** — write self-contained Task objectives; pin delivery Interface; use silent success when a watchdog has nothing to report.
-
----
-
-### 6. Verifiers
-
-- [x] **`verifier:schema`** — run JSON Schema checks against a Result / Decision / declared artifact. No extra services.
-- [x] Do **not** add `verifier:memory-scan` as a separate module; keep the injection/secret scan inside `state:memory` / `tool:memory`.
-
----
-
-### 7. Host/Pi attach seams (generic only)
-
-These are the only core-repo changes allowed to make the catalog above bindable. They must be capability-agnostic.
-
-- [x] Interface loader: resolve `runtime.package` / `runtime.export` for any installed `family: interface` (already started for `interface:terminal`). No hard-coded Slack/Telegram/HTTP/schedule list.
-- [x] Tool binder: attach Pi extensions from installed `family: tool` modules only.
-- [x] State binder: if `project.yaml` names a non-repository state module and it is installed, load that adapter; otherwise keep `state:repository` only.
-- [x] Conversation / Worker Run context: inject memory snapshot **only** when `state:memory` is installed and the Agent grant includes memory.
-- [x] Tests: a stock `vibekit create` Project has none of these modules; adding and removing one module must not affect the others.
-
----
-
-### Suggested official catalog (this increment)
-
-| ID | Family | OOB? | External service? |
+| VibeKit id | Pi id | Auth | Notes |
 | :--- | :--- | :--- | :--- |
-| `state:memory` | state | Yes — local SQLite + FTS5 | No |
-| `tool:memory` | tool | Yes — requires `state:memory` | No |
-| `interface:http` | interface | Yes | No |
-| `interface:webhook` | interface | Yes | Caller-provided |
-| `interface:schedule` | interface | Yes | No |
-| `interface:slack` | interface | Optional bind | Slack |
-| `interface:telegram` | interface | Optional bind | Telegram |
-| `tool:web` | tool | Yes (`web_fetch`); search optional | Search key optional |
-| `tool:browser` | tool | Optional bind | Driver in this package only |
-| `tool:github` | tool | Optional bind (promote stub) | `GITHUB_TOKEN` |
-| `tool:mcp` | tool | Optional bind | User MCP servers |
-| `tool:process` | tool | Yes | No |
-| `tool:scheduler` | tool | Yes — requires `interface:schedule` | No |
-| `policy:interface-pairing` | policy | Optional bind | No |
-| `policy:untrusted-inbound` | policy | Optional bind | No |
-| `policy:memory-write-approval` | policy | Optional bind | No |
-| `policy:schedule-no-recurse` | policy | Optional bind | No |
-| `skill:memory-hygiene` | skill | Optional bind | No |
-| `skill:browser-use` | skill | Optional bind | No |
-| `skill:scheduler` | skill | Optional bind | No |
-| `verifier:schema` | verifier | Optional bind | No |
+| `provider:openai` | `openai` | `OPENAI_API_KEY` | Direct OpenAI API. |
+| `provider:openai-codex` | `openai-codex` | Pi `/login` OAuth | ChatGPT / Codex. No env secret. |
+| `provider:opencode-go` | `opencode-go` | `OPENCODE_API_KEY` | OpenCode Go. |
+| `provider:xai` | `xai` | `XAI_API_KEY` (optional; Pi OAuth preferred) | Grok. |
+| `provider:openrouter` | `openrouter` | `OPENROUTER_API_KEY` | Multi-model router. |
 
-Not in this increment (contributor later, same contracts): other memory backends, Discord/email/WhatsApp, vision, Host-as-MCP-server, embeddings providers.
+---
+
+## Source catalogs (review)
+
+### OpenClaw official / bundled providers
+
+Anthropic (`ANTHROPIC_API_KEY`), OpenAI + ChatGPT/Codex OAuth, OpenCode Zen (`OPENCODE_API_KEY` / `OPENCODE_ZEN_API_KEY`), OpenCode Go, Google Gemini (`GEMINI_API_KEY` / `GOOGLE_API_KEY`), Google Vertex, Google Gemini CLI runtime, Z.AI (`ZAI_API_KEY`), Vercel AI Gateway (`AI_GATEWAY_API_KEY`), Arcee, BytePlus / BytePlus Plan, Cerebras, Chutes, ClawRouter, Cohere, DeepInfra, DeepSeek, Featherless, GitHub Copilot, GMI Cloud, Groq, Hugging Face, MiniMax / MiniMax Portal, Mistral, Moonshot, NVIDIA, Novita, Ollama Cloud, OpenRouter, Qianfan, Tencent TokenHub, Together, Venice, Volcengine / Volcengine Plan, xAI, Xiaomi / Xiaomi Token Plan, Kimi Coding (`KIMI_API_KEY`), Synthetic, LM Studio (`LM_API_TOKEN`), Ollama (local), vLLM, SGLang, plus custom `models.providers` OpenAI/Anthropic-compatible endpoints.
+
+### Hermes bundled providers
+
+Nous Portal (OAuth), OpenAI Codex (ChatGPT OAuth), OpenAI API (`openai-api` + `OPENAI_API_KEY`), GitHub Copilot + Copilot ACP, Anthropic (OAuth / `ANTHROPIC_API_KEY` / setup-token), OpenRouter, Fireworks (`FIREWORKS_API_KEY`), Novita, Vercel AI Gateway (`ai-gateway`), Z.AI (`GLM_API_KEY`), Kimi Coding / Kimi CN, Arcee, GMI, Actual Computer, MiniMax / MiniMax CN / MiniMax OAuth, xAI key + SuperGrok OAuth, Alibaba DashScope / Alibaba Coding Plan (`DASHSCOPE_API_KEY`), Kilo Code, Xiaomi, Tencent TokenHub, OpenCode Zen, OpenCode Go (`OPENCODE_GO_API_KEY`), CommandCode, DeepSeek, Hugging Face (`HF_TOKEN`), Gemini (`GOOGLE_API_KEY`), Vertex AI, Azure Foundry, AWS Bedrock, NVIDIA NIM, Ollama Cloud, Qwen OAuth, StepFun, LM Studio, Meta Model API (`MODEL_API_KEY`), custom OpenAI-compatible endpoint, plus local Ollama / vLLM via custom base URL.
+
+---
+
+## Priority 1 — import first (Pi already has these, or should)
+
+These are the high-value gaps vs both catalogs. Most are API-key wrappers around a Pi provider. Import with the recipe above.
+
+| Proposed id | Pi id (confirm) | Secret reference | Default model (confirm against live Pi catalog) | Source |
+| :--- | :--- | :--- | :--- | :--- |
+| `provider:anthropic` | `anthropic` | `ANTHROPIC_API_KEY` (required). OAuth stays in Pi `/login` like Codex — do not store tokens. | First Claude model from Pi catalog | Both |
+| `provider:google` | `google` or `gemini` (use whatever Pi reports) | `GEMINI_API_KEY` required; document `GOOGLE_API_KEY` as alias in description only (one secret name in `module.yaml`) | First Gemini model from Pi catalog | Both |
+| `provider:github-copilot` | `github-copilot` or `copilot` | `COPILOT_GITHUB_TOKEN` required; description may mention `GH_TOKEN` / `GITHUB_TOKEN` fallbacks Pi already reads | First Copilot catalog model | Both |
+| `provider:groq` | `groq` | `GROQ_API_KEY` | First Groq model from Pi catalog | OpenClaw (Hermes via custom/HF) |
+| `provider:mistral` | `mistral` | `MISTRAL_API_KEY` | `mistral-large-latest` if present | OpenClaw |
+| `provider:deepseek` | `deepseek` | `DEEPSEEK_API_KEY` | First DeepSeek model from Pi catalog | Both |
+| `provider:huggingface` | `huggingface` | `HF_TOKEN` (or `HUGGINGFACE_HUB_TOKEN` if that is what Pi uses — match Pi) | First HF router model from Pi catalog | Both |
+| `provider:cerebras` | `cerebras` | `CEREBRAS_API_KEY` | First Cerebras model from Pi catalog | OpenClaw |
+| `provider:minimax` | `minimax` | `MINIMAX_API_KEY` | First MiniMax chat model from Pi catalog | Both |
+| `provider:moonshot` | `moonshot` or `kimi` | `MOONSHOT_API_KEY` | First Kimi model from Pi catalog | Both |
+| `provider:nvidia` | `nvidia` | `NVIDIA_API_KEY` | First NIM model from Pi catalog | Both |
+| `provider:azure` | `azure` or `azure-foundry` | `AZURE_OPENAI_API_KEY` (or whatever Pi names) | Require `baseUrl` in config.schema (`required: ["baseUrl"]` if Pi needs an endpoint) | Hermes |
+| `provider:amazon-bedrock` | `amazon-bedrock` or `bedrock` | No API key if Pi uses the AWS default chain. `secrets: []`. Document `AWS_REGION` / `AWS_PROFILE` as process env, not YAML. | First Bedrock model from Pi catalog | Both |
+| `provider:ollama` | `ollama` | none (`secrets: []`). Local. | Require `baseUrl` default `http://127.0.0.1:11434/v1` in `provider.yaml` + config schema | Both |
+| `provider:opencode` | `opencode` (Zen, distinct from `opencode-go`) | `OPENCODE_API_KEY` or `OPENCODE_ZEN_API_KEY` — use the name Pi expects | First Zen model from Pi catalog | Both |
+
+### Extra steps unique to Priority 1
+
+- **`provider:anthropic`**: If Pi supports Claude Pro/Max OAuth, follow `provider:openai-codex` (`auth: oauth`, empty `secrets`) *or* ship API-key as the VibeKit module and leave OAuth to Pi `/login`. Do not implement a VibeKit OAuth flow.
+- **`provider:google`**: One module only. Do not also add `provider:gemini`. Put Vertex / Gemini CLI in Priority 3.
+- **`provider:github-copilot`**: Do not import Hermes `copilot-acp` (local CLI subprocess). That is not a Pi provider.
+- **`provider:amazon-bedrock`**: No secret values. If Pi requires a region, add optional `region` to `config.schema.json` only.
+- **`provider:ollama`**: `secrets` empty; `secretName` omitted. `required: false` for any dummy key. Health-check name must match Pi (`ollama`).
+- **`provider:opencode`**: Do not collide with existing `provider:opencode-go`. Different `piProvider`.
+
+---
+
+## Priority 2 — import next (both catalogs, OpenAI-compatible)
+
+Same recipe. Confirm Pi id before authoring. If Pi has no row, skip until Pi adds it (do not write a VibeKit HTTP client).
+
+| Proposed id | Likely secret | Likely base (document only; Pi owns the URL) | Source |
+| :--- | :--- | :--- | :--- |
+| `provider:zai` | `ZAI_API_KEY` (Hermes also uses `GLM_API_KEY` — pick the name Pi uses) | Z.AI global / coding endpoint | Both |
+| `provider:novita` | `NOVITA_API_KEY` | `https://api.novita.ai/openai/v1` | Both |
+| `provider:vercel-ai-gateway` | `AI_GATEWAY_API_KEY` | `https://ai-gateway.vercel.sh/v1` | Both |
+| `provider:arcee` | `ARCEEAI_API_KEY` | Arcee OpenAI-compat | Both |
+| `provider:gmi` | `GMI_API_KEY` | `https://api.gmi-serving.com/v1` | Both |
+| `provider:xiaomi` | `XIAOMI_API_KEY` | Xiaomi MiMo | Both |
+| `provider:tencent-tokenhub` | `TOKENHUB_API_KEY` | TokenHub | Both |
+| `provider:ollama-cloud` | `OLLAMA_API_KEY` | `https://ollama.com/v1` | Both |
+| `provider:lmstudio` | `LM_API_KEY` or `LM_API_TOKEN` (match Pi) | `http://localhost:1234/v1` | Both |
+| `provider:together` | `TOGETHER_API_KEY` | Together OpenAI-compat | OpenClaw |
+| `provider:fireworks` | `FIREWORKS_API_KEY` | `https://api.fireworks.ai/inference/v1` | Hermes |
+| `provider:kimi` | `KIMI_API_KEY` | Moonshot Anthropic-compat coding endpoint | Both (Hermes `kimi-coding`) |
+| `provider:alibaba` | `DASHSCOPE_API_KEY` | DashScope compatible-mode `/v1` | Hermes (OpenClaw Qwen Cloud) |
+| `provider:stepfun` | `STEPFUN_API_KEY` | `https://api.stepfun.com/v1` | Hermes |
+| `provider:cohere` | `COHERE_API_KEY` | Cohere | OpenClaw |
+| `provider:deepinfra` | `DEEPINFRA_API_KEY` | DeepInfra | OpenClaw |
+
+If two source names map to one Pi id (e.g. `zai` vs `glm`, `kimi` vs `moonshot`), ship **one** VibeKit module using Pi's id. Mention the alias in `description` only.
+
+---
+
+## Priority 3 — import only after Pi has a provider id
+
+Do not author these until `ModelRuntime.getProviders()` lists them, or until there is an explicit Pi custom-provider adapter in a later task.
+
+| Proposed id | Why it waits | If/when Pi adds it |
+| :--- | :--- | :--- |
+| `provider:google-vertex` | ADC / service-account JSON path; not a single env key | Follow Bedrock: `secrets: []`, config `project` + `region` as non-secret fields |
+| `provider:alibaba-coding-plan` | Separate DashScope billing SKU / base URL | Same `DASHSCOPE_API_KEY` as `provider:alibaba`, different `piProvider` |
+| `provider:minimax-cn` | China endpoint + `MINIMAX_CN_API_KEY` | Clone `provider:minimax` with CN secret + `piProvider` |
+| `provider:kimi-cn` | `KIMI_CN_API_KEY` | Clone `provider:kimi` |
+| `provider:byteplus` / `provider:byteplus-plan` | OpenClaw plugin, China-intl ARK | API key `BYTEPLUS_API_KEY` |
+| `provider:volcengine` / `provider:volcengine-plan` | Doubao / ARK CN | `VOLCANO_ENGINE_API_KEY` |
+| `provider:chutes` | OpenClaw-only | `CHUTES_API_KEY` |
+| `provider:qianfan` | OpenClaw-only | `QIANFAN_API_KEY` |
+| `provider:featherless` | OpenClaw-only | `FEATHERLESS_API_KEY` |
+| `provider:venice` | OpenClaw-only | `VENICE_API_KEY` |
+| `provider:synthetic` | OpenClaw Anthropic-compat proxy | `SYNTHETIC_API_KEY` |
+| `provider:kilocode` | Hermes-only | `KILOCODE_API_KEY` |
+| `provider:commandcode` | Hermes-only | `COMMANDCODE_API_KEY` |
+| `provider:meta-ai` | Hermes-only | `MODEL_API_KEY` |
+| `provider:actual` | Hermes-only cluster/relay | `ACTUAL_API_KEY` optional on loopback |
+| `provider:vllm` | Local server | Empty secrets; `baseUrl` default `http://127.0.0.1:8000/v1` |
+| `provider:sglang` | Local server | Empty secrets; `baseUrl` default `http://127.0.0.1:30000/v1` |
+| `provider:custom` | Generic OpenAI-compat | Required `baseUrl` in config; optional `CUSTOM_API_KEY` |
+
+---
+
+## Do not import (not VibeKit Provider Components)
+
+These are not registry `provider:*` modules. Leave them out.
+
+| Source item | Why |
+| :--- | :--- |
+| Nous Portal | Hermes subscription gateway + OAuth store. Not a Pi provider. |
+| Copilot ACP | Spawns local `copilot --acp --stdio`. Not a model vendor. |
+| Claude CLI / Gemini CLI runtimes | OpenClaw agent-runtime backends, not Provider Components. |
+| Qwen OAuth, MiniMax OAuth, SuperGrok-only modules | Consumer OAuth portals. If Pi already covers xAI OAuth, keep using `provider:xai`. Do not add parallel OAuth modules. |
+| OpenClaw ClawRouter | Their router product, not a vendor. Users who need it can use `provider:custom` later. |
+| Named Hermes `custom_providers` lists | Project config, not official registry modules. |
+| Embedding / image / TTS vendors | Not inference Providers in the VibeKit family. |
+
+---
+
+## Suggested first slice
+
+Implement Priority 1 in this order so `vibekit add provider …` covers the common gap vs OpenClaw/Hermes without new runtimes:
+
+1. `provider:anthropic`
+2. `provider:google`
+3. `provider:deepseek`
+4. `provider:groq`
+5. `provider:mistral`
+6. `provider:huggingface`
+7. `provider:ollama`
+8. `provider:github-copilot`
+9. `provider:minimax`
+10. `provider:moonshot`
+11. `provider:nvidia`
+12. `provider:cerebras`
+13. `provider:opencode` (Zen; keep `opencode-go`)
+14. `provider:azure`
+15. `provider:amazon-bedrock`
+
+Then run `pnpm registry:index`, `pnpm typecheck`, and `pnpm test`.

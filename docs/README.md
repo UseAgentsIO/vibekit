@@ -17,7 +17,7 @@ docs/
 ├── catalog/               # Official agents and component reference
 ├── api/                   # TypeScript SDK docs for @useagentsio/* packages
 ├── patterns/              # Verified multi-agent collaboration patterns
-├── contributing/          # Developer guidelines and module authoring
+├── contributing/          # Dev workflow + registry authoring (see also /CONTRIBUTING.md)
 └── spec/                  # Normative specifications & runtime corrections
 ```
 
@@ -101,8 +101,9 @@ Documented multi-agent orchestration recipes:
 
 ## 🤝 Contributing & Community
 
-- **[Contributing Guide](contributing/guide.md)**: Development prerequisites, workspace setup, test gates, and code standards.
-- **[Module Authoring](contributing/module-authoring.md)**: Guidelines for writing official registry modules.
+- **[Contributing](../CONTRIBUTING.md)**: Contribution contract, invariants, and pull request checklist.
+- **[Development Guide](contributing/guide.md)**: Workspace setup, monorepo map, test gates, and code standards.
+- **[Module Authoring](contributing/module-authoring.md)**: How to add or change official registry Agents and Components.
 
 ---
 

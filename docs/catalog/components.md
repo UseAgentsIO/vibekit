@@ -2,6 +2,8 @@
 
 Reference guide for all official Component modules available in the VibeKit registry.
 
+To add or change an official Component, follow [Module authoring](../contributing/module-authoring.md). Keep this table, the [README catalog](../../README.md), and `tests/registry/official.test.ts` in sync with `registry/index.json`.
+
 ---
 
 ## 1. Providers (`family: provider`)

@@ -1,0 +1,7 @@
+# VibeKit runtime and state
+.vibekit/runtime/
+.vibekit/state/events/
+.pi/sessions/
+.env
+.env.*
+node_modules/

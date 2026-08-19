@@ -2,6 +2,8 @@
 
 The official registry provides five core Agent recipes tailored for multi-agent software engineering and research workflows.
 
+To add or change an official Agent, follow [Module authoring](../contributing/module-authoring.md) and the root [CONTRIBUTING.md](../../CONTRIBUTING.md). Do not invent an `orchestrator` or `subagent` type — a Chief is an Agent with delegation permission.
+
 ---
 
 ## 1. Chief Agent (`agent:chief`)
