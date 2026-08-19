@@ -5,7 +5,7 @@ type: provider
 name: opencode-go
 displayName: OpenCode Go
 version: 1.0.0
-description: Maps to Pi's opencode-go provider. Does not rebuild the Pi provider runtime. Pi reads OPENCODE_API_KEY for this provider.
+description: Maps to Pi's opencode-go provider. Pi reads OPENCODE_API_KEY for this provider.
 
 compatibility:
   vibekit: "^1.0.0"

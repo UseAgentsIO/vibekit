@@ -1,0 +1,5 @@
+id: provider:mistral
+piProvider: mistral
+description: Maps to Pi's mistral provider.
+secretName: MISTRAL_API_KEY
+defaultModel: mistral-large-latest

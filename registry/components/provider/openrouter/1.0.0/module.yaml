@@ -5,7 +5,7 @@ type: provider
 name: openrouter
 displayName: OpenRouter
 version: 1.0.0
-description: Maps to Pi's openrouter provider. Does not rebuild the Pi provider runtime.
+description: Maps to Pi's openrouter provider.
 
 compatibility:
   vibekit: "^1.0.0"

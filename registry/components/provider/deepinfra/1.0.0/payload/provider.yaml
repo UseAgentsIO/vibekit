@@ -1,0 +1,5 @@
+id: provider:deepinfra
+piProvider: deepinfra
+description: Maps to the DeepInfra provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: DEEPINFRA_API_KEY
+defaultModel: deepseek-ai/DeepSeek-V3.2

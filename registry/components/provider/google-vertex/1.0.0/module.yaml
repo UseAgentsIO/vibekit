@@ -1,0 +1,45 @@
+schemaVersion: 1
+
+id: provider:google-vertex
+type: provider
+name: google-vertex
+displayName: Google Vertex
+version: 1.0.0
+description: Maps to Pi's google-vertex provider using ADC or a service-account JSON path. VERTEX_CREDENTIALS_PATH is process env, not a VibeKit secret.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.google-vertex
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets: []
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/google-vertex.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/google-vertex.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: google-vertex

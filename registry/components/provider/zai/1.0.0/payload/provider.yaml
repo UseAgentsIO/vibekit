@@ -1,0 +1,5 @@
+id: provider:zai
+piProvider: zai
+description: Maps to the Z.AI provider already supplied by Pi. Does not ship a replacement runtime. Pi may also read GLM_API_KEY.
+secretName: ZAI_API_KEY
+defaultModel: glm-5.2

@@ -1,0 +1,5 @@
+id: provider:alibaba-coding-plan
+piProvider: alibaba-coding-plan
+description: Maps to the Alibaba Coding Plan provider already supplied by Pi. Same DASHSCOPE_API_KEY as Alibaba DashScope, different Pi id / billing SKU. Does not ship a replacement runtime.
+secretName: DASHSCOPE_API_KEY
+defaultModel: qwen3-coder-plus

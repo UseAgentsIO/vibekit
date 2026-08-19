@@ -1,0 +1,5 @@
+id: provider:volcengine-plan
+piProvider: volcengine-plan
+description: Maps to the Volcengine Plan provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: VOLCANO_ENGINE_API_KEY
+defaultModel: ark-code-latest

@@ -1,0 +1,5 @@
+id: provider:volcengine
+piProvider: volcengine
+description: Maps to the Volcengine provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: VOLCANO_ENGINE_API_KEY
+defaultModel: doubao-seed-1-8-251228

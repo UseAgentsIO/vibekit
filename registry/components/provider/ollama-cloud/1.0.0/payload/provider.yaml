@@ -1,0 +1,5 @@
+id: provider:ollama-cloud
+piProvider: ollama-cloud
+description: Maps to the Ollama Cloud provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: OLLAMA_API_KEY
+defaultModel: gpt-oss:120b

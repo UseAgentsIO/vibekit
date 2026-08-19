@@ -1,0 +1,4 @@
+id: provider:google-vertex
+piProvider: google-vertex
+description: Maps to the Google Vertex provider already supplied by Pi. Uses ADC or a service-account JSON path; VERTEX_CREDENTIALS_PATH is process env. Does not ship a replacement runtime.
+defaultModel: google/gemini-2.5-flash

@@ -1,0 +1,5 @@
+id: provider:kimi
+piProvider: kimi-coding
+description: Maps to the Kimi provider already supplied by Pi. Does not ship a replacement runtime. Moonshot Anthropic-compat coding. Distinct from moonshot.
+secretName: KIMI_API_KEY
+defaultModel: kimi-for-coding

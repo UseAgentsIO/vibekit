@@ -1,0 +1,5 @@
+id: provider:stepfun
+piProvider: stepfun
+description: Maps to the StepFun provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: STEPFUN_API_KEY
+defaultModel: step-3.5-flash

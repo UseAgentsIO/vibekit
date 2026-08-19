@@ -1,0 +1,5 @@
+id: provider:custom
+piProvider: custom
+description: Maps to any OpenAI-compat endpoint already configured through Pi's custom provider. Does not ship a replacement runtime.
+secretName: CUSTOM_API_KEY
+defaultModel: custom-model

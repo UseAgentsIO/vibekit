@@ -1,64 +1,62 @@
 # Installed Manifest (`installed.json`)
 
-The `.vibekit/installed.json` file serves as the transactional record of all modules installed in your project, tracking module origins, dependency linkages, and file integrity checksums.
+Transactional record of modules installed in the Project. Schema: `schemas/installed.schema.json`. `modules` is an **array**, not a map.
 
 ---
 
-## Example `installed.json`
+## Shape
 
 ```json
 {
   "schemaVersion": 1,
-  "modules": {
-    "agent:chief": {
+  "modules": [
+    {
+      "schemaVersion": 1,
       "id": "agent:chief",
       "version": "1.0.0",
-      "source": "official",
+      "registrySource": "official",
+      "sourceRevision": "v1.0.0",
+      "integrityChecksum": "sha256:…",
       "installedAt": "2026-08-18T08:00:00.000Z",
-      "files": {
-        ".vibekit/agents/chief/agent.yaml": "sha256-a1b2c3...",
-        ".vibekit/agents/chief/instructions.md": "sha256-d4e5f6..."
-      },
-      "dependencies": [
-        "policy:least-privilege",
-        "tool:filesystem"
-      ]
-    },
-    "tool:filesystem": {
-      "id": "tool:filesystem",
-      "version": "1.0.0",
-      "source": "official",
-      "installedAt": "2026-08-18T08:00:00.000Z",
-      "files": {
-        ".vibekit/components/tools/filesystem.yaml": "sha256-789abc..."
-      },
-      "dependencies": []
+      "dependencies": [],
+      "files": [
+        {
+          "path": ".vibekit/agents/chief/agent.yaml",
+          "hash": "sha256:…",
+          "ownership": "exclusive"
+        },
+        {
+          "path": ".vibekit/agents/chief/instructions.md",
+          "hash": "sha256:…",
+          "ownership": "exclusive"
+        }
+      ],
+      "configurationPaths": [],
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      }
     }
-  }
+  ]
 }
 ```
 
 ---
 
-## Manifest Fields
+## Fields
 
-- `schemaVersion` *(integer)*: Manifest format schema version.
-- `modules` *(object)*: Map of installed module IDs to installation records:
-  - `id` *(string)*: Typed module identifier (e.g., `agent:chief`).
-  - `version` *(string)*: Exact semver version installed from the registry.
-  - `source` *(string)*: Origin registry identifier (`official` or registry path).
-  - `installedAt` *(string)*: ISO-8601 installation timestamp.
-  - `files` *(object)*: Relative file paths mapped to their SHA-256 base checksum at the time of installation.
-  - `dependencies` *(array)*: List of module IDs required by this module.
+| Field | Meaning |
+| :--- | :--- |
+| `id` | Module ID (`agent:chief`) |
+| `version` | Installed semver |
+| `registrySource` | `official` (or the source recorded at install) |
+| `sourceRevision` | Registry module `source.revision` |
+| `integrityChecksum` | Directory checksum of the installed module version |
+| `files[]` | Project-relative `path`, content `hash` (`sha256:…`), `ownership` (`exclusive` \| `generated`) |
+| `configurationPaths` | Config files created for the module |
+| `dependencies` | Module IDs installed to satisfy `requires.required` |
 
----
+Do not hand-edit this file to fake an install. Use `vibekit add` / `update` / `remove`.
 
-## Role in Three-Way Lifecycle
-
-The checksums stored in `files` allow VibeKit to answer the crucial question during `vibekit update`:
-*"Has the user customized this file locally since it was installed?"*
-
-- If `sha256(current_file) == base_checksum`, the file is unmodified and can be upgraded cleanly.
-- If `sha256(current_file) != base_checksum`, the user has made local edits. VibeKit preserves those edits.
-
-The manifest is maintained automatically by the CLI. You should never edit `installed.json` by hand.
+`vibekit list` **VERIFIED** means every recorded file still exists and its hash matches the manifest (no local edit). **AVAILABLE** means the ID is in the registry index, not “loaded in the Host.”

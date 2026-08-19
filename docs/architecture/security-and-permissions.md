@@ -35,17 +35,19 @@ If **any** layer denies or omits the permission, the operation is immediately bl
 File write and edit operations are subjected to strict path validation:
 - **Relative Paths Only**: All target paths must be relative to the project root or worktree root.
 - **Traversal Prevention**: Path segments containing `..`, absolute paths (e.g., `/etc/passwd`), null bytes (`\0`), or Windows device names (`CON`, `PRN`) are unconditionally rejected.
-- **Path Grants**: Agents declare allowed write prefixes in `agent.yaml`:
+- **Path Grants**: Agents declare capability grants with optional `scope.paths` / `scope.commands` in `agent.yaml`:
   ```yaml
   permissions:
-    paths:
-      allow:
-        - "src/**"
-        - "tests/**"
-      deny:
-        - ".vibekit/**"
-        - ".git/**"
-        - "package.json"
+    allow:
+      - capability: source.read
+        scope:
+          paths: ["**"]
+      - capability: source.write
+        scope:
+          paths: ["src/**", "tests/**"]
+    deny:
+      - capability: project.configure
+      - capability: deploy.apply
   ```
 - **Exclusive Workspace Locks**: Parallel worker runs operate inside dedicated Git worktrees to prevent race conditions and cross-agent filesystem corruption.
 

@@ -1,0 +1,5 @@
+id: provider:xiaomi
+piProvider: xiaomi
+description: Maps to the Xiaomi provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: XIAOMI_API_KEY
+defaultModel: mimo-v2-pro

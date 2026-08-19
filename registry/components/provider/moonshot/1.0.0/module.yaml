@@ -1,0 +1,48 @@
+schemaVersion: 1
+
+id: provider:moonshot
+type: provider
+name: moonshot
+displayName: Moonshot AI
+version: 1.0.0
+description: Maps to Pi's moonshotai provider (Kimi). Distinct from provider:kimi coding.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.moonshot
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets:
+  - name: MOONSHOT_API_KEY
+    required: true
+    source: environment
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/moonshot.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/moonshot.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: moonshotai

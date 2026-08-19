@@ -1,6 +1,6 @@
 # `@useagentsio/interface-sdk` API Reference
 
-The `@useagentsio/interface-sdk` package defines the contract for building custom Interface adapters that attach to the VibeKit Host.
+The `@useagentsio/interface-sdk` package is the Host-facing contract for Interface adapters.
 
 ---
 
@@ -12,74 +12,80 @@ pnpm add @useagentsio/interface-sdk
 
 ---
 
-## The Interface Contract
-
-An Interface component translates external protocols (terminal stdio, HTTP webhooks, chat protocols) into Host events and renders outbound responses.
-
-### Interface Factory Signature
+## Factory
 
 ```ts
-import type { 
-  RunningInterface, 
-  InterfaceServices, 
-  InterfaceConfig 
+import type {
+  InterfaceFactory,
+  InterfaceServices,
+  RunningInterface,
 } from "@useagentsio/interface-sdk";
 
-export function createCustomInterface(
-  services: InterfaceServices,
-  config?: InterfaceConfig
-): Promise<RunningInterface>;
+export const createCustomInterface: InterfaceFactory["create"] = async (
+  config,
+  services,
+) => {
+  // ...
+  return running;
+};
 ```
 
-### `InterfaceServices` (Provided by the Host)
+`InterfaceFactory.create(config, services)` — config first, then Host services. There is no `InterfaceConfig` type; config is `Record<string, unknown>` (usually parsed from the binding’s YAML file).
 
-The Host provides `InterfaceServices` to the interface upon loading:
+Official example: `createTerminalInterface` from `@useagentsio/interface-terminal`.
+
+---
+
+## `InterfaceServices` (Host → Interface)
 
 ```ts
 export interface InterfaceServices {
-  /** Submit an inbound message or turn to the Host */
-  submit(message: InboundMessage): Promise<SubmitResult>;
-  
-  /** Request cancellation of an active task or turn */
-  cancel(conversationKey: string): Promise<void>;
-  
-  /** Submit a human approval decision */
+  submit(message: InboundMessage): Promise<void>;
+  cancel(conversationKey: string): Promise<boolean>;
   approve(approvalId: string, decision: "approved" | "rejected", notes?: string): Promise<void>;
-  
-  /** Logger service */
-  log(level: "info" | "warn" | "error", message: string): void;
+  resolveSecret(name: string): string;
+  log: InterfaceLogger;
 }
 ```
 
-### `RunningInterface` (Returned by the Interface)
+`InterfaceLogger` is `{ info, warn, error }`, not a single `log(level, message)` function. Secret names in log `data` are redacted.
 
-The interface returns a `RunningInterface` handle allowing the Host to send outbound events and manage interface lifecycle:
+---
+
+## `RunningInterface`
 
 ```ts
 export interface RunningInterface {
-  /** Send outbound events (progress, results, approval requests) to the interface */
-  send(output: HostOutput): Promise<void>;
-  
-  /** Close and clean up the interface on Host shutdown */
+  start(): Promise<void>;
   stop(): Promise<void>;
-  
-  /** Check interface health */
+  deliver(output: HostOutput): Promise<void>;
   health(): Promise<InterfaceHealth>;
 }
 ```
 
+Outbound events use **`deliver`**, not `send`.
+
 ---
 
-## Inbound / Outbound Event Payloads
+## Messages
 
-### Inbound Events (`Interface → Host`)
-- **`InboundMessage`**: `{ conversationKey, text, author, timestamp, attachments? }`
-- **`CancelRequest`**: `{ conversationKey, reason? }`
-- **`ApprovalDecision`**: `{ approvalId, decision, notes? }`
+### Inbound (`InboundMessage`)
 
-### Outbound Events (`Host → Interface`)
-- **`progress`**: Real-time progress updates suitable for display.
-- **`result`**: Structured summary and artifacts emitted upon turn completion.
-- **`ask-approval`**: Gated action request requiring human review.
-- **`error`**: Structured error payload.
-- **`idle`**: Indicates the Host is waiting for operator input.
+`eventId`, `interfaceBinding`, `accountId`, `conversationId`, optional `threadId`, `conversationKey`, `sender` (`{ id, displayName?, trusted }`), `text`, `attachments`, `timestamp`.
+
+Build keys with `conversationKeyOf({ interfaceBinding, accountId, conversationId, threadId? })`.
+
+### Outbound (`HostOutput`)
+
+Discriminated on `type`:
+
+| `type` | Meaning |
+| :--- | :--- |
+| `text.delta` | Streaming text |
+| `message.completed` | Turn finished |
+| `activity` | Progress such as `thinking` |
+| `approval.requested` | `{ approvalId, question, options }` |
+| `error` | Failure (`message`, optional `code`) |
+| `cancelled` | Turn cancelled |
+
+Interfaces collect Approval answers on `approval.requested` and call `services.approve`. They must not own Project State, permissions, or Agent recipes.

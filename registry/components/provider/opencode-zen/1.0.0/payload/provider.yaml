@@ -1,0 +1,5 @@
+id: provider:opencode-zen
+piProvider: opencode
+description: Maps to Pi's opencode provider (OpenCode Zen). Distinct from provider:opencode-go. Secret is OPENCODE_ZEN_API_KEY; Pi may also read OPENCODE_API_KEY.
+secretName: OPENCODE_ZEN_API_KEY
+defaultModel: claude-opus-4-6

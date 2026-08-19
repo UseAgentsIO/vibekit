@@ -1,0 +1,48 @@
+schemaVersion: 1
+
+id: provider:github-copilot
+type: provider
+name: github-copilot
+displayName: GitHub Copilot
+version: 1.0.0
+description: Maps to Pi's github-copilot provider. Secret is COPILOT_GITHUB_TOKEN; Pi may also read GH_TOKEN or GITHUB_TOKEN. Does not include Copilot ACP.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.github-copilot
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets:
+  - name: COPILOT_GITHUB_TOKEN
+    required: true
+    source: environment
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/github-copilot.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/github-copilot.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: github-copilot

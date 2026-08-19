@@ -1,0 +1,5 @@
+id: provider:vllm
+piProvider: vllm
+description: Maps to the vLLM provider already supplied by Pi. Local OpenAI-compatible server; no API key. Does not ship a replacement runtime.
+defaultModel: local-model
+baseUrl: http://127.0.0.1:8000/v1

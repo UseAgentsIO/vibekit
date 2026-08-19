@@ -1,0 +1,5 @@
+id: provider:arcee
+piProvider: arcee
+description: Maps to the Arcee provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: ARCEEAI_API_KEY
+defaultModel: trinity-large-thinking

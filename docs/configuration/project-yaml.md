@@ -1,12 +1,12 @@
 # `project.yaml` Configuration Reference
 
-The `.vibekit/project.yaml` file is the canonical specification of your VibeKit Agent Project.
+`.vibekit/project.yaml` is the Project contract. Host-aware projects use **`schemaVersion: 2`**. Schema: `schemas/project.schema.json`.
 
 ---
 
-## Schema Overview
+## Annotated example
 
-VibeKit projects use **`schemaVersion: 2`** (Host-aware project format). Below is an annotated complete example:
+This matches `createDefaultProject` plus typical `create` / `add` bindings. Authorization modes are `deny` | `standing` | `explicit`. Tracking modes are `git` | `local` | `ephemeral`. Isolation is `process` | `worktree`. Delivery is `proposal` | `apply`.
 
 ```yaml
 schemaVersion: 2
@@ -23,138 +23,112 @@ defaultAgent: chief
 defaults:
   model:
     provider: openai
-    id: gpt-5
+    id: gpt-4.1
 
 host:
-  retainedConversations: 50
-  maxParallelConversations: 10
+  retainedConversations: 20
+  maxParallelConversations: 4
   sameConversationPolicy: serialize
-  shutdownGraceMs: 5000
+  shutdownGraceMs: 30000
 
 interfaceBindings:
-  terminal:
+  terminal-main:
     definition: interface:terminal
     enabled: true
     defaultAgent: chief
-
-agentBindings:
-  chief:
-    definition: agent:chief
-  coder:
-    definition: agent:coder
-  reviewer:
-    definition: agent:reviewer
-
-delegation:
-  chief:
-    - coder
-    - reviewer
-  coder: []
-  reviewer: []
-
-capabilityBindings:
-  filesystem: tool:filesystem
-  execution: tool:execution
-
-policies:
-  - policy:least-privilege
-  - policy:require-verification
-
-execution:
-  maxParallelRuns: 4
-  defaultIsolation: process
-  mutationIsolation: worktree
-  defaultTimeoutMs: 300000
-  maxDelegationDepth: 2
-
-authorization:
-  default: autonomous
-  actions:
-    file.write: review
-    command.execute: review
-
-verification:
-  default:
-    - verifier:command
-
-sources:
-  canonical:
-    - "README.md"
-    - "docs/**"
-  derived:
-    - "dist/**"
-  untrusted:
-    - "issues/**"
+    config: .vibekit/config/interfaces/terminal-main.yaml
 
 pi:
-  compatibility: ">=0.1.0"
+  compatibility: ">=0.50.0"
 
 state:
   backend: state:repository
   path: .vibekit/state
   tracking:
-    conversations: track
-    decisions: track
-    tasks: track
-    results: track
-    approvals: track
-    verifications: track
-    events: ephemeral
-    runtime: ignore
-```
+    conversations: local
+    decisions: git
+    tasks: local
+    results: local
+    approvals: local
+    verifications: local
+    events: local
+    runtime: ephemeral
 
----
-
-## Field Reference
-
-### Root Settings
-- `schemaVersion` *(integer, required)*: Must be `2` for Host runtime compatibility.
-- `id` *(string, required)*: Machine ID in format `project:<name>`.
-- `name` *(string, required)*: Human-readable project display name.
-- `root` *(string, required)*: Relative path to project root (usually `.`).
-- `defaultAgent` *(string, optional)*: Agent binding used when no explicit agent is targeted in conversations.
-
-### Host Runtime (`host`)
-- `retainedConversations` *(integer, required)*: Maximum number of conversation records kept in state before pruning.
-- `maxParallelConversations` *(integer, required)*: Maximum concurrent active conversation streams.
-- `sameConversationPolicy` *(string, required)*: Concurrency policy for turns on identical conversation keys (must be `serialize`).
-- `shutdownGraceMs` *(integer, required)*: Time in milliseconds to wait for worker runs to clean up during process termination.
-
-### Interface Bindings (`interfaceBindings`)
-Defines configured interface adapters:
-- `definition` *(string, required)*: Module ID (e.g., `interface:terminal`).
-- `enabled` *(boolean, required)*: Whether the interface is loaded on Host startup.
-- `defaultAgent` *(string, required)*: Bound agent to direct incoming messages to.
-- `config` *(string, optional)*: Path to interface configuration file.
-
-### Agent Bindings (`agentBindings`)
-Map local agent binding aliases to installed agent definitions:
-```yaml
 agentBindings:
   chief:
     definition: agent:chief
-```
 
-### Delegation (`delegation`)
-Explicitly restricts which agents are permitted to delegate tasks to other agents:
-```yaml
 delegation:
-  chief: [coder, reviewer]  # chief may delegate to coder and reviewer
-  coder: []                 # coder cannot delegate
+  chief:
+    - coder
+    - reviewer
+
+capabilityBindings: {}
+
+policies:
+  - policy:least-privilege
+
+execution:
+  maxParallelRuns: 4
+  defaultIsolation: process
+  mutationIsolation: worktree
+  defaultTimeoutMs: 600000
+  maxDelegationDepth: 2
+
+authorization:
+  default: deny
+  actions:
+    source.read: standing
+    source.write: standing
+    deploy.apply: explicit
+    destructive.delete: explicit
+    project.configure: explicit
+
+verification:
+  default: []
+
+sources:
+  canonical:
+    - .vibekit/project.yaml
+    - .vibekit/installed.json
+  derived: []
+  untrusted: []
 ```
 
-### Execution (`execution`)
-Controls runtime isolation and safety limits:
-- `maxParallelRuns` *(integer)*: Maximum concurrent worker sessions.
-- `defaultIsolation` *(string)*: `none`, `process`, or `worktree`.
-- `mutationIsolation` *(string)*: Isolation mode used for tasks that modify files (`worktree` strongly recommended).
-- `defaultTimeoutMs` *(integer)*: Worker task timeout in milliseconds.
-- `maxDelegationDepth` *(integer)*: Maximum allowed parent-to-child delegation chain depth.
+`vibekit create` uses binding name `terminal-main` (not `terminal`).
 
-### Authorization (`authorization`)
-Configures approval gates for specific capability actions:
-- `default`: `autonomous` (proceed without prompt) or `review` (require human approval).
-- `actions`: Granular map of actions requiring explicit human approval (e.g., `file.write: review`).
+---
 
-### State & Tracking (`state`)
-Defines the state storage driver and Git tracking behavior for state collections (`track`, `ephemeral`, `ignore`).
+## Field reference
+
+### Root
+- `schemaVersion` *(integer)*: `2` for Host runtime (V1 documents used `1`; `vibekit migrate` upgrades).
+- `id`: `project:<slug>`
+- `name`, `root`, optional `defaultAgent` (binding name, e.g. `chief`)
+
+### `host`
+- `retainedConversations`, `maxParallelConversations`, `shutdownGraceMs`
+- `sameConversationPolicy`: only `serialize`
+
+### `interfaceBindings`
+Map of binding name → `{ definition, enabled, defaultAgent, config? }`.
+
+### `agentBindings`
+Map of binding name → `{ definition }` (module ID such as `agent:chief`).
+
+### `delegation`
+Binding name → list of target **binding names** the Agent may delegate to.
+
+### `execution`
+- `defaultIsolation` / `mutationIsolation`: `process` or `worktree` (there is no `none`)
+- `maxParallelRuns`, `defaultTimeoutMs`, `maxDelegationDepth`
+
+### `authorization`
+- `default` and per-action values: `deny` | `standing` | `explicit`
+- There is no `autonomous` or `review` mode
+
+### `state.tracking`
+Each kind: `git` (commit), `local` (on disk, typically gitignored by layout), `ephemeral` (runtime). There is no `track` or `ignore` string.
+
+### `pi`
+- `compatibility`: Pi version range (official modules use `>=0.50.0`)

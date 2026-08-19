@@ -1,0 +1,48 @@
+schemaVersion: 1
+
+id: provider:anthropic
+type: provider
+name: anthropic
+displayName: Anthropic
+version: 1.0.0
+description: Maps to Pi's anthropic provider. API key via ANTHROPIC_API_KEY. Claude Pro/Max OAuth stays in Pi /login and is not stored by VibeKit.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.anthropic
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets:
+  - name: ANTHROPIC_API_KEY
+    required: true
+    source: environment
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/anthropic.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/anthropic.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: anthropic

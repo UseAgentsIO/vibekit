@@ -1,0 +1,5 @@
+id: provider:vercel-ai-gateway
+piProvider: vercel-ai-gateway
+description: Maps to the Vercel AI Gateway provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: AI_GATEWAY_API_KEY
+defaultModel: anthropic/claude-sonnet-4-6

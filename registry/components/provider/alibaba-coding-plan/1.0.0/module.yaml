@@ -1,0 +1,48 @@
+schemaVersion: 1
+
+id: provider:alibaba-coding-plan
+type: provider
+name: alibaba-coding-plan
+displayName: Alibaba Coding Plan
+version: 1.0.0
+description: Maps to Pi's alibaba-coding-plan provider (DashScope coding-plan billing SKU). Uses the same DASHSCOPE_API_KEY as provider:alibaba, different Pi id.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.alibaba-coding-plan
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets:
+  - name: DASHSCOPE_API_KEY
+    required: true
+    source: environment
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/alibaba-coding-plan.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/alibaba-coding-plan.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: alibaba-coding-plan

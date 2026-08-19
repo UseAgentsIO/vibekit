@@ -87,6 +87,7 @@ $RECYCLE.BIN/
 *~
 .history/
 repomix-output.xml
+TODO.md
 
 # Local sandbox for CLI verification (never commit)
 /.developer/

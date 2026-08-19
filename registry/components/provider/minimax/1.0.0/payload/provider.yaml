@@ -1,0 +1,5 @@
+id: provider:minimax
+piProvider: minimax
+description: Maps to Pi's minimax provider.
+secretName: MINIMAX_API_KEY
+defaultModel: MiniMax-M2.7

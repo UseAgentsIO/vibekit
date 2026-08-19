@@ -1,0 +1,48 @@
+schemaVersion: 1
+
+id: provider:volcengine-plan
+type: provider
+name: volcengine-plan
+displayName: Volcengine Plan
+version: 1.0.0
+description: Maps to Pi's volcengine-plan provider.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.volcengine-plan
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets:
+  - name: VOLCANO_ENGINE_API_KEY
+    required: true
+    source: environment
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/volcengine-plan.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/volcengine-plan.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: volcengine-plan

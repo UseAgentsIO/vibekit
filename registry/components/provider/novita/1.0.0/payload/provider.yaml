@@ -1,0 +1,5 @@
+id: provider:novita
+piProvider: novita
+description: Maps to the Novita provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: NOVITA_API_KEY
+defaultModel: moonshotai/kimi-k2.5

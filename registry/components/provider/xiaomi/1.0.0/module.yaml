@@ -1,0 +1,48 @@
+schemaVersion: 1
+
+id: provider:xiaomi
+type: provider
+name: xiaomi
+displayName: Xiaomi Provider
+version: 1.0.0
+description: Declares Pi Xiaomi provider configuration and a credential reference.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.xiaomi
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets:
+  - name: XIAOMI_API_KEY
+    required: true
+    source: environment
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/xiaomi.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/xiaomi.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: xiaomi

@@ -1,0 +1,5 @@
+id: provider:anthropic
+piProvider: anthropic
+description: Maps to Pi's anthropic provider. API key via ANTHROPIC_API_KEY. Claude Pro/Max OAuth stays in Pi /login and is not stored by VibeKit.
+secretName: ANTHROPIC_API_KEY
+defaultModel: claude-opus-4-5

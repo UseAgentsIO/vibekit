@@ -1,0 +1,5 @@
+id: provider:moonshot
+piProvider: moonshotai
+description: Maps to Pi's moonshotai provider (Kimi). Distinct from provider:kimi coding.
+secretName: MOONSHOT_API_KEY
+defaultModel: kimi-k2-thinking

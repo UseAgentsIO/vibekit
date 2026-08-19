@@ -1,0 +1,5 @@
+id: provider:venice
+piProvider: venice
+description: Maps to the Venice provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: VENICE_API_KEY
+defaultModel: llama-3.3-70b

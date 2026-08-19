@@ -44,10 +44,10 @@ vibekit msg "Hello! What can you help me with?"
 ```
 
 What happens under the hood:
-- The `vibekit` CLI starts an in-process **Agent Host**.
-- The Host resolves the `chief` agent binding, checks permissions, and connects to the provider using your `OPENAI_API_KEY`.
-- Pi executes the turn inside an isolated session.
-- The Host records the conversation turn to `.vibekit/state/conversations/` and prints the output to your terminal.
+- If a Host is already running for this Project, `msg` submits the turn over `.vibekit/runtime/host.sock`.
+- Otherwise the CLI starts a short-lived in-process Host, then stops it.
+- The Host resolves the `chief` binding, checks permissions, and uses `OPENAI_API_KEY` as a secret **reference**.
+- Pi runs the turn; the Host writes `conversation_*.yaml` under `.vibekit/state/conversations/`.
 
 ---
 
@@ -62,7 +62,7 @@ vibekit start
 This launches the always-running Host alongside the interactive Terminal interface:
 - Type messages directly into the prompt.
 - Conversation context is preserved across turns.
-- Press `Ctrl+C` or type `/quit` to exit.
+- Press `Ctrl+C` or type `exit` / `/exit` to quit. Approval prompts accept `y` / `n`.
 
 ---
 

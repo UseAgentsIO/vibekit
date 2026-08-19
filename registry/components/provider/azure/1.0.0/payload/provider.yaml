@@ -1,0 +1,5 @@
+id: provider:azure
+piProvider: azure-openai-responses
+description: Maps to Pi's azure-openai-responses provider (Azure OpenAI / Foundry). Set baseUrl to the Azure resource endpoint.
+secretName: AZURE_OPENAI_API_KEY
+defaultModel: gpt-4.1

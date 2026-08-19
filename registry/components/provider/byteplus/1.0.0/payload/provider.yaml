@@ -1,0 +1,5 @@
+id: provider:byteplus
+piProvider: byteplus
+description: Maps to the BytePlus provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: BYTEPLUS_API_KEY
+defaultModel: seed-1-8-251228

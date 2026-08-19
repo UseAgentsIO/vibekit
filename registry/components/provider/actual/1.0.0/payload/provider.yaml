@@ -1,0 +1,5 @@
+id: provider:actual
+piProvider: actual
+description: Maps to the Actual provider already supplied by Pi. Loopback needs no key. Does not ship a replacement runtime.
+secretName: ACTUAL_API_KEY
+defaultModel: local-model

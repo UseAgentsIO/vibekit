@@ -14,7 +14,7 @@ vibekit create [options] [dir]
 ```
 
 ### Description
-Generates a schemaVersion 2 project, installs the selected Agent (default: `chief`), configures the specified provider (default: `openai`), installs the terminal Interface (`interface:terminal`), and generates `.pi/` settings.
+Writes a schemaVersion 2 Project, installs `agent:<name>`, `provider:<id>`, and `interface:<name>` into `installed.json`, sets `defaults.model`, and binds `terminal-main` (or `<interface>-main`).
 
 ### Options
 - `[dir]`: Target directory (default: current directory).
@@ -67,7 +67,7 @@ vibekit start [options]
 ```
 
 ### Description
-Runs the persistent Host daemon and attaches the terminal Interface for continuous, multi-turn conversation. Press `Ctrl+C` or type `/quit` to stop.
+Runs the Host in the foreground and attaches the terminal Interface. Type a message at the `>` prompt. Type `exit` or `/exit` to quit, or press `Ctrl+C`. Approval gates prompt `y` / `n`. While this process is up, `vibekit msg` in another terminal uses local IPC instead of starting a second Host.
 
 ### Examples
 ```bash
@@ -193,11 +193,11 @@ vibekit list [options]
 ```
 
 ### Description
-Displays a structured table showing Module ID, installed version, source, and four separate status flags:
-1. **Installed**: Files present in project workspace.
-2. **Configured**: Properly referenced in `.vibekit/project.yaml`.
-3. **Available**: Supported and active in the current Host runtime.
-4. **Verified**: Passing checksum and contract integrity checks.
+Displays a table of Module ID, version, source, and four flags:
+1. **Installed**: Recorded in `.vibekit/installed.json`.
+2. **Configured**: Referenced from `project.yaml` (policies, verification, agent bindings, state backend) **or** all recorded `configurationPaths` exist.
+3. **Available**: Present in the official registry index (not “loaded in the Host”).
+4. **Verified**: Every installed file still exists and its hash matches the manifest (no local edit).
 
 ### Examples
 ```bash

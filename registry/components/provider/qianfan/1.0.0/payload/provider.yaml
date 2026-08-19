@@ -1,0 +1,5 @@
+id: provider:qianfan
+piProvider: qianfan
+description: Maps to the Qianfan provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: QIANFAN_API_KEY
+defaultModel: deepseek-v3.2

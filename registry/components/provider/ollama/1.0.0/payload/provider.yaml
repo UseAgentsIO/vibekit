@@ -1,0 +1,5 @@
+id: provider:ollama
+piProvider: ollama
+description: Maps to a local Ollama OpenAI-compatible server. No API key.
+defaultModel: llama3.3
+baseUrl: http://127.0.0.1:11434/v1

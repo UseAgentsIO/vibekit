@@ -30,9 +30,9 @@ VibeKit is architected as a modular TypeScript monorepo published under the `@us
 
 | Package | Role | Key Exports |
 | :--- | :--- | :--- |
-| [`@useagentsio/host`](host.md) | The always-running Host daemon process | `VibeKitHost`, `HostOptions`, `PersistentSessionManager`, `SecretResolver` |
-| [`@useagentsio/core`](core.md) | Schema validation, typed IDs, state storage, and three-way diff/update | `parseAndValidateYaml`, `createRepositoryState`, `computeModuleDiff`, `applyModuleUpdate` |
-| [`@useagentsio/pi`](pi.md) | Embedded Pi runtime adapter, worktree manager, and delegation executor | `prepareIsolatedRun`, `runIsolated`, `createPiIsolatedSession` |
+| [`@useagentsio/host`](host.md) | Always-running Host daemon | `VibeKitHost.start`, `submitViaIpc`, `SecretResolver` |
+| [`@useagentsio/core`](core.md) | Schemas, IDs, State, install/update | `parseAndValidateYaml`, `createRepositoryState`, `diffInstalledModule`, `planUpdate` |
+| [`@useagentsio/pi`](pi.md) | Embedded Pi adapter, worktrees, delegation | `prepareIsolatedRun`, `runIsolated`, `runManaged`, `executeDelegation` |
 | [`@useagentsio/interface-sdk`](interface-sdk.md) | Standard interface contract for building custom I/O adapters | `RunningInterface`, `InboundMessage`, `HostOutput`, `InterfaceServices` |
 | `@useagentsio/interface-terminal` | Official Terminal interface implementation | `createTerminalInterface` |
 | `@useagentsio/cli` | CLI commands and official-registry distribution | `runCli` |

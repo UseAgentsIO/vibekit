@@ -1,0 +1,48 @@
+schemaVersion: 1
+
+id: provider:kimi
+type: provider
+name: kimi
+displayName: Kimi Provider
+version: 1.0.0
+description: Declares Pi Kimi provider configuration and a credential reference. Moonshot Anthropic-compat coding. Distinct from moonshot.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.kimi
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets:
+  - name: KIMI_API_KEY
+    required: true
+    source: environment
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/kimi.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/kimi.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: kimi-coding

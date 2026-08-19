@@ -1,0 +1,5 @@
+id: provider:gmi
+piProvider: gmi
+description: Maps to the GMI provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: GMI_API_KEY
+defaultModel: deepseek-ai/DeepSeek-V3.2

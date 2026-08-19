@@ -1,0 +1,4 @@
+id: provider:amazon-bedrock
+piProvider: amazon-bedrock
+description: Maps to Pi's amazon-bedrock provider. Uses the AWS default credential chain. AWS_REGION and AWS_PROFILE are process environment, not VibeKit secrets.
+defaultModel: amazon.nova-pro-v1:0

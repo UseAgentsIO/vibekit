@@ -1,0 +1,5 @@
+id: provider:together
+piProvider: together
+description: Maps to the Together provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: TOGETHER_API_KEY
+defaultModel: meta-llama/Llama-3.3-70B-Instruct-Turbo

@@ -1,0 +1,5 @@
+id: provider:fireworks
+piProvider: fireworks
+description: Maps to the Fireworks provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: FIREWORKS_API_KEY
+defaultModel: accounts/fireworks/models/kimi-k2p6

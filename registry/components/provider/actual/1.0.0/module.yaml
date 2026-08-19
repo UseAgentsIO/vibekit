@@ -1,0 +1,48 @@
+schemaVersion: 1
+
+id: provider:actual
+type: provider
+name: actual
+displayName: Actual
+version: 1.0.0
+description: Maps to Pi's actual provider. Loopback needs no key; ACTUAL_API_KEY is optional.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.actual
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets:
+  - name: ACTUAL_API_KEY
+    required: false
+    source: environment
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/actual.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/actual.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: actual

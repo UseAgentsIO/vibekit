@@ -1,0 +1,48 @@
+schemaVersion: 1
+
+id: provider:lmstudio
+type: provider
+name: lmstudio
+displayName: LM Studio Provider
+version: 1.0.0
+description: Declares Pi LM Studio provider configuration and a credential reference (LM_API_TOKEN; Pi may also read LM_API_KEY).
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.lmstudio
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets:
+  - name: LM_API_TOKEN
+    required: true
+    source: environment
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/lmstudio.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/lmstudio.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: lmstudio

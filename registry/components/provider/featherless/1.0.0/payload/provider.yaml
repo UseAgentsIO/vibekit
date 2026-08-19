@@ -1,0 +1,5 @@
+id: provider:featherless
+piProvider: featherless
+description: Maps to the Featherless provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: FEATHERLESS_API_KEY
+defaultModel: Qwen/Qwen3-32B

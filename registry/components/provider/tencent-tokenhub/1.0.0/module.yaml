@@ -1,0 +1,48 @@
+schemaVersion: 1
+
+id: provider:tencent-tokenhub
+type: provider
+name: tencent-tokenhub
+displayName: Tencent TokenHub Provider
+version: 1.0.0
+description: Declares Pi Tencent TokenHub provider configuration and a credential reference.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.tencent-tokenhub
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets:
+  - name: TOKENHUB_API_KEY
+    required: true
+    source: environment
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/tencent-tokenhub.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/tencent-tokenhub.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: tencent-tokenhub

@@ -1,0 +1,48 @@
+schemaVersion: 1
+
+id: provider:qianfan
+type: provider
+name: qianfan
+displayName: Qianfan
+version: 1.0.0
+description: Maps to Pi's qianfan provider.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.qianfan
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets:
+  - name: QIANFAN_API_KEY
+    required: true
+    source: environment
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/qianfan.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/qianfan.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: qianfan

@@ -1,0 +1,48 @@
+schemaVersion: 1
+
+id: provider:zai
+type: provider
+name: zai
+displayName: Z.AI Provider
+version: 1.0.0
+description: Declares Pi Z.AI provider configuration and a credential reference (ZAI_API_KEY; Pi may also read GLM_API_KEY).
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.zai
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets:
+  - name: ZAI_API_KEY
+    required: true
+    source: environment
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/zai.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/zai.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: zai

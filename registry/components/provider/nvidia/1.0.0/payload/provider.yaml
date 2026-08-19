@@ -1,0 +1,5 @@
+id: provider:nvidia
+piProvider: nvidia
+description: Maps to Pi's nvidia provider (NIM / build.nvidia.com).
+secretName: NVIDIA_API_KEY
+defaultModel: meta/llama-3.1-70b-instruct

@@ -1,0 +1,48 @@
+schemaVersion: 1
+
+id: provider:opencode-zen
+type: provider
+name: opencode-zen
+displayName: OpenCode Zen
+version: 1.0.0
+description: Maps to Pi's opencode provider (OpenCode Zen). Distinct from provider:opencode-go. Secret is OPENCODE_ZEN_API_KEY; Pi may also read OPENCODE_API_KEY.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.opencode-zen
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets:
+  - name: OPENCODE_ZEN_API_KEY
+    required: true
+    source: environment
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/opencode-zen.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/opencode-zen.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: opencode

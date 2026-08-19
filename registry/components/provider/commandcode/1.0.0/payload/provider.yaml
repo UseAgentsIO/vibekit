@@ -1,0 +1,5 @@
+id: provider:commandcode
+piProvider: commandcode
+description: Maps to the CommandCode provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: COMMANDCODE_API_KEY
+defaultModel: claude-sonnet-4-6

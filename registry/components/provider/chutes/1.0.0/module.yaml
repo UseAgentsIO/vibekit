@@ -1,0 +1,48 @@
+schemaVersion: 1
+
+id: provider:chutes
+type: provider
+name: chutes
+displayName: Chutes
+version: 1.0.0
+description: Maps to Pi's chutes provider.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.chutes
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets:
+  - name: CHUTES_API_KEY
+    required: true
+    source: environment
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/chutes.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/chutes.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: chutes

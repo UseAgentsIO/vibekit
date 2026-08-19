@@ -189,9 +189,416 @@
       "path": "components/policy/untrusted-inbound/1.0.0"
     },
     {
+      "id": "provider:actual",
+      "version": "1.0.0",
+      "checksum": "sha256:d7a18c494a4b9f1615216373ad2c7fbdcc26141d117cc95ff0f529c46bff4f80",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/actual/1.0.0"
+    },
+    {
+      "id": "provider:alibaba",
+      "version": "1.0.0",
+      "checksum": "sha256:5e5355040bdfdf99ea51b22c80e67ec902cc764616175175e43dc65cd2c99590",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/alibaba/1.0.0"
+    },
+    {
+      "id": "provider:alibaba-coding-plan",
+      "version": "1.0.0",
+      "checksum": "sha256:a3abef0cd5d6ae0bc120b2dd4d0de7618ac7ce1fd269b6ae1a49301232dacedb",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/alibaba-coding-plan/1.0.0"
+    },
+    {
+      "id": "provider:amazon-bedrock",
+      "version": "1.0.0",
+      "checksum": "sha256:98dcd9c8d55122d6a2b20198312e771eccd5c5b6bff1faec635c0758b22b7c7a",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/amazon-bedrock/1.0.0"
+    },
+    {
+      "id": "provider:anthropic",
+      "version": "1.0.0",
+      "checksum": "sha256:bd6e273f75bf29a1634a90eb5def39ce1bb36468660250dc8ee1647581fbad76",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/anthropic/1.0.0"
+    },
+    {
+      "id": "provider:arcee",
+      "version": "1.0.0",
+      "checksum": "sha256:be8afffa593bd1b40b3fff941511761ae77ff97a58f2734e9cce427d3b42fba4",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/arcee/1.0.0"
+    },
+    {
+      "id": "provider:azure",
+      "version": "1.0.0",
+      "checksum": "sha256:0b6ac736715e0591056f3790ae0743adf1dcbf1381f19f43dd14bf34366ca6d1",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/azure/1.0.0"
+    },
+    {
+      "id": "provider:byteplus",
+      "version": "1.0.0",
+      "checksum": "sha256:4d3e0ce732ef8c9d7e54d5b9ebea433e534f9cba2363f1e42f46e0d16b5c734c",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/byteplus/1.0.0"
+    },
+    {
+      "id": "provider:byteplus-plan",
+      "version": "1.0.0",
+      "checksum": "sha256:34905177527634fa4c64fd36c47d85989f29dcfe23c48b7393b3c0e0fafb9390",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/byteplus-plan/1.0.0"
+    },
+    {
+      "id": "provider:cerebras",
+      "version": "1.0.0",
+      "checksum": "sha256:04ad6ef169cfd20e32123ce43108de95fdcdcafb78deae75f6bb324ac91b41ff",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/cerebras/1.0.0"
+    },
+    {
+      "id": "provider:chutes",
+      "version": "1.0.0",
+      "checksum": "sha256:bfbd92b50b3d653cb59aa0af686f5e61b151f586cd688573fa1ee285b91d6894",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/chutes/1.0.0"
+    },
+    {
+      "id": "provider:cohere",
+      "version": "1.0.0",
+      "checksum": "sha256:f21c6901c7c053bf4605a033ba933054046cc5dd24c4c365336df03f149c34de",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/cohere/1.0.0"
+    },
+    {
+      "id": "provider:commandcode",
+      "version": "1.0.0",
+      "checksum": "sha256:ac2c3275533b0e027d19fa4eee436187b7df471612ed38f889a1f1ccf5c3f9b2",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/commandcode/1.0.0"
+    },
+    {
+      "id": "provider:custom",
+      "version": "1.0.0",
+      "checksum": "sha256:af894e171dfc91b9878402de051258c53b33a596d3d98a81329a4411c5a04d65",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/custom/1.0.0"
+    },
+    {
+      "id": "provider:deepinfra",
+      "version": "1.0.0",
+      "checksum": "sha256:1bfec3a6beef4d35056c0148f6e0eaeb40fe61935638f12f9d29f74f8edf4ecc",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/deepinfra/1.0.0"
+    },
+    {
+      "id": "provider:deepseek",
+      "version": "1.0.0",
+      "checksum": "sha256:ef65d2cab838e408e1079924517905a88bca7ab8106df40c256e430dc722cbb8",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/deepseek/1.0.0"
+    },
+    {
+      "id": "provider:featherless",
+      "version": "1.0.0",
+      "checksum": "sha256:a4cd86fbe35cb1be1b6a14ba1ec522f1702b9b041aa99c2690534e4870c35fea",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/featherless/1.0.0"
+    },
+    {
+      "id": "provider:fireworks",
+      "version": "1.0.0",
+      "checksum": "sha256:da9f34c4518bb97106a78bb602436ba2bf08feba28ac9a857ac253a6287b52b9",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/fireworks/1.0.0"
+    },
+    {
+      "id": "provider:github-copilot",
+      "version": "1.0.0",
+      "checksum": "sha256:2770ad3483494d90c7b8fe70d44c2e7caf3dd09f80b5472a3636614bbca33dca",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/github-copilot/1.0.0"
+    },
+    {
+      "id": "provider:gmi",
+      "version": "1.0.0",
+      "checksum": "sha256:9fcd5b69a321af1c7f8c9f45bcda07bb7d1d3f8fa757dc41a1294946ceb8ac0e",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/gmi/1.0.0"
+    },
+    {
+      "id": "provider:google",
+      "version": "1.0.0",
+      "checksum": "sha256:e3e60f6c3c43f0101c2f9a33356b1d7262de987e480e4b2fa880f945badb3357",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/google/1.0.0"
+    },
+    {
+      "id": "provider:google-vertex",
+      "version": "1.0.0",
+      "checksum": "sha256:ef8c4f041aa94679c03abe526b0af7a13bdb0ee663ab9b515c10729dd3bd16b4",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/google-vertex/1.0.0"
+    },
+    {
+      "id": "provider:groq",
+      "version": "1.0.0",
+      "checksum": "sha256:9c16f67f3de1f5cdfbc488c53621429b698326f83a9efe6f998726cdd626854e",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/groq/1.0.0"
+    },
+    {
+      "id": "provider:huggingface",
+      "version": "1.0.0",
+      "checksum": "sha256:d2db01ba24ae7d2d782541273c07533d7e6a5fd853a3329bc98fc6dc2cc79abb",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/huggingface/1.0.0"
+    },
+    {
+      "id": "provider:kilocode",
+      "version": "1.0.0",
+      "checksum": "sha256:85129ea949aec391790f6f2a3fb11b5092033096ac9b12c70e00fe8a0e793741",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/kilocode/1.0.0"
+    },
+    {
+      "id": "provider:kimi",
+      "version": "1.0.0",
+      "checksum": "sha256:5c004aecf40580b3266dab783ccf59e98ddf7c4983302435e49270e84ef71ff3",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/kimi/1.0.0"
+    },
+    {
+      "id": "provider:kimi-cn",
+      "version": "1.0.0",
+      "checksum": "sha256:edec6de4476f508c8948373339e174d961d7df8c3db9dc07cc475c25566ab70d",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/kimi-cn/1.0.0"
+    },
+    {
+      "id": "provider:lmstudio",
+      "version": "1.0.0",
+      "checksum": "sha256:23d4a5a85146a7c2df077c910e6a99cec24452dc26efd73a53af7c09b7cfc1c6",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/lmstudio/1.0.0"
+    },
+    {
+      "id": "provider:meta-ai",
+      "version": "1.0.0",
+      "checksum": "sha256:5fe9ffcd0b757ff3727d081398933603f0c23f9e3d2f8068c06ae937937161d6",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/meta-ai/1.0.0"
+    },
+    {
+      "id": "provider:minimax",
+      "version": "1.0.0",
+      "checksum": "sha256:2ffc98cb50d2ae4275c670c353c9180cf20081aca4c9a7558d4b6f047b1799a7",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/minimax/1.0.0"
+    },
+    {
+      "id": "provider:minimax-cn",
+      "version": "1.0.0",
+      "checksum": "sha256:8f21744e070d30fae88c7ceee0e807618c3ab5cc2e6a1534d3c1ee79ac5e5ae3",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/minimax-cn/1.0.0"
+    },
+    {
+      "id": "provider:mistral",
+      "version": "1.0.0",
+      "checksum": "sha256:59c8b777cd9fa741f4a63e6f57dbba36c7ca0e6e05bdceda417b1054d435c2b3",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/mistral/1.0.0"
+    },
+    {
+      "id": "provider:moonshot",
+      "version": "1.0.0",
+      "checksum": "sha256:cc60da13dc80fa3c8e1036f1a8933dd16daeb8a2dae20b4beaa98557a0798769",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/moonshot/1.0.0"
+    },
+    {
+      "id": "provider:novita",
+      "version": "1.0.0",
+      "checksum": "sha256:88c469fba45a6593a2b614d37ea6423412e528d0b7704ff8f05b1d3ef1f83a84",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/novita/1.0.0"
+    },
+    {
+      "id": "provider:nvidia",
+      "version": "1.0.0",
+      "checksum": "sha256:c75be60c6c355335f35b22fc2b1e4cb08c5f9ec5dae7038bda4a7e8ea7ae0b4d",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/nvidia/1.0.0"
+    },
+    {
+      "id": "provider:ollama",
+      "version": "1.0.0",
+      "checksum": "sha256:85e5f012b4ecde52d218017c0acedff3b370c3ea0a1fe09de707894f845996e9",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/ollama/1.0.0"
+    },
+    {
+      "id": "provider:ollama-cloud",
+      "version": "1.0.0",
+      "checksum": "sha256:4e574a41fae0e9a9196a795d292eedee302410521d453d006e86040837ea2b28",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/ollama-cloud/1.0.0"
+    },
+    {
       "id": "provider:openai",
       "version": "1.0.0",
-      "checksum": "sha256:356dc379f6927e7d502af9134329b226df2218068cb57ab17f77f89744d33c49",
+      "checksum": "sha256:96b8695daa5a57eea8efb470e3d9eefe6fffbf496d65051aa036de1c70e689d9",
       "compatibility": {
         "vibekit": "^1.0.0",
         "pi": ">=0.50.0",
@@ -202,7 +609,7 @@
     {
       "id": "provider:openai-codex",
       "version": "1.0.0",
-      "checksum": "sha256:be3993e5d20ddb82d44c341c273a381b8965e772ba98452c4ab81125aeea94e6",
+      "checksum": "sha256:4f9156bef6763c8505611514f0cf1165d16569137ea66beed88f8a96f707133b",
       "compatibility": {
         "vibekit": "^1.0.0",
         "pi": ">=0.50.0",
@@ -213,7 +620,7 @@
     {
       "id": "provider:opencode-go",
       "version": "1.0.0",
-      "checksum": "sha256:c932ebb08d2d9289bf3f4ebe50df734be0aff4d051f0bfcfab02ae64ea8526cb",
+      "checksum": "sha256:ec4d50a36229aee375f83d7390b2824d7f0185727ee490e5c24c54fa13bf10e0",
       "compatibility": {
         "vibekit": "^1.0.0",
         "pi": ">=0.50.0",
@@ -222,9 +629,20 @@
       "path": "components/provider/opencode-go/1.0.0"
     },
     {
+      "id": "provider:opencode-zen",
+      "version": "1.0.0",
+      "checksum": "sha256:cf8c1e146e252a8ce08c6d1f33938260dbec303a8ce3fa9011b79bcb043db44b",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/opencode-zen/1.0.0"
+    },
+    {
       "id": "provider:openrouter",
       "version": "1.0.0",
-      "checksum": "sha256:09300d22ddf9376976516f958c3037878e7649e9cc1e9a4376dde0059d05e8fe",
+      "checksum": "sha256:2c8aad32ad1ce461d6ad561d2c06a46cc12531fc39dac736a7afaa8c4b31798c",
       "compatibility": {
         "vibekit": "^1.0.0",
         "pi": ">=0.50.0",
@@ -233,15 +651,158 @@
       "path": "components/provider/openrouter/1.0.0"
     },
     {
+      "id": "provider:qianfan",
+      "version": "1.0.0",
+      "checksum": "sha256:6241348e893a14082de70540a3beb60d547d503f5b2d2cc9c155057506022faf",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/qianfan/1.0.0"
+    },
+    {
+      "id": "provider:sglang",
+      "version": "1.0.0",
+      "checksum": "sha256:321782dbb55c8ef1b2eebe29862d0361f8078930d805dbdd233572163dcba82d",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/sglang/1.0.0"
+    },
+    {
+      "id": "provider:stepfun",
+      "version": "1.0.0",
+      "checksum": "sha256:b94d9fa722ab08ba3032a77b8ace1e19bff9454eb095ff68f2582b511933410e",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/stepfun/1.0.0"
+    },
+    {
+      "id": "provider:synthetic",
+      "version": "1.0.0",
+      "checksum": "sha256:cd59fc795660497586c97c795cc6d41a22d7c1525ead6d023b12d16ad728789c",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/synthetic/1.0.0"
+    },
+    {
+      "id": "provider:tencent-tokenhub",
+      "version": "1.0.0",
+      "checksum": "sha256:d36d501c60630f2d317372bf0fbfaf5a968abc61db407f71c3b4e67152f9bf80",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/tencent-tokenhub/1.0.0"
+    },
+    {
+      "id": "provider:together",
+      "version": "1.0.0",
+      "checksum": "sha256:6fe91339456c3bdf5a8c8b165dee297e579a7ddfe140cd76d9fafc3462fb74b8",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/together/1.0.0"
+    },
+    {
+      "id": "provider:venice",
+      "version": "1.0.0",
+      "checksum": "sha256:f24b99fac52494c213ec9c14080a97e4fbc15df0d96c2c51cca801a2716ce715",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/venice/1.0.0"
+    },
+    {
+      "id": "provider:vercel-ai-gateway",
+      "version": "1.0.0",
+      "checksum": "sha256:0f192a9eed6281723e6014c0d1a62de4bdf97b64837924ccebc6a11180abb5a5",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/vercel-ai-gateway/1.0.0"
+    },
+    {
+      "id": "provider:vllm",
+      "version": "1.0.0",
+      "checksum": "sha256:ea60759db721a6db59adc3c2fbccdb61a74a7ab06570c18e4a8172b72829936e",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/vllm/1.0.0"
+    },
+    {
+      "id": "provider:volcengine",
+      "version": "1.0.0",
+      "checksum": "sha256:17f5853db1ea6de1669985eeda7985feff14cf81e87367958f81ef38ec184d30",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/volcengine/1.0.0"
+    },
+    {
+      "id": "provider:volcengine-plan",
+      "version": "1.0.0",
+      "checksum": "sha256:a95aa65afa10d57989f2fd27a683243c3d560834a35c6c3c939440f91bb14416",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/volcengine-plan/1.0.0"
+    },
+    {
       "id": "provider:xai",
       "version": "1.0.0",
-      "checksum": "sha256:ddf8bac2d7bb102086e24163a80d76a8e0768d5ebcadd0a829d73f7fff46073f",
+      "checksum": "sha256:2b2318d6a7cf2f0c0f33458ce389b2ef1ee222f641a9c17c5c2f8b97edf92de1",
       "compatibility": {
         "vibekit": "^1.0.0",
         "pi": ">=0.50.0",
         "node": ">=20"
       },
       "path": "components/provider/xai/1.0.0"
+    },
+    {
+      "id": "provider:xiaomi",
+      "version": "1.0.0",
+      "checksum": "sha256:8766fcfdc5ad1ab3c07fad4069bf29e80a468764e8e9ac3e860c874b3eb52deb",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/xiaomi/1.0.0"
+    },
+    {
+      "id": "provider:zai",
+      "version": "1.0.0",
+      "checksum": "sha256:fde30e26760b6c6b68ca4cccebc6c29a71d68518f382f7f4a5e158136240315e",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/provider/zai/1.0.0"
     },
     {
       "id": "skill:browser-use",

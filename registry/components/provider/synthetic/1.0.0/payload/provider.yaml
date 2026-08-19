@@ -1,0 +1,5 @@
+id: provider:synthetic
+piProvider: synthetic
+description: Maps to the Synthetic provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: SYNTHETIC_API_KEY
+defaultModel: hf:MiniMaxAI/MiniMax-M3

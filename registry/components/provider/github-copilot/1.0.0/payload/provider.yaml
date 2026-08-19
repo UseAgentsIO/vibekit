@@ -1,0 +1,5 @@
+id: provider:github-copilot
+piProvider: github-copilot
+description: Maps to Pi's github-copilot provider. Secret is COPILOT_GITHUB_TOKEN; Pi may also read GH_TOKEN or GITHUB_TOKEN. Does not include Copilot ACP.
+secretName: COPILOT_GITHUB_TOKEN
+defaultModel: claude-opus-4.6

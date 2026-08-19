@@ -1,0 +1,48 @@
+schemaVersion: 1
+
+id: provider:vercel-ai-gateway
+type: provider
+name: vercel-ai-gateway
+displayName: Vercel AI Gateway Provider
+version: 1.0.0
+description: Declares Pi Vercel AI Gateway provider configuration and a credential reference.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.vercel-ai-gateway
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets:
+  - name: AI_GATEWAY_API_KEY
+    required: true
+    source: environment
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/vercel-ai-gateway.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/vercel-ai-gateway.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: vercel-ai-gateway

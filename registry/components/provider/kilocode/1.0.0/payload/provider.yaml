@@ -1,0 +1,5 @@
+id: provider:kilocode
+piProvider: kilocode
+description: Maps to the KiloCode provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: KILOCODE_API_KEY
+defaultModel: kilo-auto

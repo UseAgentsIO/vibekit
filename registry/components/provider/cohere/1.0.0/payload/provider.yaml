@@ -1,0 +1,5 @@
+id: provider:cohere
+piProvider: cohere
+description: Maps to the Cohere provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: COHERE_API_KEY
+defaultModel: command-a-plus-05-2026

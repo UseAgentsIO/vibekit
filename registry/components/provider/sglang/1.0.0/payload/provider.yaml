@@ -1,0 +1,5 @@
+id: provider:sglang
+piProvider: sglang
+description: Maps to the SGLang provider already supplied by Pi. Local OpenAI-compatible server; no API key. Does not ship a replacement runtime.
+defaultModel: local-model
+baseUrl: http://127.0.0.1:30000/v1

@@ -1,6 +1,6 @@
 # `@useagentsio/pi` API Reference
 
-The `@useagentsio/pi` package serves as the embedded adapter for running task execution sessions on top of the Pi engine.
+Embedded adapter for Pi sessions: Worker Runs, worktrees, delegation, and persistent conversations. Users do not launch the Pi TUI.
 
 ---
 
@@ -12,57 +12,69 @@ pnpm add @useagentsio/pi @useagentsio/core
 
 ---
 
-## Running Isolated Tasks
-
-### `runIsolated(options: RunIsolatedOptions): Promise<IsolatedRunOutcome>`
-Executes an isolated worker run for a bounded task with complete environment and worktree sandboxing.
+## Worker Runs
 
 ```ts
-import { runIsolated } from "@useagentsio/pi";
+import { prepareIsolatedRun, runIsolated, runManaged } from "@useagentsio/pi";
+
+const prepared = await prepareIsolatedRun({
+  projectRoot,
+  bindingName: "coder",
+  task,
+});
 
 const outcome = await runIsolated({
-  projectRoot: "/path/to/project",
+  projectRoot,
   bindingName: "coder",
-  task: {
-    id: "task_01j9abc",
-    objective: "Add healthcheck endpoint to server.ts",
-    constraints: ["Follow existing Express routing patterns"],
-    acceptanceCriteria: ["GET /health returns 200 OK"],
-  },
-  onEvent: (event) => {
-    console.log(`[${event.type}]`, event.payload);
-  },
+  task,
+  signal,
 });
-
-console.log("Run status:", outcome.result.status);
-console.log("Summary:", outcome.result.summary);
-console.log("Modified artifacts:", outcome.result.artifacts);
 ```
+
+- `prepareIsolatedRun` — resolve Agent, tools, model, bounded context, filtered env; does not start Pi.
+- `runIsolated` — execute one Worker Run. Persistence of Events/Results is the caller’s job (the Host does this).
+- `runManaged` — wraps isolation, claims, concurrency, and idempotency around a Run.
+
+Inject `createSession` only in unit tests.
 
 ---
 
-## Worktree Isolation
-
-### `withWorktreeIsolation(options, runner)`
-Allocates a temporary Git worktree for mutating coding tasks, executes the provided runner inside the isolated directory, and safely cleans up or stages changes upon completion.
+## Worktrees
 
 ```ts
-import { withWorktreeIsolation } from "@useagentsio/pi";
+import { createWorktree, removeWorktree, shouldUseWorktree } from "@useagentsio/pi";
 
-const result = await withWorktreeIsolation({
-  projectRoot: "/path/to/project",
-  runId: "run_01j9xyz",
-}, async (worktreePath) => {
-  // Execute coding task inside worktreePath
-  return { modifiedFiles: ["src/server.ts"] };
-});
+if (shouldUseWorktree({ project, task })) {
+  const worktree = createWorktree({ projectRoot, runId });
+  try {
+    // mutate files under worktree.path
+  } finally {
+    removeWorktree(worktree);
+  }
+}
 ```
+
+There is no `withWorktreeIsolation` helper. Isolation is `process` or `worktree` (see Project `execution`).
 
 ---
 
-## Delegation Runtime (`agent_delegate`)
+## Delegation
 
-Implements the delegation tool passed into parent agent sessions to safely dispatch child worker runs:
-- Validates parent delegation grants against `.vibekit/project.yaml`.
-- Enforces maximum delegation depth limits (`execution.maxDelegationDepth`).
-- Propagates cancellation signals to child runs.
+`executeDelegation` / `createAgentDelegateTool` start a **child Worker Run** and return its Result. The parent must have `agent.delegate`, and both Agent and Project contracts must allow the target. There is no `orchestrator` type.
+
+---
+
+## Persistent conversations
+
+The Host uses `runConversationTurn` (and related session helpers) for Interface threads. That is separate from `runIsolated` Worker Runs.
+
+---
+
+## Model catalog
+
+```ts
+import { OFFICIAL_PROVIDERS, openModelCatalog } from "@useagentsio/pi";
+
+const catalog = await openModelCatalog({ allowNetwork: true });
+const models = await catalog.listModels("openai");
+```

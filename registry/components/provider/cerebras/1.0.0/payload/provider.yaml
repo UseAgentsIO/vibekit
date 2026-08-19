@@ -1,0 +1,5 @@
+id: provider:cerebras
+piProvider: cerebras
+description: Maps to Pi's cerebras provider.
+secretName: CEREBRAS_API_KEY
+defaultModel: gpt-oss-120b

@@ -5,7 +5,7 @@ type: provider
 name: openai
 displayName: OpenAI Provider
 version: 1.0.0
-description: Declares Pi OpenAI provider configuration and a credential reference. Does not rebuild the Pi provider runtime.
+description: Declares Pi OpenAI provider configuration and a credential reference.
 
 compatibility:
   vibekit: "^1.0.0"

@@ -1,0 +1,5 @@
+id: provider:tencent-tokenhub
+piProvider: tencent-tokenhub
+description: Maps to the Tencent TokenHub provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: TOKENHUB_API_KEY
+defaultModel: hy3-preview

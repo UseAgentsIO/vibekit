@@ -1,0 +1,5 @@
+id: provider:google
+piProvider: google
+description: Maps to Pi's google provider (Gemini). Secret is GEMINI_API_KEY; Pi may also read GOOGLE_API_KEY.
+secretName: GEMINI_API_KEY
+defaultModel: gemini-2.5-flash

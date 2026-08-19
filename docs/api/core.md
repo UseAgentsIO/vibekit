@@ -1,6 +1,6 @@
 # `@useagentsio/core` API Reference
 
-The `@useagentsio/core` package provides schemas, strongly typed ID utilities, state repository drivers, and module lifecycle management.
+Schemas, typed IDs, repository State, install/update/remove, and three-way diff.
 
 ---
 
@@ -10,91 +10,85 @@ The `@useagentsio/core` package provides schemas, strongly typed ID utilities, s
 pnpm add @useagentsio/core
 ```
 
+JSON Schema sources live in `schemas/` and are copied into this package on publish.
+
 ---
 
-## Schema Validation & Parsing
-
-### `parseAndValidateYaml<T>(schemaId: string, yamlText: string)`
-Parses a YAML string and validates it against the specified JSON Schema draft-07 document.
+## Schema validation
 
 ```ts
 import { parseAndValidateYaml, type AgentDocument } from "@useagentsio/core";
 
-const { valid, data, errors } = parseAndValidateYaml<AgentDocument>("agent", yamlContent);
-
-if (!valid) {
-  console.error("Invalid agent.yaml:", errors);
-} else {
-  console.log("Agent loaded:", data.name);
+const parsed = parseAndValidateYaml("agent", yamlContent);
+if (!parsed.valid || parsed.data === undefined) {
+  throw new Error(JSON.stringify(parsed.errors));
 }
+const agent: AgentDocument = parsed.data;
 ```
+
+Document kinds include `project`, `agent`, `component`, `task`, `result`, `decision`, `approval`, `verification`, `event`, `conversation`, `installed`.
 
 ---
 
 ## Typed IDs
 
-Provides strict parsing, validation, and stringification for all VibeKit domain identifiers.
+Module IDs are `type:name` (no `@version` in the ID itself). Version is a separate field.
 
 ```ts
-import { 
-  parseModuleId, 
-  stringifyModuleId, 
-  isAgentId, 
-  isToolId 
-} from "@useagentsio/core";
+import { parseModuleId, formatModuleId, isModuleId } from "@useagentsio/core";
 
-const modId = parseModuleId("agent:chief@1.2.0");
-console.log(modId.type);    // "agent"
-console.log(modId.name);    // "chief"
-console.log(modId.version); // "1.2.0"
+const parsed = parseModuleId("agent:chief");
+// { type: "agent", name: "chief" }
 
-console.log(isAgentId("agent:coder")); // true
-console.log(isToolId("agent:coder"));  // false
+formatModuleId("tool", "filesystem"); // "tool:filesystem"
+isModuleId("agent:coder"); // true
 ```
+
+Runtime IDs are `kind_<uuid>` (`task_`, `run_`, `result_`, `approval_`, …) via `formatRuntimeId` / `parseRuntimeId`. There are no `isAgentId` / `stringifyModuleId` helpers.
 
 ---
 
-## Repository State Driver
-
-### `createRepositoryState(options: { projectRoot: string }): RepositoryState`
-Instantiates a filesystem-backed state store pointing to `.vibekit/state/`.
+## Repository State
 
 ```ts
-import { createRepositoryState } from "@useagentsio/core";
+import { createRepositoryState, readProjectDocument } from "@useagentsio/core";
 
-const state = createRepositoryState({ projectRoot: "/path/to/project" });
-
-// Write a task
-const task = await state.tasks.create({
-  objective: "Refactor database connector",
-  assignedAgent: "coder",
-  constraints: ["Do not break connection pooling"],
-  acceptanceCriteria: ["All unit tests pass"],
-  delivery: { mode: "proposal" },
+const project = readProjectDocument(projectRoot);
+const state = createRepositoryState({
+  projectRoot,
+  statePath: project.state.path,
 });
 
-// Read a task
-const fetched = await state.tasks.get(task.id);
+const stored = state.tasks.create(taskDocument); // sync; writes task_<uuid>.yaml
+const fetched = state.tasks.get(stored.document.id);
 ```
+
+`create` / `get` / `update` are **synchronous**. Documents are YAML files under `.vibekit/state/<kind>/`. Conversations are stored by the Host (`ConversationStore`), not on `RepositoryState`.
 
 ---
 
-## Three-Way Diffs & Updates
-
-Programmatic API for calculating three-way comparisons and performing non-destructive module updates.
+## Three-way diff and update
 
 ```ts
-import { 
-  computeModuleDiff, 
-  applyModuleUpdate 
+import {
+  diffInstalledModule,
+  planUpdate,
+  applyUpdate,
+  readInstalledManifest,
+  loadRegistry,
 } from "@useagentsio/core";
 
-const diffResult = await computeModuleDiff({
-  projectRoot: "/path/to/project",
-  moduleId: "agent:coder",
-  registryPath: "/path/to/registry",
-});
+const registry = loadRegistry(registryRoot);
+const manifest = readInstalledManifest(projectRoot);
 
-console.log("Has local edits:", diffResult.hasLocalEdits);
-console.log("Has upstream changes:", diffResult.hasUpstreamChanges);
+const diff = diffInstalledModule({
+  projectRoot,
+  registry,
+  id: "agent:coder",
+  manifest,
+});
 ```
+
+Use `planUpdate` / `applyUpdate` for writes. There is no `computeModuleDiff` or `applyModuleUpdate`. Conflicts stop the Module; V1 has no `--force`.
+
+Related: `planInstall` / `applyInstall`, `planRemove` / `applyRemove`, `runDoctor`.

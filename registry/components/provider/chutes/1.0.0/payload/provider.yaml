@@ -1,0 +1,5 @@
+id: provider:chutes
+piProvider: chutes
+description: Maps to the Chutes provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: CHUTES_API_KEY
+defaultModel: zai-org/GLM-5-TEE

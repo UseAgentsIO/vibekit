@@ -10,13 +10,13 @@ The default state backend (`state:repository`) organizes records in clear subdir
 
 ```text
 .vibekit/state/
-├── tasks/                 # TaskDocument records (task_*.json)
-├── results/               # ResultDocument records (result_*.json)
-├── decisions/             # DecisionDocument records (decision_*.json)
-├── approvals/             # ApprovalDocument records (approval_*.json)
-├── verifications/         # VerificationDocument records (verification_*.json)
-├── events/                # EventDocument streaming records (event_*.json)
-└── conversations/         # ConversationDocument records (conversation_*.json)
+├── tasks/                 # task_<uuid>.yaml
+├── results/               # result_<uuid>.yaml
+├── decisions/             # decision_<uuid>.yaml
+├── approvals/             # approval_<uuid>.yaml
+├── verifications/         # verification_<uuid>.yaml
+├── events/                # append-only event log
+└── conversations/         # conversation_<uuid>.yaml (Host ConversationStore)
 ```
 
 In addition, an untracked runtime scratch directory is used for process coordination:
@@ -30,61 +30,49 @@ In addition, an untracked runtime scratch directory is used for process coordina
 
 ### 1. Task (`TaskDocument`)
 Represents an actionable request assigned to an agent.
-- **ID**: `task_<nanoid>`
+- **ID**: `task_<uuid>`
 - **Fields**:
-  - `objective`: High-level goal string.
-  - `assignedAgent`: Bound agent name (e.g., `chief`, `coder`).
-  - `constraints`: List of execution boundaries (e.g., "Do not modify package.json").
-  - `acceptanceCriteria`: Specific conditions required for completion.
-  - `delivery`: Object declaring mode (`direct`, `proposal`, `pr`).
-  - `status`: `pending`, `claimed`, `running`, `completed`, `failed`, `cancelled`.
+  - `objective`, `constraints`, `acceptanceCriteria`
+  - `assignedAgent`: Module ID (`agent:coder`) or `null`
+  - `delivery.mode`: `proposal` or `apply`
+  - `authorization.state`: `deny` | `standing` | `explicit`
+  - `status`: `open`, `claimed`, `running`, `blocked`, `review`, `accepted`, `failed`, `cancelled`
 
 ### 2. Result (`ResultDocument`)
-The immutable record produced when a Worker Run finishes.
-- **ID**: `result_<nanoid>`
+The record produced when a Worker Run finishes.
+- **ID**: `result_<uuid>`
 - **Fields**:
-  - `taskId`: Associated task reference.
-  - `runId`: Specific run instance.
-  - `status`: `success`, `failure`, `timeout`, `cancelled`.
-  - `summary`: Human-readable summary of actions taken.
-  - `artifacts`: List of generated or modified files with SHA-256 hashes.
-  - `evidence`: Verification proof, test logs, or command execution outputs.
-  - `unresolvedIssues`: Explicit list of blocked or remaining items.
+  - `taskId`, `runId`, `agentId`
+  - `status`: `completed` or `failed`
+  - `summary`, `artifacts` (`path` + `revision`), `evidence`, `unresolvedIssues`
+  - `verificationIds`, `discoveredConstraints`, `recommendedNextActions`
 
 ### 3. Decision (`DecisionDocument`)
 Records key architectural or strategic decisions made during a project lifecycle.
-- **ID**: `decision_<nanoid>`
+- **ID**: `decision_<uuid>`
 - **Fields**:
-  - `title`: Short summary of the decision.
-  - `context`: Background information and alternatives considered.
-  - `status`: `proposed`, `accepted`, `rejected`, `superseded`.
-  - `decidedBy`: Agent or human author.
+  - `question`, `decision`, `reason`, `evidence`
+  - `status`: `proposed`, `accepted`, `rejected`, `disputed`, `superseded`
+  - `authority`, `producedBy`
 
 ### 4. Approval (`ApprovalDocument`)
 Captures explicit human authorization for high-impact or policy-gated operations.
-- **ID**: `approval_<nanoid>`
+- **ID**: `approval_<uuid>`
 - **Fields**:
-  - `taskId` / `action`: The gated operation requiring review.
-  - `requestedBy`: Agent seeking approval.
-  - `status`: `pending`, `approved`, `rejected`.
-  - `decision`: Reviewer comments and timestamp.
+  - `action`, `target`, `scope`, `taskId`, optional `resultId`
+  - `status`: `pending`, `approved`, `rejected`, `expired`
+  - `requestedAuthority`, `requestedAt`, `decidedAt`, `expiresAt`
 
 ### 5. Verification (`VerificationDocument`)
 Records the outcome of independent verification checks (e.g., unit test runs, linter checks).
-- **ID**: `verification_<nanoid>`
+- **ID**: `verification_<uuid>`
 - **Fields**:
-  - `targetRevision`: Git commit SHA or artifact hash verified.
-  - `verifier`: Module ID of the verifier (e.g., `verifier:command`).
-  - `status`: `passed`, `failed`, `error`.
-  - `logs`: Raw stdout/stderr evidence.
+  - target revision / verifier module ID
+  - `status`: `pending`, `passed`, `failed`, `skipped`
 
 ### 6. Event (`EventDocument`)
 Fine-grained audit trail emitted during an execution turn.
-- **Fields**:
-  - `runId` / `taskId`: Correlation IDs.
-  - `type`: `tool_call`, `tool_result`, `text_delta`, `lifecycle`, `error`.
-  - `timestamp`: ISO-8601 string.
-  - `payload`: Structured event details.
+- **Fields**: `id` (`event_<uuid>`), `type` (string), `projectId`, optional `taskId` / `runId`, `actor`, `timestamp`, `data` (no secret values).
 
 ---
 
@@ -97,17 +85,17 @@ state:
   backend: state:repository
   path: .vibekit/state
   tracking:
-    conversations: track
-    decisions: track
-    tasks: track
-    results: track
-    approvals: track
-    verifications: track
-    events: ephemeral
-    runtime: ignore
+    conversations: local
+    decisions: git
+    tasks: local
+    results: local
+    approvals: local
+    verifications: local
+    events: local
+    runtime: ephemeral
 ```
 
-### Tracking Modes
-- **`track`**: Committed to source control. Serves as permanent project memory.
-- **`ephemeral`**: Kept locally on disk for debugging and inspection, but omitted from long-term history or pruned periodically.
-- **`ignore`**: Never committed or persisted across project wipes (e.g., `.vibekit/runtime/`).
+### Tracking modes
+- **`git`**: Intended to be committed (default for `decisions`).
+- **`local`**: On disk under `.vibekit/state/`; not the Git-backed history.
+- **`ephemeral`**: Runtime only (default for `runtime`, under `.vibekit/runtime/`).

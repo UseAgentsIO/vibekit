@@ -1,0 +1,45 @@
+schemaVersion: 1
+
+id: provider:sglang
+type: provider
+name: sglang
+displayName: SGLang
+version: 1.0.0
+description: Maps to Pi's sglang provider for a local OpenAI-compatible server.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.sglang
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets: []
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/sglang.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/sglang.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: sglang

@@ -226,9 +226,13 @@ VibeKit includes a curated official registry of modular Agents and Components.
 | :--- | :--- | :--- | :--- |
 | **`provider:openai`** | Provider | `config` | OpenAI models (`OPENAI_API_KEY`) |
 | **`provider:openai-codex`** | Provider | `config` | OpenAI Codex models (OAuth login) |
-| **`provider:opencode-go`** | Provider | `config` | OpenCode API endpoint (`OPENCODE_API_KEY`) |
+| **`provider:opencode-zen`** | Provider | `config` | OpenCode Zen (`OPENCODE_ZEN_API_KEY`) |
+| **`provider:opencode-go`** | Provider | `config` | OpenCode Go (`OPENCODE_API_KEY`) |
 | **`provider:xai`** | Provider | `config` | xAI Grok models (`XAI_API_KEY`) |
 | **`provider:openrouter`** | Provider | `config` | Multi-model routing (`OPENROUTER_API_KEY`) |
+| **`provider:anthropic`** | Provider | `config` | Claude (`ANTHROPIC_API_KEY`) |
+| **`provider:google`** | Provider | `config` | Gemini (`GEMINI_API_KEY`) |
+| **`provider:*`** | Provider | `config` | 50+ optional vendors — see [Official Components](docs/catalog/components.md) |
 | **`tool:filesystem`** | Tool | `pi-builtin` | Pi filesystem tools (`read`, `grep`, `find`, `ls`, `write`, `edit`) |
 | **`tool:execution`** | Tool | `pi-builtin` | Shell execution (`bash`) |
 | **`tool:github`** | Tool | `pi-extension` | Issues, PRs, checks (`GITHUB_TOKEN`). Opt-in; `1.0.0` stays config-only. |

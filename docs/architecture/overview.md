@@ -53,7 +53,7 @@ Pi is the internal execution engine that translates agent directives into LLM AP
 - **Event Streaming**: Streams fine-grained execution events (token deltas, tool calls, tool results) back to the Host.
 
 ### 3. Core Engine (`@useagentsio/core`)
-The foundation library containing zero-dependency business logic:
+The foundation library for contracts and State:
 - **JSON Schema Validation**: Validates all project contracts, agent definitions, component manifests, and state records against draft-07 schemas.
 - **Typed IDs**: Strongly-typed parsers and stringifiers for module IDs (`agent:coder`, `tool:filesystem`), task IDs (`task_*`), and run IDs (`run_*`).
 - **Dependency Graph**: Resolves transitive module dependencies, detects dependency cycles, and verifies compatibility.

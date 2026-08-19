@@ -1,0 +1,5 @@
+id: provider:kimi-cn
+piProvider: moonshotai-cn
+description: Maps to the Kimi CN provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: KIMI_CN_API_KEY
+defaultModel: kimi-k2.5

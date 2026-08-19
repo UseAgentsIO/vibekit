@@ -45,7 +45,7 @@ export const COMMANDS: readonly CommandHelp[] = [
     options: [
       { flags: "--agent <name>", text: "starter Agent (default: chief)" },
       { flags: "--provider <name>", text: "provider id (default: openai)" },
-      { flags: "--model <id>", text: "model id (required with --yes; otherwise pick from the live list)" },
+      { flags: "--model <id>", text: "model id (with --yes, defaults from the catalog if omitted)" },
       { flags: "--interface <name>", text: "Interface (default: terminal)" },
       { flags: "-y, --yes", text: "skip confirmation prompts" },
       { flags: "--dir <path>", text: "project directory" },
@@ -80,7 +80,7 @@ export const COMMANDS: readonly CommandHelp[] = [
     usage: "msg [options] <text>",
     summary: "send one message through the Host to the configured provider",
     description:
-      "Starts the Host in-process, sends one turn on the local CLI conversation, prints the response, and stops. Does not launch the Pi TUI.",
+      "Sends one turn on the local CLI conversation and prints the response. Uses a running Host over local IPC when one is up; otherwise starts a short-lived in-process Host. Does not launch the Pi TUI.",
     arguments: [{ name: "text", text: "message to send" }],
     options: READ_OPTIONS,
     examples: ["$ vibekit msg \"Hello\""],

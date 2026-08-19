@@ -1,0 +1,45 @@
+schemaVersion: 1
+
+id: provider:ollama
+type: provider
+name: ollama
+displayName: Ollama
+version: 1.0.0
+description: Maps to a local Ollama OpenAI-compatible server. No API key.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.ollama
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets: []
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/ollama.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/ollama.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: ollama

@@ -1,0 +1,5 @@
+id: provider:alibaba
+piProvider: alibaba
+description: Maps to the Alibaba DashScope compatible-mode provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: DASHSCOPE_API_KEY
+defaultModel: qwen3.5-plus

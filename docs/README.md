@@ -18,6 +18,7 @@ docs/
 ├── api/                   # TypeScript SDK docs for @useagentsio/* packages
 ├── patterns/              # Verified multi-agent collaboration patterns
 ├── contributing/          # Dev workflow + registry authoring (see also /CONTRIBUTING.md)
+├── phases/                # Historical V1 build briefs (not current catalog)
 └── spec/                  # Normative specifications & runtime corrections
 ```
 
@@ -111,3 +112,5 @@ Documented multi-agent orchestration recipes:
 
 - **[V1 Implementation Specification](spec/V1-Implementation-Specification.md)**: The original V1 normative design specification.
 - **[V1 Runtime Correction](spec/V1-Runtime-Correction.md)**: The runtime correction establishing the Agent Host front door.
+
+Phase briefs under [`phases/`](phases/README.md) are historical. Do not treat their catalog counts or “remaining work” tables as current.

@@ -1,0 +1,48 @@
+schemaVersion: 1
+
+id: provider:minimax-cn
+type: provider
+name: minimax-cn
+displayName: MiniMax CN
+version: 1.0.0
+description: Maps to Pi's minimax-cn provider.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+providesCapabilities:
+  - provider.minimax-cn
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets:
+  - name: MINIMAX_CN_API_KEY
+    required: true
+    source: environment
+
+files:
+  - source: payload/provider.yaml
+    target: .vibekit/components/providers/minimax-cn.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/providers/minimax-cn.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-provider
+  name: minimax-cn

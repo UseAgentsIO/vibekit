@@ -5,7 +5,7 @@ type: provider
 name: openai-codex
 displayName: OpenAI Codex
 version: 1.0.0
-description: Maps to Pi's openai-codex provider (ChatGPT / Codex OAuth). Does not rebuild the Pi provider runtime. Credentials stay in Pi auth.json.
+description: Maps to Pi's openai-codex provider (ChatGPT / Codex OAuth). Credentials stay in Pi auth.json.
 
 compatibility:
   vibekit: "^1.0.0"

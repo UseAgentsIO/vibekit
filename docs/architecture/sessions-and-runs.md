@@ -41,7 +41,7 @@ A **Persistent Conversation Session** represents an ongoing dialogue between a h
 ### Key Characteristics
 - **Identity & Keying**: Uniquely identified by `interfaceBinding:accountId:conversationId` (and `threadId` when present).
 - **Longevity**: Survives across multiple CLI invocations (`vibekit msg`) or stays active during an interactive session (`vibekit start`).
-- **State Storage**: Serialized to `.vibekit/state/conversations/conversation_<id>.json`.
+- **State Storage**: Serialized to `.vibekit/state/conversations/conversation_<uuid>.yaml`.
 - **Concurrency Control**: Requests on the same conversation key are serialized to prevent race conditions and conflicting agent turns.
 - **Scope**: Carries conversational context, operator intent, and conversation-level attachments.
 

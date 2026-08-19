@@ -1,0 +1,5 @@
+id: provider:byteplus-plan
+piProvider: byteplus-plan
+description: Maps to the BytePlus Plan provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: BYTEPLUS_API_KEY
+defaultModel: ark-code-latest

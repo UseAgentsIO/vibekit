@@ -21,7 +21,7 @@ This guide details the system requirements, installation methods, and environmen
 > - CLI package: `@useagentsio/cli` (provides the `vibekit` binary)
 > - Host package: `@useagentsio/host` (provides the `vibekit-host` binary)
 > - Core libraries: `@useagentsio/core`, `@useagentsio/pi`, `@useagentsio/interface-sdk`, `@useagentsio/interface-terminal`
-> - Optional packages: `@useagentsio/interface-http`, `interface-webhook`, `interface-schedule`, `interface-slack`, `interface-telegram`, `tool-web`, `tool-browser`, `tool-github`, `tool-mcp`, `tool-process`, `state-memory`, `verifier-schema`
+> - Optional packages: `@useagentsio/interface-http`, `@useagentsio/interface-webhook`, `@useagentsio/interface-schedule`, `@useagentsio/interface-slack`, `@useagentsio/interface-telegram`, `@useagentsio/tool-web`, `@useagentsio/tool-browser`, `@useagentsio/tool-github`, `@useagentsio/tool-mcp`, `@useagentsio/tool-process`, `@useagentsio/state-memory`, `@useagentsio/verifier-schema`
 
 ---
 

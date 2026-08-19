@@ -5,7 +5,7 @@ type: provider
 name: xai
 displayName: xAI
 version: 1.0.0
-description: Maps to Pi's xai provider. Prefer Pi `/login` OAuth. Optional XAI_API_KEY if you use a key instead. Does not rebuild the Pi provider runtime.
+description: Maps to Pi's xai provider. Prefer Pi `/login` OAuth. Optional XAI_API_KEY if you use a key instead.
 
 compatibility:
   vibekit: "^1.0.0"

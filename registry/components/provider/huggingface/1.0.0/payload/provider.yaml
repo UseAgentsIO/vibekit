@@ -1,0 +1,5 @@
+id: provider:huggingface
+piProvider: huggingface
+description: Maps to Pi's huggingface provider. Secret is HF_TOKEN; Pi may also read HUGGINGFACE_HUB_TOKEN.
+secretName: HF_TOKEN
+defaultModel: MiniMaxAI/MiniMax-M2.7

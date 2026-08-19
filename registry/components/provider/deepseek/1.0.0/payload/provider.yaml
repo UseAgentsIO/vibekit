@@ -1,0 +1,5 @@
+id: provider:deepseek
+piProvider: deepseek
+description: Maps to Pi's deepseek provider.
+secretName: DEEPSEEK_API_KEY
+defaultModel: deepseek-v4-pro

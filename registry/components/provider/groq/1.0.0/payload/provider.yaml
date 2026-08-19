@@ -1,0 +1,5 @@
+id: provider:groq
+piProvider: groq
+description: Maps to Pi's groq provider.
+secretName: GROQ_API_KEY
+defaultModel: llama-3.3-70b-versatile

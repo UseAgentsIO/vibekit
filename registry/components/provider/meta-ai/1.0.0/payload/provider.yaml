@@ -1,0 +1,5 @@
+id: provider:meta-ai
+piProvider: meta-ai
+description: Maps to the Meta AI provider already supplied by Pi. Does not ship a replacement runtime.
+secretName: MODEL_API_KEY
+defaultModel: muse-spark-1.2

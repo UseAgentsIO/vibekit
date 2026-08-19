@@ -1,0 +1,6 @@
+id: provider:lmstudio
+piProvider: lmstudio
+description: Maps to the LM Studio provider already supplied by Pi. Does not ship a replacement runtime. OpenClaw uses LM_API_TOKEN; Pi may also read LM_API_KEY.
+secretName: LM_API_TOKEN
+defaultModel: openai/gpt-oss-20b
+baseUrl: http://localhost:1234/v1

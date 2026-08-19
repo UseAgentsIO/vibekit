@@ -78,7 +78,7 @@ Users communicate with a Project through **Interfaces**:
 
 ## 4. State & Auditability
 
-All project activity produces durable, machine-verifiable records stored under `.vibekit/state/`:
+All project activity produces durable, machine-verifiable **YAML** records under `.vibekit/state/`:
 - **Tasks**: Units of work requested by humans or delegated by agents.
 - **Results**: Structured outcomes emitted by completed runs (status, summary, evidence, artifacts).
 - **Decisions**: Architectural and operational records accepted by agents or operators.
