@@ -8,37 +8,61 @@
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg" alt="Node.js version"></a>
   <a href="https://pnpm.io/"><img src="https://img.shields.io/badge/pnpm-11.18.0-orange.svg" alt="pnpm version"></a>
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.9-blue.svg" alt="TypeScript"></a>
-  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/tests-231%20passing-success.svg" alt="Tests passing"></a>
+  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/tests-240%20passing-success.svg" alt="Tests passing"></a>
   <a href="https://www.npmjs.com/org/useagentsio"><img src="https://img.shields.io/badge/npm-%40useagentsio-crimson.svg" alt="npm scope"></a>
 </p>
 
 ---
 
-## 🎯 The Mental Model
+## 🎯 The Core Mental Model
 
-> **Components are the pieces. Agents are useful compositions of those pieces. Projects are systems of Agents working against shared state. The Agent Host runs them.**
+> **VibeKit runs Projects composed of Agents built from Components, using embedded Pi sessions to perform Tasks and persist structured Results and State.**
 
-VibeKit is an **Agent Host** built on top of [Pi](https://github.com/earendil-works/pi). You create a Project, communicate with it through an Interface (such as your terminal), and the Host continuously executes Agents against durable, shared Project State.
+VibeKit organizes autonomous multi-agent systems around a clean, layered taxonomy:
 
-Pi serves as the internal model and tool execution engine inside the Host. Users do **not** launch or interact with the Pi TUI directly.
+$$\textbf{Components} \longrightarrow \textbf{Agents} \longrightarrow \textbf{Project} \longrightarrow \textbf{Host}$$
+
+* **Components** are atomic, reusable building blocks (providers, tools, skills, interfaces, policies, verifiers, state).
+* **Agents** are useful compositions of Components configured with specific capabilities, permissions, and instructions.
+* **Projects** compose Agents and Components into a working system with clear delegation rules and boundaries (`.vibekit/project.yaml`).
+* **The Host** is the always-running product daemon that coordinates interfaces, executes agent work, enforces permissions, and persists durable state.
+* **Pi** is the internal model and tool execution engine embedded underneath the Host.
+
+```text
+Human
+  ↓
+Interface
+  ↓
+Host
+  ↓
+Project
+  ↓
+Agent
+  ↓
+Pi
+  ↓
+Model + Tools
+```
 
 > [!NOTE]
-> **Package Scope:** The unscoped npm name `vibekit` is taken by an unrelated legacy project. All official packages are published under the **`@useagentsio`** scope (e.g., `@useagentsio/cli`, `@useagentsio/host`, `@useagentsio/core`). The CLI binary remains **`vibekit`**, and the Host binary is **`vibekit-host`**.
+> **Users interact with VibeKit through Interfaces—never directly with Pi.** Sessions are managed and isolated internally by the Host.
+>
+> **Package Scope:** All official packages are published under the **`@useagentsio`** scope (e.g., `@useagentsio/cli`, `@useagentsio/host`, `@useagentsio/core`). The CLI binary is **`vibekit`**, and the Host binary is **`vibekit-host`**.
 
 ---
 
 ## ⚡ 30-Second Quickstart
 
-Create and interact with a live agent project in three commands (no global install required):
+The primary user journey is simple: **Create Project → Choose Agent & Provider → Talk to Agent**.
 
 ```bash
 # 1. Set your provider API key
 export OPENAI_API_KEY="sk-proj-..."
 
-# 2. Create a runnable Agent Project
+# 2. Create a runnable Agent Project (scaffolds agent, provider, interface, and host wiring)
 npx --yes @useagentsio/cli@latest create my-agent --agent chief --provider openai --interface terminal --yes
 
-# 3. Message your agent
+# 3. Message your agent through the Host
 cd my-agent
 vibekit msg "Hello! What can you help me with?"
 ```
@@ -60,12 +84,13 @@ vibekit start
           ▼                                           ▼
      vibekit CLI                              terminal Interface
   (@useagentsio/cli)                  (@useagentsio/interface-terminal)
+  (create / msg / start)                      (I/O Adapter Only)
           │                                           │
           └─────────────────────┬─────────────────────┘
                                 ▼
-                           AGENT HOST
-                       (@useagentsio/host)
-                     (Always-Running Daemon)
+                            AGENT HOST
+                        (@useagentsio/host)
+                      (Always-Running Daemon)
                                 │
         ┌───────────────────────┼───────────────────────┐
         ▼                       ▼                       ▼
@@ -79,48 +104,111 @@ vibekit start
 
 ---
 
-## ✨ Key Features
+## 🔑 Key Concepts
 
-- 🚀 **Instant Scaffolding (`create`)**: Generates fully-wired, runnable Agent projects with contracts, bindings, tools, and interfaces in seconds.
-- 💬 **Flexible Interaction Modes**: Run single turn headless queries (`vibekit msg`) or maintain always-on foreground conversations (`vibekit start`).
-- 🔒 **Defense-in-Depth Permissions**: Enforces permissions at the code boundary: $\text{Capability} \cap \text{Policy} \cap \text{Agent Grant} \cap \text{Task Scope} \cap \text{Current Authorization}$.
-- 🌿 **Worktree Mutation Isolation**: Parallel coding tasks execute within dedicated Git worktrees to prevent workspace corruption.
-- 🔄 **Three-Way Non-Destructive Lifecycle**: Install (`add`), inspect (`diff`), safely update (`update`), and cleanly remove (`remove`) modules without overwriting local customizations.
-- 🩺 **Self-Healing Diagnostics (`doctor`)**: Validates JSON schemas, dependency trees, cycle freedom, and file integrity checksums.
-- 📜 **Durable Machine-Verifiable State**: Transparent JSON documents stored in `.vibekit/state/` for Tasks, Results, Decisions, Approvals, and Conversations.
+### 1. Components (Atomic Building Blocks)
+Components are atomic, reusable modules installed from the official registry into your project:
+- **Providers**: Model vendor configurations (e.g., `provider:openai`, `provider:openai-codex`, `provider:opencode-go`, `provider:xai`, `provider:openrouter`).
+- **Tools**: Toolsets for system interactions (e.g., `tool:filesystem`, `tool:execution`, `tool:github`).
+- **Skills**: Structured domain guidelines and prompt instructions (e.g., `skill:software-development`, `skill:research`).
+- **Interfaces**: I/O adapters that connect external channels to the Host (e.g., `interface:terminal`).
+- **Policies**: Governance and permission constraints (e.g., `policy:least-privilege`, `policy:require-verification`).
+- **Verifiers**: Deterministic check runners (e.g., `verifier:command`).
+- **State Backends**: Storage drivers for project records (e.g., `state:repository`).
+
+### 2. Agents (Compositions as Ordinary Peers)
+An Agent is a configured composition of Components defining instructions, capabilities, permissions, and delegation targets. **Agents are ordinary peers**—there is no separate orchestrator or subagent type. A Chief is simply an Agent with permission to delegate. A Coder is an Agent configured for implementation.
+
+### 3. Projects (The Composition Boundary)
+Represented by `.vibekit/project.yaml`, the Project defines which Agents exist, which Components are installed, default provider/model routing, delegation permissions, execution limits, and state storage.
+
+### 4. The Host (The Running Product)
+The Host (`vibekit-host`) is the runtime process. It loads the Project, starts Interfaces, routes messages, creates isolated Pi worker sessions, tracks delegation, and persists Project State.
+
+### 5. Persistent Conversations vs. Worker Runs
+- **Persistent Conversation**: Long-lived interaction context across multiple turns between a user and an agent.
+- **Worker Run**: Temporary, bounded execution spawned to fulfill a specific Task. Receives scoped context, executes inside an isolated sandbox (e.g., Git worktree), produces a structured Result, and terminates.
+
+### 6. Tasks & Structured Results
+- **Tasks**: Explicit units of work with objectives, constraints, acceptance criteria, assigned agents, and dependencies. Work is tracked explicitly rather than lost in conversation history.
+- **Results**: Machine-verifiable records emitted by Worker Runs detailing what happened, artifacts produced, evidence, and unresolved issues.
+
+### 7. Four-Stage Verification & Apply Lifecycle
+Consequential work transitions through four explicit stages:
+
+$$\textbf{Completed} \longrightarrow \textbf{Verified} \longrightarrow \textbf{Accepted} \longrightarrow \textbf{Applied}$$
+
+- **Completed**: The Agent finished execution and produced a structured Result.
+- **Verified**: Independent automated checks and test commands ran against the candidate revision.
+- **Accepted**: Work is approved by an operator or authorized review agent.
+- **Applied**: Changes are merged into the main workspace.
+
+### 8. Local Ownership & Three-Way Updates
+Modules installed from the registry copy their files into the Project, where they become **locally owned and editable**. When updating an upstream module, VibeKit performs a three-way comparison:
+
+$$\text{Original Base Version} \longleftrightarrow \text{Local Edited Version} \longleftrightarrow \text{New Upstream Version}$$
+
+- If only upstream changed $\rightarrow$ cleanly update.
+- If only local files changed $\rightarrow$ preserve user edits.
+- If both changed $\rightarrow$ stop and require explicit reconciliation (no silent overwrites).
+
+---
+
+## 🤝 Multi-Agent Patterns
+
+VibeKit models collaboration as ordinary composition and delegation—**no complex workflow DSL required**:
+
+### Chief → Coder → Reviewer
+```text
+Human ──→ Chief ──→ Coder (Worktree Sandbox) ──→ Result ──→ Reviewer ──→ Verified Work
+```
+
+### Chief → Project Manager → Coder
+```text
+Human ──→ Chief ──→ Project Manager (Task Decomposition) ──→ Coder (Implementation)
+```
+
+### Researcher → Reviewer
+```text
+Human ──→ Research Task ──→ Researcher (Cited Analysis) ──→ Reviewer (Fact Checking)
+```
 
 ---
 
 ## 💻 CLI Commands Tour
 
+The CLI binary is **`vibekit`** (`@useagentsio/cli`).
+
+### Primary Runtime Commands
+The primary front door is the running agent system:
 ```bash
-Usage: vibekit [options] [command]
-
-# Primary Runtime Commands
-vibekit create [dir]     # Create a runnable Agent Project
+vibekit create [dir]     # Scaffold a runnable Agent Project
 vibekit msg <text>       # Send one turn through the Host to the Agent
-vibekit start            # Run Host + terminal Interface in foreground
-vibekit status           # Inspect Host and Interface health
-vibekit model            # Select or change models from Pi's live catalog
+vibekit start            # Run Host + terminal Interface in the foreground
+vibekit status           # Inspect Host and Interface daemon health
+vibekit model            # Inspect or switch active model from Pi's live catalog
+```
 
-# Composition & Project Management
-vibekit init [dir]       # Initialize project with interactive setup wizard
-vibekit add <type> <name># Install module from the official registry
-vibekit list             # Show installed modules and status matrix
-vibekit diff <module>    # Three-way compare (base vs local vs upstream)
-vibekit update <module>  # Three-way non-destructive module update
-vibekit remove <module>  # Safe removal protecting local edits
-vibekit doctor           # Verify schemas, dependencies, and file integrity
+### Composition & Lifecycle Commands
+Manage and customize your project modules after creation:
+```bash
+vibekit init [dir]       # Initialize .vibekit configuration in an existing directory
+vibekit add <type> <name># Install an Agent or Component from the official registry
+vibekit list             # View installed modules, versions, and status matrix
+vibekit diff <module>    # Three-way diff (base vs local vs upstream)
+vibekit update <module>  # Safely update module without overwriting local customizations
+vibekit remove <module>  # Cleanly remove module protecting shared dependencies
+vibekit doctor           # Diagnostic checks for schemas, dependencies, and file integrity
 vibekit migrate          # Upgrade schemaVersion 1 projects to schemaVersion 2
 ```
 
-For complete flag descriptions and examples, see the **[CLI Reference](docs/cli/commands.md)**.
+For complete flag options and examples, see the **[CLI Reference](docs/cli/commands.md)**.
 
 ---
 
 ## 📦 Official Catalog
 
-VibeKit ships with an official, curated registry of modular Agents and Components.
+VibeKit includes a curated official registry of modular Agents and Components.
 
 ### Official Agents
 
@@ -137,6 +225,7 @@ VibeKit ships with an official, curated registry of modular Agents and Component
 | Component ID | Family | Runtime Kind | Description |
 | :--- | :--- | :--- | :--- |
 | **`provider:openai`** | Provider | `config` | OpenAI models (`OPENAI_API_KEY`) |
+| **`provider:openai-codex`** | Provider | `config` | OpenAI Codex models (OAuth login) |
 | **`provider:opencode-go`** | Provider | `config` | OpenCode API endpoint (`OPENCODE_API_KEY`) |
 | **`provider:xai`** | Provider | `config` | xAI Grok models (`XAI_API_KEY`) |
 | **`provider:openrouter`** | Provider | `config` | Multi-model routing (`OPENROUTER_API_KEY`) |
@@ -168,12 +257,13 @@ VibeKit ships with an official, curated registry of modular Agents and Component
 
 ## 📖 Documentation Index
 
-Explore full guides and technical references in the **[`docs/`](docs/)** directory:
+Explore comprehensive documentation and guides in the **[`docs/`](docs/)** directory:
 
-- **Getting Started**:
+- **Product & Concepts**:
+  - [Product Requirements Document (PRD)](docs/PRD.md)
+  - [Core Concepts Guide](docs/getting-started/core-concepts.md)
   - [Quickstart Tutorial](docs/getting-started/quickstart.md)
   - [Installation & Setup](docs/getting-started/installation.md)
-  - [Core Concepts](docs/getting-started/core-concepts.md)
 - **Architecture & Design**:
   - [System Architecture Overview](docs/architecture/overview.md)
   - [Persistent Sessions vs. Worker Runs](docs/architecture/sessions-and-runs.md)
@@ -202,10 +292,9 @@ Explore full guides and technical references in the **[`docs/`](docs/)** directo
   - [Chief → Coder → Reviewer](docs/patterns/chief-coder-reviewer.md)
   - [Parallel Coding Worktrees](docs/patterns/parallel-coding-worktrees.md)
   - [Proposal → Verification → Approval → Apply](docs/patterns/proposal-verification-approval-apply.md)
-- **Contributing**:
+- **Contributing & Specifications**:
   - [Contributing Guidelines](docs/contributing/guide.md)
   - [Module Authoring](docs/contributing/module-authoring.md)
-- **Normative Specifications**:
   - [V1 Implementation Specification](docs/spec/V1-Implementation-Specification.md)
   - [V1 Runtime Correction](docs/spec/V1-Runtime-Correction.md)
 
@@ -213,9 +302,10 @@ Explore full guides and technical references in the **[`docs/`](docs/)** directo
 
 ## 🛡️ Security & Invariants
 
-- **Secrets as References Only**: API keys and tokens are never written into YAML/JSON files, state records, logs, or fixtures. Only variable names and sources (`{ name, source: "environment" }`) are stored.
-- **Relative Path Sandboxing**: File operations are strictly scoped to relative paths. Traversal (`..`), root paths (`/`), and null bytes are rejected.
-- **Runtime-Enforced Boundaries**: Security policies are evaluated directly in TypeScript runtime code before tool execution—never delegated to LLM prompts.
+- **Secrets as References Only**: API keys and tokens are never stored in YAML/JSON files, state records, logs, or fixtures. Only variable names and sources (`{ name, source: "environment" }`) are stored.
+- **Relative Path Sandboxing**: File operations are strictly scoped to relative paths. Path traversal (`..`), absolute paths (`/`), and null bytes are rejected.
+- **Runtime-Enforced Boundaries**: Security policies are evaluated directly in code at the tool/adapter boundary—never delegated to LLM prompts:
+  $$\text{Effective Permission} = \text{Capability} \cap \text{Policy} \cap \text{Agent Grant} \cap \text{Task Scope} \cap \text{Current Authorization}$$
 - **Untrusted Input Defense**: User inputs, web scrapes, and external tool outputs are treated as untrusted data and cannot elevate agent permissions.
 
 ---
@@ -232,6 +322,9 @@ pnpm install
 
 # Run test suites (Vitest)
 pnpm test
+
+# Run TypeScript typechecks
+pnpm typecheck
 
 # Rebuild official registry index
 pnpm registry:index

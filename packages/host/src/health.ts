@@ -16,4 +16,6 @@ export interface HostHealth {
 
 export interface HostStatusFile extends HostHealth {
   readonly schemaVersion: 1;
+  readonly socketPath?: string;
+  readonly ipcPort?: number;
 }

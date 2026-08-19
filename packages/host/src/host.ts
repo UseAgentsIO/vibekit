@@ -3,10 +3,13 @@ import path from "node:path";
 
 import {
   createRepositoryState,
+  decideApproval,
+  isRuntimeIdOf,
   readProjectDocument,
   type EventDocument,
   type ProjectDocument,
   type RepositoryState,
+  type RuntimeId,
 } from "@useagentsio/core";
 import type { CreatePiSession } from "@useagentsio/pi";
 import type {
@@ -16,6 +19,7 @@ import type {
   InterfaceServices,
   RunningInterface,
 } from "@useagentsio/interface-sdk";
+import { parse as parseYaml } from "yaml";
 
 import { readDeploymentSecrets } from "./secret-resolver.js";
 import { AttachmentStore } from "./attachment-store.js";
@@ -30,6 +34,7 @@ import {
 import { hostError } from "./errors.js";
 import type { HostHealth, HostStatusFile } from "./health.js";
 import { startInterface, type InterfaceFactoryMap } from "./interface-loader.js";
+import { startHostIpc, stopHostIpc, type HostIpcServer } from "./ipc.js";
 import { KeyedWorkPool } from "./keyed-work-pool.js";
 import { PersistentSessionManager } from "./persistent-session-manager.js";
 import { SecretResolver } from "./secret-resolver.js";
@@ -109,6 +114,7 @@ export class VibeKitHost {
   private stopping = false;
   private lastFatalError?: string;
   private lockHeld = false;
+  private ipc: HostIpcServer | undefined;
 
   private constructor(options: HostOptions, project: ProjectRuntime) {
     this.projectRoot = path.resolve(options.projectRoot);
@@ -176,6 +182,14 @@ export class VibeKitHost {
       await this.startEnabledInterfaces();
     }
     this.ready = true;
+    this.ipc = await startHostIpc({
+      projectRoot: this.projectRoot,
+      submit: (message) => this.submit(message),
+      health: async () => {
+        const snapshot = await this.health();
+        return { pid: snapshot.pid, ready: snapshot.ready };
+      },
+    });
     this.writeStatus();
   }
 
@@ -192,6 +206,8 @@ export class VibeKitHost {
       grace,
       () => undefined,
     );
+    await stopHostIpc(this.ipc);
+    this.ipc = undefined;
     this.releaseLock();
     this.state.close();
     if (fs.existsSync(this.statusPath)) {
@@ -250,6 +266,27 @@ export class VibeKitHost {
     return this.pool.cancel(conversationKey);
   }
 
+  async approve(
+    approvalId: string,
+    decision: "approved" | "rejected",
+    _notes?: string,
+  ): Promise<void> {
+    const stored = isRuntimeIdOf("approval", approvalId)
+      ? this.state.approvals.tryGet(approvalId as RuntimeId)
+      : undefined;
+    if (stored === undefined) {
+      throw hostError("invalid_input", "approval_not_found", `Approval ${approvalId} was not found`, {
+        approvalId,
+      });
+    }
+    decideApproval({
+      state: this.state,
+      approval: stored.document,
+      decision,
+      actor: "human",
+    });
+  }
+
   async health(): Promise<HostHealth> {
     const interfaces: Record<string, InterfaceHealth> = {};
     for (const [name, running] of this.interfaces) {
@@ -274,6 +311,7 @@ export class VibeKitHost {
     return {
       submit: (message) => this.submit(message).then(() => undefined),
       cancel: (conversationKey) => this.cancel(conversationKey),
+      approve: (approvalId, decision, notes) => this.approve(approvalId, decision, notes),
       resolveSecret: (name) => this.secrets.resolve(name),
       log: {
         info: (message) => process.stderr.write(`${message}\n`),
@@ -469,6 +507,7 @@ export class VibeKitHost {
         config,
         this.services(),
         this.factories,
+        this.projectRoot,
       );
       await running.start();
       this.interfaces.set(name, running);
@@ -522,6 +561,8 @@ export class VibeKitHost {
       retainedSessions: this.sessions.size,
       interfaces: {},
       lastFatalError: this.lastFatalError,
+      socketPath: this.ipc?.socketPath,
+      ipcPort: this.ipc?.port,
     };
     fs.mkdirSync(path.dirname(this.statusPath), { recursive: true });
     fs.writeFileSync(this.statusPath, `${JSON.stringify(status, null, 2)}\n`, "utf8");
@@ -551,6 +592,15 @@ function loadBindingConfig(
   const abs = path.join(projectRoot, configPath);
   if (!fs.existsSync(abs)) {
     return {};
+  }
+  let parsed: unknown;
+  try {
+    parsed = parseYaml(fs.readFileSync(abs, "utf8"));
+  } catch {
+    return { path: configPath };
+  }
+  if (parsed !== null && typeof parsed === "object" && !Array.isArray(parsed)) {
+    return { ...(parsed as Record<string, unknown>), path: configPath };
   }
   return { path: configPath };
 }

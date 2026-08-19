@@ -1,4 +1,9 @@
 export { VibeKitHost, type HostOptions, type SubmitResult } from "./host.js";
+export {
+  isHostIpcAvailable,
+  submitViaIpc,
+  hostSocketPath,
+} from "./ipc.js";
 export { KeyedWorkPool } from "./keyed-work-pool.js";
 export {
   SecretResolver,

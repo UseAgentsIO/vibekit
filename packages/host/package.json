@@ -37,6 +37,8 @@
   "dependencies": {
     "@useagentsio/core": "workspace:*",
     "@useagentsio/interface-sdk": "workspace:*",
-    "@useagentsio/pi": "workspace:*"
+    "@useagentsio/interface-terminal": "workspace:*",
+    "@useagentsio/pi": "workspace:*",
+    "yaml": "^2.8.1"
   }
 }

@@ -32,6 +32,9 @@ Read `.vibekit/project.yaml`, `.vibekit/installed.json`, and the relevant instal
 ## Command surface
 
 ```text
+vibekit create [dir] [--agent <name>] [--provider <id>] [--model <id>] [--interface <name>] [--yes]
+vibekit msg <text> [--dir <path>]
+vibekit start [--dir <path>]
 vibekit init [dir] [--yes] [--registry <path>]
 vibekit add <type> <name> [--yes] [--registry <path>] [--dir <path>]
 vibekit list [--registry <path>] [--dir <path>]
@@ -40,6 +43,8 @@ vibekit update <type:name> [--yes] [--registry <path>] [--dir <path>]
 vibekit remove <type:name> [--yes] [--registry <path>] [--dir <path>]
 vibekit doctor [--registry <path>] [--dir <path>]
 ```
+
+`create` is the first-path command. With `--yes` it installs the selected Agent, provider, and Interface and picks a default model when `--model` is omitted (first catalog model, then a known-provider fallback). `msg` sends one turn to a running Host over local IPC when `vibekit start` / `vibekit-host` is already up; otherwise it starts a short-lived in-process Host. `start` runs the Host plus the terminal Interface in the foreground.
 
 Accept selectors as `type name`, `type:name`, or `type:name@version`. Accept `-y` as the short form of `--yes`, `-v` for the CLI version, and `-h` for help. Require `--yes` for noninteractive `add`, `update`, and `remove` operations.
 

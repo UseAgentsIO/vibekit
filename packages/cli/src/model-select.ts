@@ -135,6 +135,14 @@ async function resolveProvider(
   }
 }
 
+const DEFAULT_MODELS: Readonly<Record<string, string>> = {
+  openai: "gpt-4.1",
+  "openai-codex": "gpt-5-codex",
+  xai: "grok-4",
+  openrouter: "openai/gpt-4.1",
+  "opencode-go": "opencode",
+};
+
 async function resolveModel(
   input: {
     readonly out: OutputBuffer;
@@ -154,6 +162,10 @@ async function resolveModel(
     return submit({ provider: provider.id, id: input.model, name: input.model }, 0);
   }
   if (input.yes || !canPrompt()) {
+    const selected = await resolveDefaultModel(catalog, provider);
+    if (selected !== undefined) {
+      return submit(selected, 0);
+    }
     throw new VibeKitError({
       category: "invalid_input",
       code: "model_required",
@@ -187,6 +199,27 @@ async function resolveModel(
     return BACK;
   }
   return submit(picked.value);
+}
+
+async function resolveDefaultModel(
+  catalog: ModelCatalog,
+  provider: CatalogProvider,
+): Promise<SelectedModel | undefined> {
+  let models: readonly SelectedModel[] = [];
+  try {
+    models = await catalog.listModels(provider.id);
+  } catch {
+    models = [];
+  }
+  const first = models[0];
+  if (first !== undefined) {
+    return first;
+  }
+  const id = DEFAULT_MODELS[provider.id];
+  if (id === undefined) {
+    return undefined;
+  }
+  return { provider: provider.id, id, name: id };
 }
 
 async function ensureProviderSecret(

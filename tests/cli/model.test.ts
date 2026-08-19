@@ -50,13 +50,13 @@ describe("model", () => {
     });
   });
 
-  it("refuses non-interactive create without --model", async () => {
+  it("refuses non-interactive create without --model for unknown providers", async () => {
     const dir = makeTempDir("vibekit-model-required-");
     const result = await runCli([
       "create",
       dir,
       "--provider",
-      "openai",
+      "not-a-real-provider",
       "--yes",
       "--registry",
       officialRegistryDir,

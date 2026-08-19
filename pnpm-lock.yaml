@@ -72,9 +72,15 @@ importers:
       '@useagentsio/interface-sdk':
         specifier: workspace:*
         version: link:../interface-sdk
+      '@useagentsio/interface-terminal':
+        specifier: workspace:*
+        version: link:../interface-terminal
       '@useagentsio/pi':
         specifier: workspace:*
         version: link:../pi
+      yaml:
+        specifier: ^2.8.1
+        version: 2.9.0
 
   packages/interface-sdk: {}
 

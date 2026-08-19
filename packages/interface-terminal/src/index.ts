@@ -1,1 +1,1 @@
-export { createTerminalInterface } from "./terminal.js";
+export { createTerminalInterface, TerminalInterface } from "./terminal.js";

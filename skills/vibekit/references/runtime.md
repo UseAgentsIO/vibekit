@@ -2,6 +2,8 @@
 
 The running product is the Agent Host (`@useagentsio/host`, binary `vibekit-host`). Users talk to a Project with `vibekit create`, `vibekit msg`, and `vibekit start`. Pi is embedded inside the Host. Do not launch the Pi TUI and do not treat `init` / `add` / `doctor` as the finished product.
 
+`vibekit-host` loads `kind: interface` Modules by importing `runtime.package` and calling `runtime.export` (official fallback: `interface:terminal` → `@useagentsio/interface-terminal` / `createTerminalInterface`). Do not inject factories unless a test needs a fake Interface. A running Host listens on `.vibekit/runtime/host.sock`; `vibekit msg` must reuse that socket instead of starting a second process. The terminal Interface collects Approval decisions (`y` / `n`) and forwards them through `InterfaceServices.approve`.
+
 Slack and Telegram are planned Interfaces. They are not in this drop.
 
 Use `@useagentsio/core` for schemas, IDs, Project State, installation contracts, verification, and proposal/apply decisions. Use `@useagentsio/pi` as the embedded adapter that resolves a Project and Agent into an isolated worker Run. Use `@useagentsio/interface-sdk` when attaching an Interface. The Host persists conversations and State; the adapter does not.

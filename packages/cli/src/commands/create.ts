@@ -84,7 +84,7 @@ export async function runCreate(
   const plan = planInstall({
     projectRoot: target,
     registry,
-    roots: [`agent:${agentName}`],
+    roots: [`agent:${agentName}`, `provider:${provider}`, `interface:${iface}`],
     project,
     manifest,
     registrySource: "official",

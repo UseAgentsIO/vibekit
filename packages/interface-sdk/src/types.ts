@@ -54,6 +54,7 @@ export interface InterfaceHealth {
 export interface InterfaceServices {
   submit(message: InboundMessage): Promise<void>;
   cancel(conversationKey: string): Promise<boolean>;
+  approve(approvalId: string, decision: "approved" | "rejected", notes?: string): Promise<void>;
   resolveSecret(name: string): string;
   log: InterfaceLogger;
 }
