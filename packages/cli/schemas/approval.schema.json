@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "approval.schema.json",
+  "title": "VibeKit Approval",
+  "description": "Approval record stored under .vibekit/state/approvals/.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "action",
+    "target",
+    "scope",
+    "taskId",
+    "resultId",
+    "status",
+    "requestedAuthority",
+    "requestedAt",
+    "decidedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "$ref": "module.schema.json#/definitions/schemaVersion" },
+    "id": { "$ref": "module.schema.json#/definitions/approvalId" },
+    "projectId": { "$ref": "module.schema.json#/definitions/projectId" },
+    "action": { "type": "string", "minLength": 1 },
+    "target": { "type": "string", "minLength": 1 },
+    "scope": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": ["string", "number", "boolean", "array", "object", "null"]
+      }
+    },
+    "taskId": { "$ref": "module.schema.json#/definitions/taskId" },
+    "resultId": { "$ref": "module.schema.json#/definitions/resultId" },
+    "status": { "$ref": "module.schema.json#/definitions/approvalStatus" },
+    "requestedAuthority": { "type": "string", "minLength": 1 },
+    "requestedAt": { "$ref": "module.schema.json#/definitions/isoDateTime" },
+    "decidedAt": {
+      "anyOf": [
+        { "type": "null" },
+        { "$ref": "module.schema.json#/definitions/isoDateTime" }
+      ]
+    },
+    "expiresAt": {
+      "anyOf": [
+        { "type": "null" },
+        { "$ref": "module.schema.json#/definitions/isoDateTime" }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "enum": ["approved", "rejected"] } },
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "decidedAt": { "$ref": "module.schema.json#/definitions/isoDateTime" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "status": { "const": "expired" } },
+        "required": ["status"]
+      },
+      "then": {
+        "required": ["expiresAt"],
+        "properties": {
+          "expiresAt": { "$ref": "module.schema.json#/definitions/isoDateTime" }
+        }
+      }
+    }
+  ]
+}

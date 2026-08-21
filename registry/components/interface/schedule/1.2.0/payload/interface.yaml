@@ -1,0 +1,17 @@
+id: interface:schedule
+kind: schedule
+description: Optional scheduled-input Interface. Each fire is a fresh Host Task with a self-contained objective. Job table lives in Project data.
+ownsProjectState: false
+actions:
+  - accept-external-events
+  - create-tasks
+  - display-progress
+  - display-results
+notOwned:
+  - agent-definitions
+  - project-state
+  - permissions
+  - tasks
+  - approvals
+  - schedules
+  - verification-rules

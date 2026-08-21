@@ -14,7 +14,7 @@ type RunSchemaVerification = (input: {
 
 const verifierDist = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
-  "../../packages/verifier-schema/dist/index.js",
+  "../../packages/cli/dist/internal/verifiers/schema/index.js",
 );
 const { runSchemaVerification } = (await import(pathToFileURL(verifierDist).href)) as {
   runSchemaVerification: RunSchemaVerification;
@@ -22,7 +22,7 @@ const { runSchemaVerification } = (await import(pathToFileURL(verifierDist).href
 
 const moduleDir = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
-  "../../registry/components/verifier/schema/1.0.0",
+  "../../registry/components/verifier/schema/1.2.0",
 );
 
 const temps: string[] = [];
@@ -61,7 +61,7 @@ describe("verifier:schema module", () => {
     expect(validated.data?.providesCapabilities).toEqual(["verification.schema"]);
     expect(validated.data?.runtime).toEqual({
       kind: "package",
-      package: "@useagentsio/verifier-schema",
+      package: "vibekit:verifier-schema",
       export: "runSchemaVerification",
     });
     expect(validated.data?.configuration.target).toBe(".vibekit/config/verifiers/schema.yaml");

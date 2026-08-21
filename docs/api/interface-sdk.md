@@ -1,14 +1,12 @@
-# `@useagentsio/interface-sdk` API Reference
+# Interface Contract Reference
 
-The `@useagentsio/interface-sdk` package is the Host-facing contract for Interface adapters.
+The Interface contract is an internal runtime area of `@useagentsio/vibekit`. It defines how connection adapters exchange messages with the Host. It is not currently a separately installable SDK.
 
 ---
 
-## Installation
+## Source location
 
-```bash
-pnpm add @useagentsio/interface-sdk
-```
+The current source lives under `packages/cli/src/internal/interfaces/sdk/`. Extract an independently versioned SDK only when a real external Component author needs that boundary.
 
 ---
 
@@ -19,7 +17,7 @@ import type {
   InterfaceFactory,
   InterfaceServices,
   RunningInterface,
-} from "@useagentsio/interface-sdk";
+} from "./packages/cli/src/internal/interfaces/sdk/index.js";
 
 export const createCustomInterface: InterfaceFactory["create"] = async (
   config,
@@ -32,7 +30,7 @@ export const createCustomInterface: InterfaceFactory["create"] = async (
 
 `InterfaceFactory.create(config, services)` — config first, then Host services. There is no `InterfaceConfig` type; config is `Record<string, unknown>` (usually parsed from the binding’s YAML file).
 
-Official example: `createTerminalInterface` from `@useagentsio/interface-terminal`.
+The built-in terminal connection uses the same internal contract. Independently distributed connection Modules may implement the contract without importing private product source.
 
 ---
 

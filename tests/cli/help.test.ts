@@ -7,11 +7,14 @@ describe("cli help", () => {
     const result = await runCli(["--help"]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("Usage: vibekit [options] [command]");
-    expect(result.stdout).toContain("run an Agent Host; compose Agents and Components");
+    expect(result.stdout).toContain("run your VibeKit Project and its configured connections");
+    expect(result.stdout).not.toMatch(/Host|Gateway|IPC|daemon/);
     expect(result.stdout).toContain("Options:");
     expect(result.stdout).toContain("-v, --version");
     expect(result.stdout).toContain("-d, --defaults");
     expect(result.stdout).toContain("Commands:");
+    expect(result.stdout).toContain("setup [options] [dir]");
+    expect(result.stdout).toContain("project create [options] [dir]");
     expect(result.stdout).toContain("init [options] [dir]");
     expect(result.stdout).toContain("add [options] <type> <name>");
     expect(result.stdout).toContain("help [command]");
@@ -35,7 +38,7 @@ describe("cli help", () => {
   });
 
   it("prints command help for every shipped command", async () => {
-    for (const name of ["create", "model", "msg", "start", "status", "migrate", "init", "add", "approve-pairing", "list", "diff", "update", "remove", "doctor"]) {
+    for (const name of ["create", "setup", "project", "config", "model", "msg", "start", "status", "stop", "migrate", "init", "add", "approve-pairing", "list", "diff", "update", "remove", "doctor"]) {
       const result = await runCli([name, "-h"]);
       expect(result.exitCode, name).toBe(0);
       expect(result.stdout, name).toContain(`Usage: vibekit ${name}`);

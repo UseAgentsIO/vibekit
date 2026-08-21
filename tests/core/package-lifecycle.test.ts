@@ -65,11 +65,11 @@ describe("package dependency lifecycle", () => {
       required: ["policy:least-privilege"],
       runtime: {
         kind: "pi-extension",
-        package: "@useagentsio/tool-github",
+        package: "fixture-github-runtime",
         export: "createGithubTool",
         available: true,
       },
-      packages: { dependencies: { "@useagentsio/tool-github": "^1.1.0" } },
+      packages: { dependencies: { "fixture-github-runtime": "^1.1.0" } },
     });
     writeRegistryIndex(registryRoot);
     const updatedRegistry = loadRegistry(registryRoot);
@@ -80,12 +80,12 @@ describe("package dependency lifecycle", () => {
       project: createDefaultProject({ slug: "gh", name: "gh" }),
       manifest: installed.plan.manifest,
     });
-    expect(plan.packageDependencies["@useagentsio/tool-github"]).toBe("^1.1.0");
+    expect(plan.packageDependencies["fixture-github-runtime"]).toBe("^1.1.0");
     applyUpdate({ projectRoot: dir, plan });
     const pkg = JSON.parse(fs.readFileSync(path.join(dir, "package.json"), "utf8")) as {
       dependencies: Record<string, string>;
     };
-    expect(pkg.dependencies["@useagentsio/tool-github"]).toBe("^1.1.0");
+    expect(pkg.dependencies["fixture-github-runtime"]).toBe("^1.1.0");
   });
 
   it("removes an unshared implementation package when the last Module is removed", () => {

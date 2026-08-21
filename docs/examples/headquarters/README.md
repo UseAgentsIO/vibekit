@@ -8,12 +8,15 @@ This directory is the canonical fixture. Tests copy it and run `doctor` against 
 
 ## Create it
 
-From a published CLI:
+When the consolidated product is published:
 
 ```bash
-npx --yes @useagentsio/cli@latest create ~/headquarters --example headquarters --provider openai --yes
+npm install --global --ignore-scripts @useagentsio/vibekit@latest
+vibekit create ~/headquarters --example headquarters --provider openai --yes
 cd ~/headquarters
 ```
+
+`@useagentsio/vibekit` is not published yet. Use the local product tarball flow in the [contributor guide](../../contributing/guide.md#local-product-tarball) when validating this checked-in fixture.
 
 From this repository:
 
@@ -22,9 +25,11 @@ pnpm exec tsx packages/cli/src/index.ts create ~/headquarters --example headquar
 cd ~/headquarters
 ```
 
-That installs `agent:chief`, `agent:personal`, `provider:openai`, `interface:telegram`, `policy:interface-pairing`, and `policy:untrusted-inbound`.
+The `headquarters` preset expands Chief's delegation graph, so it installs Chief, Personal, Project Manager, Coder, Reviewer, and Researcher together with `provider:openai`, `interface:telegram`, the pairing and inbound policies, the required research and software-development Skills, repository State, built-in file and command abilities, and the command Verifier.
 
 Interactive create (no `--yes`) prompts for missing **required secrets** declared on those modules (`OPENAI_API_KEY`, `TELEGRAM_BOT_TOKEN`). Values go to `~/.config/vibekit/<project>/env`, never YAML.
+
+On first launch, `vibekit start` will prompt for your credentials and save them securely in your local deployment store (`~/.config/vibekit/<project>/env` with `0600` permissions), or you can provide them in your environment:
 
 ```bash
 export OPENAI_API_KEY="sk-proj-..."
@@ -41,10 +46,10 @@ Telegram token: message `@BotFather` → `/newbot`.
 vibekit start
 ```
 
-Keep this process up so Telegram can poll.
+VibeKit runs as a background service so Telegram can poll.
 
 1. Message the bot. It replies with an **8-character** pairing code (expires in 1 hour).
-2. In another terminal:
+2. In your terminal:
 
    ```bash
    vibekit approve-pairing <code>
@@ -66,14 +71,18 @@ Chief should assign a Task to Personal and return the plan.
 
 ## Add another Agent later
 
+The preset already includes Researcher because Chief's delegation graph names it. To add an Agent that is not part of that graph, for example the general-purpose Assistant:
+
 ```bash
-vibekit add agent researcher --yes
+vibekit add agent assistant --yes
 ```
 
-Then add `researcher` under `delegation.chief` in `.vibekit/project.yaml` if Chief should hand work there.
+Then add `assistant` under `delegation.chief` in `.vibekit/project.yaml` if Chief should hand work there.
 
 ---
 
 ## Stop
 
-`Ctrl+C` in the `vibekit start` terminal.
+```bash
+vibekit stop
+```

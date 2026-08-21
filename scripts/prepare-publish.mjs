@@ -12,7 +12,7 @@ function copyDir(from, to) {
 }
 
 if (target === "core") {
-  copyDir(path.join(root, "schemas"), path.join(root, "packages/core/schemas"));
+  copyDir(path.join(root, "schemas"), path.join(root, "packages/cli/schemas"));
   process.exit(0);
 }
 
@@ -21,5 +21,11 @@ if (target === "cli") {
   process.exit(0);
 }
 
-console.error("Usage: prepare-publish.mjs <core|cli>");
+if (target === "all") {
+  copyDir(path.join(root, "schemas"), path.join(root, "packages/cli/schemas"));
+  copyDir(path.join(root, "registry"), path.join(root, "packages/cli/registry"));
+  process.exit(0);
+}
+
+console.error("Usage: prepare-publish.mjs <core|cli|all>");
 process.exit(1);

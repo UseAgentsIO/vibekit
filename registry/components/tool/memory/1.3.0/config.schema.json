@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "tool:memory configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "conversationsDir": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

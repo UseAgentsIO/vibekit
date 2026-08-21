@@ -3,7 +3,7 @@ import http from "node:http";
 
 import { type InboundMessage, type InterfaceServices } from "@useagentsio/interface-sdk";
 
-import { createWebhookInterface, WebhookInterface } from "../../packages/interface-webhook/src/index.js";
+import { createWebhookInterface, WebhookInterface } from "../../packages/cli/src/internal/interfaces/webhook/index.js";
 import { afterEach, describe, expect, it } from "vitest";
 
 function recordingServices(secrets: Record<string, string> = {}): {

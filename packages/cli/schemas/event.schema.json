@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "event.schema.json",
+  "title": "VibeKit Event",
+  "description": "Append-only Event record.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "type",
+    "projectId",
+    "actor",
+    "timestamp",
+    "data"
+  ],
+  "properties": {
+    "schemaVersion": { "$ref": "module.schema.json#/definitions/schemaVersion" },
+    "id": { "$ref": "module.schema.json#/definitions/eventId" },
+    "type": { "$ref": "module.schema.json#/definitions/eventType" },
+    "projectId": { "$ref": "module.schema.json#/definitions/projectId" },
+    "taskId": {
+      "anyOf": [
+        { "type": "null" },
+        { "$ref": "module.schema.json#/definitions/taskId" }
+      ]
+    },
+    "runId": {
+      "anyOf": [
+        { "type": "null" },
+        { "$ref": "module.schema.json#/definitions/runId" }
+      ]
+    },
+    "actor": { "type": "string", "minLength": 1 },
+    "timestamp": { "$ref": "module.schema.json#/definitions/isoDateTime" },
+    "data": {
+      "type": "object"
+    }
+  }
+}

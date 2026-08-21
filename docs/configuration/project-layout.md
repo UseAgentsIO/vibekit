@@ -38,7 +38,7 @@ my-project/
         └── uploads/
 ```
 
-Worktrees for mutating Runs live under the Git repo’s worktree directory (managed by `@useagentsio/pi`), not as committed Project files.
+Worktrees for mutating Runs live under the Git repo’s worktree directory (managed by the embedded Pi runtime), not as committed Project files.
 
 ---
 

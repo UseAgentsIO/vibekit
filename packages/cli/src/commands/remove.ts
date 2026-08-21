@@ -7,7 +7,7 @@ import {
   readInstalledManifest,
   readProjectDocument,
   runDoctor,
-} from "@useagentsio/core";
+} from "../internal/core/index.js";
 
 import type { GlobalFlags } from "../args.js";
 import type { OutputBuffer } from "../output.js";

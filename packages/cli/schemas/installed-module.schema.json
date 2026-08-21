@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "installed-module.schema.json",
+  "title": "VibeKit Installed Module",
+  "description": "One installed Module record from .vibekit/installed.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "version",
+    "registrySource",
+    "sourceRevision",
+    "integrityChecksum",
+    "installedAt",
+    "dependencies",
+    "files",
+    "configurationPaths",
+    "compatibility"
+  ],
+  "properties": {
+    "schemaVersion": { "$ref": "module.schema.json#/definitions/schemaVersion" },
+    "id": { "$ref": "module.schema.json#/definitions/moduleId" },
+    "version": { "$ref": "module.schema.json#/definitions/semver" },
+    "registrySource": { "type": "string", "minLength": 1 },
+    "sourceRevision": { "type": "string", "minLength": 1 },
+    "integrityChecksum": { "$ref": "module.schema.json#/definitions/sha256Checksum" },
+    "installedAt": { "$ref": "module.schema.json#/definitions/isoDateTime" },
+    "dependencies": { "$ref": "module.schema.json#/definitions/moduleIdList" },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "hash", "ownership"],
+        "properties": {
+          "path": { "$ref": "module.schema.json#/definitions/fileTarget" },
+          "hash": { "$ref": "module.schema.json#/definitions/sha256Checksum" },
+          "ownership": { "$ref": "module.schema.json#/definitions/ownershipMode" }
+        }
+      }
+    },
+    "configurationPaths": {
+      "type": "array",
+      "items": { "$ref": "module.schema.json#/definitions/fileTarget" }
+    },
+    "compatibility": { "$ref": "module.schema.json#/definitions/compatibility" }
+  }
+}

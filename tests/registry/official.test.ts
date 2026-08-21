@@ -11,6 +11,7 @@ import { describe, expect, it } from "vitest";
 import { officialRegistryDir } from "../helpers.js";
 
 const officialIds = [
+  "agent:assistant",
   "agent:chief",
   "agent:coder",
   "agent:personal",

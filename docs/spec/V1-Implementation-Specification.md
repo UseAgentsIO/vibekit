@@ -2,13 +2,15 @@
 
 > **Runtime correction.** The front door in this document (`init` / `add` / `doctor` as the product, Slack deferred as the remaining V1 story, users run Pi themselves, and single-registry-source restrictions) is superseded by [V1-Runtime-Correction.md](./V1-Runtime-Correction.md). The Component / Agent / Project model remains.
 
+> **Distribution correction.** The current product boundary is one scoped package, `@useagentsio/vibekit`, with internal Core, Host, Pi, connection, ability, State, scheduling, verification, schema, and registry areas. Older references below to `@vibekit/*`, `@useagentsio/*` implementation packages, or separate package publication describe historical development units and are not user installation instructions. See [Architecture Overview](../architecture/overview.md), [Contributing](../contributing/guide.md), and [Module Authoring](../contributing/module-authoring.md) for the current boundary.
+
 ## Document status
 
 **Architecture status:** Locked for V1 implementation
 **Product name:** VibeKit Agents, working name
 **Runtime:** Pi
 **Primary language:** TypeScript
-**Distribution model:** CLI, official registry, and a small runtime core
+**Distribution model:** one product package containing the CLI, official registry, schemas, and internal runtime
 **Supersedes:** Earlier Product Shape documents and the previous primitive-catalog model
 
 The product name, public package names, and license may change before public release. Those decisions do not change this architecture.
@@ -73,7 +75,7 @@ V1 will not include:
 * third-party registries
 * distributed Agent clusters
 * database-backed state
-* permanent Agent fleets
+* permanent multi-Project runtimes
 * automatic merging of arbitrary user changes
 * an executable workflow language
 * a separate `orchestrator` type
@@ -2935,7 +2937,7 @@ The following are intentionally deferred:
 * automatic customized-file merging
 * executable Pattern definitions
 * complex workflow DSL
-* cross-Project portfolio runtime
+* cross-Project portfolio runtime, except the metadata-only local lifecycle Gateway defined by `Local-Gateway-Specification.md`
 * hosted control plane
 * remote telemetry
 * Agent reputation systems
@@ -2960,8 +2962,7 @@ Implementation should proceed using:
 ```text
 VibeKit
 vibekit
-@vibekit/core
-@vibekit/pi
+@useagentsio/vibekit
 ```
 
 These names may be changed before public release.

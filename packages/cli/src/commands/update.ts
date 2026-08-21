@@ -2,12 +2,13 @@ import { isatty } from "node:tty";
 
 import {
   VibeKitError,
-  applyUpdate,
-  planUpdate,
+  applyUpdates,
+  planUpdates,
   readInstalledManifest,
   readProjectDocument,
   runDoctor,
-} from "@useagentsio/core";
+} from "../internal/core/index.js";
+import type { ModuleId, UpdateSelector } from "../internal/core/index.js";
 
 import type { GlobalFlags } from "../args.js";
 import type { OutputBuffer } from "../output.js";
@@ -20,35 +21,36 @@ export function runUpdate(
   flags: GlobalFlags,
   out: OutputBuffer,
 ): number {
-  const { id, version } = parseModuleSelector(positionals, "update");
+  const updates = parseUpdateSelectors(positionals);
   const projectRoot = resolveProjectDir(flags.dir);
   const { registry, source } = resolveRegistrySelection(flags.registry);
   const project = readProjectDocument(projectRoot);
   const manifest = readInstalledManifest(projectRoot);
 
-  const plan = planUpdate({
+  const plan = planUpdates({
     projectRoot,
     registry,
-    id,
-    version,
+    updates,
     project,
     manifest,
     registrySource: source,
   });
 
-  out.log(`Update ${plan.id} ${plan.fromVersion} → ${plan.toVersion}`);
-  out.log("Files:");
-  if (plan.files.length === 0) {
-    out.log("  (none)");
-  }
-  for (const file of plan.files) {
-    out.log(`  ${file.path} [${file.decision}]`);
-  }
+  for (const update of plan.updates) {
+    out.log(`Update ${update.id} ${update.fromVersion} → ${update.toVersion}`);
+    out.log("Files:");
+    if (update.files.length === 0) {
+      out.log("  (none)");
+    }
+    for (const file of update.files) {
+      out.log(`  ${file.path} [${file.decision}]`);
+    }
 
-  if (plan.dependencyPlan && plan.dependencyPlan.modules.length > 0) {
-    out.log("New dependencies:");
-    for (const module of plan.dependencyPlan.modules) {
-      out.log(`  ${module.id}@${module.version}`);
+    if (update.dependencyPlan && update.dependencyPlan.modules.length > 0) {
+      out.log("New dependencies:");
+      for (const module of update.dependencyPlan.modules) {
+        out.log(`  ${module.id}@${module.version}`);
+      }
     }
   }
 
@@ -60,16 +62,17 @@ export function runUpdate(
     throw new VibeKitError({
       category: "conflict",
       code: "update_conflict",
-      message: `Update of ${plan.id} stopped; conflicting files: ${plan.conflicts.map((file) => file.path).join(", ")}`,
+      message: `Update stopped; conflicting files: ${plan.conflicts.map((file) => file.path).join(", ")}`,
       details: {
-        id: plan.id,
         files: plan.conflicts.map((file) => file.path),
       },
     });
   }
 
   if (plan.alreadyCurrent) {
-    out.log(`Already current: ${plan.id}@${plan.toVersion}`);
+    for (const update of plan.updates) {
+      out.log(`Already current: ${update.id}@${update.toVersion}`);
+    }
     return 0;
   }
 
@@ -81,7 +84,7 @@ export function runUpdate(
     });
   }
 
-  const result = applyUpdate({ projectRoot, plan });
+  const result = applyUpdates({ projectRoot, plan });
   if (result.created.length > 0) {
     out.log("Created:");
     for (const file of result.created) {
@@ -100,9 +103,26 @@ export function runUpdate(
       out.log(`  ${file}`);
     }
   }
-  out.log(`Updated ${result.plan.id} to ${result.toVersion}`);
+  for (const update of result.plan.updates.filter((item) => !item.alreadyCurrent)) {
+    out.log(`Updated ${update.id} to ${update.toVersion}`);
+  }
 
   const report = runDoctor({ projectRoot, registry });
   printDoctor(report, out);
   return report.errorCount === 0 ? 0 : 1;
+}
+
+function parseUpdateSelectors(positionals: readonly string[]): UpdateSelector[] {
+  if (positionals.length > 1 && positionals[0]?.includes(":")) {
+    if (positionals.length === 2 && !positionals[1]?.includes(":")) {
+      const single = parseModuleSelector(positionals, "update");
+      return [{ id: single.id, version: single.version }];
+    }
+    return positionals.map((raw): UpdateSelector => {
+      const parsed = parseModuleSelector([raw], "update");
+      return { id: parsed.id as ModuleId, version: parsed.version };
+    });
+  }
+  const single = parseModuleSelector(positionals, "update");
+  return [{ id: single.id, version: single.version }];
 }

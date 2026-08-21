@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "conversation.schema.json",
+  "title": "VibeKit Conversation",
+  "description": "Operational conversation continuity under .vibekit/state/conversations/.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "projectId",
+    "interfaceBinding",
+    "accountId",
+    "external",
+    "conversationKey",
+    "agentBinding",
+    "sessionPath",
+    "status",
+    "createdAt",
+    "lastUsedAt",
+    "revision"
+  ],
+  "properties": {
+    "schemaVersion": { "$ref": "module.schema.json#/definitions/schemaVersion" },
+    "id": { "$ref": "module.schema.json#/definitions/conversationId" },
+    "projectId": { "$ref": "module.schema.json#/definitions/projectId" },
+    "interfaceBinding": { "$ref": "module.schema.json#/definitions/bindingName" },
+    "accountId": { "type": "string", "minLength": 1 },
+    "external": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["conversationId"],
+      "properties": {
+        "conversationId": { "type": "string", "minLength": 1 },
+        "threadId": { "type": "string", "minLength": 1 }
+      }
+    },
+    "conversationKey": { "type": "string", "minLength": 1 },
+    "agentBinding": { "$ref": "module.schema.json#/definitions/bindingName" },
+    "sessionPath": { "$ref": "module.schema.json#/definitions/fileTarget" },
+    "status": { "type": "string", "enum": ["active", "idle", "closed"] },
+    "title": { "type": "string", "minLength": 1 },
+    "lastEventId": { "type": "string", "minLength": 1 },
+    "createdAt": { "$ref": "module.schema.json#/definitions/isoDateTime" },
+    "lastUsedAt": { "$ref": "module.schema.json#/definitions/isoDateTime" },
+    "revision": { "type": "integer", "minimum": 1 }
+  }
+}

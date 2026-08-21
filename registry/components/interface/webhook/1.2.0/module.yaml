@@ -1,0 +1,55 @@
+schemaVersion: 1
+
+id: interface:webhook
+type: interface
+name: webhook
+displayName: Webhook Interface
+version: 1.2.0
+description: Inbound HTTP callbacks become Host messages after signature verification. Treats payloads as untrusted. Does not own Project State.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.2.0"
+
+license: MIT
+
+providesCapabilities:
+  - interface.webhook
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets:
+  - name: VIBEKIT_WEBHOOK_SECRET
+    required: true
+    source: environment
+
+files:
+  - source: payload/interface.yaml
+    target: .vibekit/components/interfaces/webhook.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/interfaces/webhook.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-interface
+  name: webhook
+
+runtime:
+  kind: interface
+  package: vibekit:interface-webhook
+  export: createWebhookInterface
+  lifecycle: singleton
+

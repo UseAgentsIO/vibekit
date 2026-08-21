@@ -1,12 +1,12 @@
-import { VibeKitError, type Registry } from "@useagentsio/core";
-import { readDeploymentSecrets, writeDeploymentSecret } from "@useagentsio/host";
+import { VibeKitError, type Registry } from "./internal/core/index.js";
+import { readDeploymentSecrets, writeDeploymentSecret } from "./internal/host/index.js";
 import {
   OFFICIAL_PROVIDERS,
   openModelCatalog,
   secretNameForProvider,
   type CatalogProvider,
   type ModelCatalog,
-} from "@useagentsio/pi";
+} from "./internal/pi/index.js";
 
 import type { OutputBuffer } from "./output.js";
 import { canPrompt, say } from "./prompt.js";
@@ -86,7 +86,7 @@ async function resolveProvider(
     throw new VibeKitError({
       category: "invalid_input",
       code: "provider_required",
-      message: "Pass --provider, or run create/model in a terminal to pick one",
+      message: "Pass --provider, or run setup in a terminal to pick a model connection",
     });
   }
 
@@ -97,25 +97,27 @@ async function resolveProvider(
     .filter((provider) => !menuIds.includes(provider.id));
   const moreId = "__more__";
   const officialById = new Map(OFFICIAL_PROVIDERS.map((provider) => [provider.id, provider]));
-  const labels = new Map(registryItems.map((item) => [item.id, item.label]));
+  const labels = new Map(registryItems.map((item) => [item.id, friendlyProviderLabel(item.label)]));
   const descriptions = new Map(
     registryItems.flatMap((item) =>
-      item.description === undefined ? [] : [[item.id, item.description]],
+      item.description === undefined
+        ? []
+        : [[item.id, friendlyProviderDescription(item.description)]],
     ),
   );
 
   for (;;) {
     const firstPage = extras.length > 0 ? [...menuIds, moreId] : menuIds;
     const picked = await select({
-      message: "Provider",
-      description: "Which model provider should this project use?",
+      message: "Model connection",
+      description: "Which model service should this project use?",
       searchable: true,
       options: firstPage.map((id) =>
         id === moreId
           ? { value: moreId, label: "More providers", id: moreId }
           : {
               value: id,
-              label: labels.get(id) ?? officialById.get(id)?.name ?? id,
+              label: labels.get(id) ?? friendlyProviderLabel(officialById.get(id)?.name ?? id),
               id,
               hint: input.verbose === true ? id : descriptions.get(id),
             },
@@ -131,11 +133,11 @@ async function resolveProvider(
       );
     }
     const extra = await select({
-      message: "Provider",
+      message: "Model connection",
       searchable: "type",
       options: extras.map((provider) => ({
         value: provider,
-        label: provider.name,
+        label: friendlyProviderLabel(provider.name),
         id: provider.id,
         hint: input.verbose === true ? provider.id : undefined,
       })),
@@ -308,8 +310,8 @@ export async function pickProviderId(input: {
   const byId = new Map(items.map((item) => [item.id, item]));
   const officialById = new Map(OFFICIAL_PROVIDERS.map((provider) => [provider.id, provider]));
   return resolveSelect({
-    message: "Provider",
-    description: "Which model provider should this project use?",
+    message: "Model connection",
+    description: "Which model service should this project use?",
     value: input.value,
     interactive: input.interactive,
     skippable: true,
@@ -317,15 +319,23 @@ export async function pickProviderId(input: {
     noneLabel: "None",
     options: ids.map((id) => ({
       value: id,
-      label: byId.get(id)?.label ?? officialById.get(id)?.name ?? id,
+      label: friendlyProviderLabel(byId.get(id)?.label ?? officialById.get(id)?.name ?? id),
       id,
-      hint: input.verbose === true ? id : byId.get(id)?.description,
+      hint: input.verbose === true ? id : friendlyProviderDescription(byId.get(id)?.description),
     })),
   });
 }
 
 function providerItems(registry: Registry | undefined) {
   return setupItemsFromRegistry([], registry, "provider");
+}
+
+function friendlyProviderLabel(label: string): string {
+  return label.replace(/\s+Provider$/i, "");
+}
+
+function friendlyProviderDescription(description: string | undefined): string | undefined {
+  return description?.replace(/\bprovider\b/gi, "model service");
 }
 
 function orderedProviderIds(

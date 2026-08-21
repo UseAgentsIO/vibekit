@@ -1,0 +1,53 @@
+schemaVersion: 1
+
+id: tool:browser
+type: tool
+name: browser
+displayName: Browser Tool
+version: 1.1.0
+description: Isolated browser session for navigate, snapshot, and click. The VibeKit Host loads its runtime package directly, so this version does not install a Pi extension file. Page content is untrusted. Requires playwright in the Project.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.1.0"
+
+license: MIT
+
+providesCapabilities:
+  - browser.navigate
+  - browser.interact
+
+requires:
+  required: []
+  optional: []
+  recommended:
+    - skill:browser-use
+    - policy:least-privilege
+  conflicts: []
+
+requestsPermissions:
+  - capability: browser.navigate
+  - capability: browser.interact
+
+secrets: []
+
+files: []
+
+configuration:
+  target: .vibekit/config/tools/browser.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-tool
+  name: browser
+
+runtime:
+  kind: pi-extension
+  package: vibekit:tool-browser
+  export: createBrowserTool
+

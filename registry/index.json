@@ -2,6 +2,17 @@
   "schemaVersion": 1,
   "modules": [
     {
+      "id": "agent:assistant",
+      "version": "1.0.0",
+      "checksum": "sha256:e127a43e809e0120c9e40f4756f7597582e306a6714392c898c36ebe78256881",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "agents/assistant/1.0.0"
+    },
+    {
       "id": "agent:chief",
       "version": "1.0.0",
       "checksum": "sha256:e3fa77ecf4840abcfd7fe20525092f79844975fb01b53f7289963c4d8cfa947a",
@@ -79,6 +90,17 @@
       "path": "components/interface/http/1.0.0"
     },
     {
+      "id": "interface:http",
+      "version": "1.2.0",
+      "checksum": "sha256:4c9cc3db44c33d5504f964414cc66dd92203615f728e47d524e16fb4f70fdeff",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/interface/http/1.2.0"
+    },
+    {
       "id": "interface:schedule",
       "version": "1.0.0",
       "checksum": "sha256:c0c82abe83f646e2b61c6fcebf7ec18060947a8010fdd3587450fc8a6f14a5b6",
@@ -88,6 +110,17 @@
         "node": ">=20"
       },
       "path": "components/interface/schedule/1.0.0"
+    },
+    {
+      "id": "interface:schedule",
+      "version": "1.2.0",
+      "checksum": "sha256:bb4e3b7277527cd3309161328bc789cf0ec085788cc8a25127ad02a45ffee91a",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/interface/schedule/1.2.0"
     },
     {
       "id": "interface:slack",
@@ -101,6 +134,17 @@
       "path": "components/interface/slack/1.0.0"
     },
     {
+      "id": "interface:slack",
+      "version": "1.2.0",
+      "checksum": "sha256:b4e758d884772f8aa76142316d8cc517099c3667b5831a62f340f1fbadcca073",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/interface/slack/1.2.0"
+    },
+    {
       "id": "interface:telegram",
       "version": "1.0.0",
       "checksum": "sha256:63ccb0e92701d00a6274ce7135370aff1c891fedced1493b816ed4525802ae87",
@@ -110,6 +154,17 @@
         "node": ">=20"
       },
       "path": "components/interface/telegram/1.0.0"
+    },
+    {
+      "id": "interface:telegram",
+      "version": "1.2.0",
+      "checksum": "sha256:ec7b1ef8f78de5d4cf5f6b9cb1ac726a94fcf08b6224b1826bd444fe6ba887bd",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/interface/telegram/1.2.0"
     },
     {
       "id": "interface:terminal",
@@ -123,6 +178,17 @@
       "path": "components/interface/terminal/1.0.0"
     },
     {
+      "id": "interface:terminal",
+      "version": "1.2.0",
+      "checksum": "sha256:628ace0891311ac43de6d7811d96d61b207f9fab8b0ce10f7c873f187df8bde5",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/interface/terminal/1.2.0"
+    },
+    {
       "id": "interface:webhook",
       "version": "1.0.0",
       "checksum": "sha256:ee2424971105facb1fba2e8371ea6b83c8898a981a9e1c4dd306f6df3c2bdfce",
@@ -132,6 +198,17 @@
         "node": ">=20"
       },
       "path": "components/interface/webhook/1.0.0"
+    },
+    {
+      "id": "interface:webhook",
+      "version": "1.2.0",
+      "checksum": "sha256:31b171ae53ac54400ba4e21abbd286f62b5f4b90fc92ee62001223aab18ac3ee",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/interface/webhook/1.2.0"
     },
     {
       "id": "policy:interface-pairing",
@@ -882,6 +959,17 @@
       "path": "components/state/memory/1.0.0"
     },
     {
+      "id": "state:memory",
+      "version": "1.2.0",
+      "checksum": "sha256:91afe38a83523c465fb39a3606bc494e512c549a38df6bdc02c0e4d38505ecd4",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/state/memory/1.2.0"
+    },
+    {
       "id": "state:repository",
       "version": "1.0.0",
       "checksum": "sha256:e6631d3421c24d42c927cc5c19709ce5f45aabc564830a2cb3fe00dd398e4707",
@@ -904,6 +992,17 @@
       "path": "components/tool/browser/1.0.0"
     },
     {
+      "id": "tool:browser",
+      "version": "1.1.0",
+      "checksum": "sha256:6590a3329a22216ab9eb6e9348bf2ffbe60ee7330684b65b66bb661cf3a975eb",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/tool/browser/1.1.0"
+    },
+    {
       "id": "tool:execution",
       "version": "1.0.0",
       "checksum": "sha256:a201d0b37bfc8c9b25ff992484cbcdff1567fe3355debca94ef3e16adb6753b1",
@@ -915,6 +1014,17 @@
       "path": "components/tool/execution/1.0.0"
     },
     {
+      "id": "tool:execution",
+      "version": "1.1.0",
+      "checksum": "sha256:e874110d5b7933b0ef60808083a380f82d8faaf37bdebf67f2b590ec7623c70e",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/tool/execution/1.1.0"
+    },
+    {
       "id": "tool:filesystem",
       "version": "1.0.0",
       "checksum": "sha256:d88615340dd88ed80a1c088d85358fb6cf2f127831c934ac5b84df1f93f0ccd5",
@@ -924,6 +1034,17 @@
         "node": ">=20"
       },
       "path": "components/tool/filesystem/1.0.0"
+    },
+    {
+      "id": "tool:filesystem",
+      "version": "1.1.0",
+      "checksum": "sha256:49650ac7573b19ef390a20fcaa7725d7acc57062ce5b84506da778062fd1b8c7",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/tool/filesystem/1.1.0"
     },
     {
       "id": "tool:github",
@@ -948,6 +1069,17 @@
       "path": "components/tool/github/1.1.0"
     },
     {
+      "id": "tool:github",
+      "version": "1.2.0",
+      "checksum": "sha256:e6551226b373d4e67e4a13317fa82d83a591cf80078d44ab92163fc062811ef8",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/tool/github/1.2.0"
+    },
+    {
       "id": "tool:mcp",
       "version": "1.0.0",
       "checksum": "sha256:48325bc0f57252a74e2bd46ba95d4ca0e9f846ff52bd23d6efbd4f8a18a58f05",
@@ -957,6 +1089,17 @@
         "node": ">=20"
       },
       "path": "components/tool/mcp/1.0.0"
+    },
+    {
+      "id": "tool:mcp",
+      "version": "1.1.0",
+      "checksum": "sha256:8454034aeba7dca1475016050801457d39e156e0d83aa15760c2825dee160088",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/tool/mcp/1.1.0"
     },
     {
       "id": "tool:memory",
@@ -970,6 +1113,28 @@
       "path": "components/tool/memory/1.0.0"
     },
     {
+      "id": "tool:memory",
+      "version": "1.2.0",
+      "checksum": "sha256:7566b7284dac42f375dbfe6a3fa36380040e732045acb08bf3312abdd518c91f",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/tool/memory/1.2.0"
+    },
+    {
+      "id": "tool:memory",
+      "version": "1.3.0",
+      "checksum": "sha256:702ff0cd7ec44b9020d9ceac1f656a7254ed3e57ef134c8daeb8788510d72382",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/tool/memory/1.3.0"
+    },
+    {
       "id": "tool:process",
       "version": "1.0.0",
       "checksum": "sha256:7dc8439ac22b18f149e569eb71046412b11b8d8e8a399c504903a14329b02943",
@@ -979,6 +1144,17 @@
         "node": ">=20"
       },
       "path": "components/tool/process/1.0.0"
+    },
+    {
+      "id": "tool:process",
+      "version": "1.1.0",
+      "checksum": "sha256:190d4d44fa2817122c38408a5d46a12591f52975af8a8c28a62f6cd8dbf677b8",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/tool/process/1.1.0"
     },
     {
       "id": "tool:scheduler",
@@ -992,6 +1168,17 @@
       "path": "components/tool/scheduler/1.0.0"
     },
     {
+      "id": "tool:scheduler",
+      "version": "1.1.0",
+      "checksum": "sha256:b7cd6b0c7e63ae0ce715edf0a86628e4b97f6e503e204c0a348ddd1b031e9426",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/tool/scheduler/1.1.0"
+    },
+    {
       "id": "tool:web",
       "version": "1.0.0",
       "checksum": "sha256:9088053589417f95c0be0a6bd2a6e2bbfd4abbdbb893c672f2b38f7efe836364",
@@ -1001,6 +1188,17 @@
         "node": ">=20"
       },
       "path": "components/tool/web/1.0.0"
+    },
+    {
+      "id": "tool:web",
+      "version": "1.1.0",
+      "checksum": "sha256:1ba256fc448ac4e9c8a1040ac0106c8e3f6ae387d8449d53750d7538026bd95b",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/tool/web/1.1.0"
     },
     {
       "id": "verifier:command",
@@ -1023,6 +1221,17 @@
         "node": ">=20"
       },
       "path": "components/verifier/schema/1.0.0"
+    },
+    {
+      "id": "verifier:schema",
+      "version": "1.2.0",
+      "checksum": "sha256:bac1fdd29da285c8683c5cadda0b9947989f84fff010adb5e161b04311537aad",
+      "compatibility": {
+        "vibekit": "^1.0.0",
+        "pi": ">=0.50.0",
+        "node": ">=20"
+      },
+      "path": "components/verifier/schema/1.2.0"
     }
   ]
 }

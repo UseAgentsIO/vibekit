@@ -6,7 +6,7 @@ The **official** registry is the default curated catalog inside this monorepo. I
 
 Installing a module copies its payload into the Project, where the files become locally owned. See the [PRD registry and ownership sections](../PRD.md) and [catalog overview](../catalog/overview.md).
 
-A Tool or Interface does **not** require editing VibeKit core, Host ID maps, or `vibekit start` in order to load. The Host resolves `runtime.kind` / `runtime.package` / `runtime.export` from the **installed** Module and its recorded registry source.
+A Tool or Interface does **not** require editing the product command or a hard-coded Module ID map in order to load. The Host resolves the installed Module's runtime metadata. First-party implementations use internal `vibekit:*` runtime identifiers; independently distributed implementations use an npm package and export.
 
 ---
 
@@ -124,7 +124,17 @@ Optional: `healthCheck`, `runtime`, `packages`.
 
 ### Runtime contract (Tools and Interfaces)
 
-Package-backed Components declare how the Host loads them. This is implementation metadata, not identity:
+Runtime metadata describes how the product loads a Module. It is implementation metadata, not identity. A first-party Module points at an internal product runtime:
+
+```yaml
+runtime:
+  kind: interface
+  package: "vibekit:interface-terminal"
+  export: createTerminalInterface
+  lifecycle: singleton
+```
+
+An independently distributed Module keeps an npm-backed runtime:
 
 ```yaml
 runtime:
@@ -141,12 +151,12 @@ Required for a loadable Tool or Interface:
 
 - `id` / `type` / `name` / `version` / `description` / `compatibility`
 - `runtime.kind` matching the family (`interface` or `pi-extension` / `package` for Tools)
-- `runtime.package` and `runtime.export` for package-backed implementations
+- `runtime.package` and `runtime.export` for an internal or npm-backed implementation
 - configuration schema, requested capabilities/permissions, secret **references** only
 - relative `files` targets and ownership
 - `requires` for other Modules the installer must resolve
 
-The Host loads `runtime.package` from the **Project** (`importProjectModule`) and calls `runtime.export`. Official `@useagentsio/*` packages are implementations of official Modules; a third-party package is treated the same after registry validation. Adding `interface:discord` must not require edits to `packages/cli/src/commands/start.ts` or a Host ID map.
+The Host resolves an internal `vibekit:*` identifier from the installed product or imports an external `runtime.package` from the Project, then calls `runtime.export`. Adding `interface:discord` must not require edits to the product command or a Host ID map. External packages are treated the same after registry validation, but they remain independently owned and npm-backed.
 
 `publisher` is a document field, not a privileged runtime type. It does not have to be UseAgentsIO.
 
@@ -164,8 +174,8 @@ The installable Agent recipe is `payload/agent.yaml` plus `payload/instructions.
 
 ```yaml
 files:
-  - source: payload/index.ts
-    target: .pi/extensions/filesystem/index.ts
+  - source: payload/config.yaml
+    target: .vibekit/components/tools/filesystem.yaml
     ownership: exclusive
 ```
 
@@ -182,7 +192,7 @@ Conventional targets:
 | :--- | :--- |
 | Agent | `.vibekit/agents/<name>/agent.yaml` and `instructions.md` |
 | Provider | `.vibekit/components/providers/<name>.yaml` |
-| Tool | `.pi/extensions/<name>/index.ts` or `.vibekit/components/tools/<name>.yaml` |
+| Tool | `.pi/extensions/<name>/index.ts` only for a real `pi-extension`; otherwise `.vibekit/components/tools/<name>.yaml` |
 | Skill | `.pi/skills/<name>/SKILL.md` |
 | Interface | `.vibekit/components/interfaces/<name>.yaml` |
 | Policy | `.vibekit/components/policies/<name>.yaml` |
@@ -190,6 +200,8 @@ Conventional targets:
 | State | `.vibekit/components/state/<name>.yaml` |
 
 Configuration `target` is usually `.vibekit/config/<family>/<name>.yaml`.
+
+A `pi-builtin` Module must not install a placeholder file under `.pi/extensions/`; Pi treats every file there as a loadable extension and requires a default-exported factory. Use `files: []` when the ability comes from Pi itself.
 
 ---
 
@@ -199,15 +211,15 @@ Declare how the Host or Pi should load the module.
 
 | `runtime.kind` | Meaning | Example |
 | :--- | :--- | :--- |
-| `interface` | Host `import(package)` and call `export` | `interface:terminal` → `@useagentsio/interface-terminal` / `createTerminalInterface` |
+| `interface` | Resolve an internal or npm-backed runtime and call `export` | `interface:terminal` → `vibekit:interface-terminal` / `createTerminalInterface` |
 | `pi-builtin` | Bind named Pi built-ins | `tool:filesystem` (`read`, `grep`, `find`, `ls`, `write`, `edit`) |
-| `pi-extension` | Load a Pi extension package | `tool:web` → `@useagentsio/tool-web` |
-| `package` | Host/adapter package | optional verifiers / state drivers |
+| `pi-extension` | Load a product or external Pi extension | `tool:web` → internal `vibekit:tool-web` or an external package |
+| `package` | Host/adapter runtime | third-party verifiers / state drivers |
 | `config-only` | Metadata only; not executable | use `available: false` |
 
-Executable modules that live in `packages/` should also list `packages.dependencies` so install can record the npm dependency.
+First-party executable Modules live inside the product source tree and do not add a Project npm dependency. An external executable Module must list its npm package under `packages.dependencies` so installation can record the dependency.
 
-Interfaces that attach to the Host **must** set `runtime.kind: interface`, `package`, `export`, and `lifecycle: singleton` unless a new lifecycle is specified in the spec.
+Interfaces that attach to the Host **must** set `runtime.kind: interface`, the internal runtime identifier or external `package`, `export`, and `lifecycle: singleton` unless a new lifecycle is specified in the spec.
 
 ---
 
@@ -247,7 +259,7 @@ Fetched web content, webhook bodies, and tool stdout are **untrusted**. They mus
 1. Copy the closest official module under `registry/components/<family>/<name>/1.0.0/`.
 2. Fill `module.yaml` (IDs, capabilities, secrets, files, runtime).
 3. Add payload files and `config.schema.json`.
-4. If the module executes, implement the Node package under `packages/` and point `runtime.package` / `runtime.export` at it.
+4. If the module executes, implement a first-party runtime inside the product source tree or an independently distributed external package, then point `runtime.package` / `runtime.export` at the matching internal identifier or npm package.
 5. Rebuild the index:
 
    ```bash
@@ -306,9 +318,9 @@ Read these before sending a new family member:
 | :--- | :--- |
 | Provider | `registry/components/provider/openai/1.0.0/` |
 | Pi built-in tool | `registry/components/tool/filesystem/1.0.0/` |
-| Pi extension tool | `registry/components/tool/web/1.0.0/` + `packages/tool-web/` |
+| Pi extension tool | `registry/components/tool/web/1.0.0/` + the product's internal tools source |
 | Skill | `registry/components/skill/research/1.0.0/` |
-| Interface | `registry/components/interface/terminal/1.0.0/` + `packages/interface-terminal/` |
+| Interface | `registry/components/interface/terminal/1.0.0/` + the product's internal Interfaces source |
 | Policy | `registry/components/policy/least-privilege/1.0.0/` |
 | Verifier | `registry/components/verifier/command/1.0.0/` |
 | Delegating Agent | `registry/agents/chief/1.0.0/` |

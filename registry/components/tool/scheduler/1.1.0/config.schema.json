@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "tool:scheduler configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "allowAgentScheduling": {
+      "type": "boolean",
+      "description": "When true, scheduled Worker Runs may mutate the job table. Default false (deny)."
+    }
+  }
+}

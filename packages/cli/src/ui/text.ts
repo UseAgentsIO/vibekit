@@ -1,4 +1,4 @@
-import { VibeKitError } from "@useagentsio/core";
+import { VibeKitError } from "../internal/core/index.js";
 
 import { readKey, withRawInput } from "./keys.js";
 import { printDone, requireTty } from "./render.js";

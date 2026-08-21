@@ -84,7 +84,7 @@ Tool components grant agents concrete capabilities to interact with filesystems 
 | `tool:github` | `pi-extension` (`1.1.0`) | Issues, PRs, checks, file contents (`GITHUB_TOKEN`) | **Optional.** `1.0.0` stays config-only; update explicitly. |
 | `tool:memory` | `pi-extension` | `store` / `get` / `search` / `replace` / `forget` / `session_search` | **Optional.** Requires `state:memory`. |
 | `tool:web` | `pi-extension` | `web_fetch` (no key); `web_search` only if a search secret is set | **Optional.** Fetched content is untrusted. |
-| `tool:browser` | `pi-extension` | navigate / snapshot / click | **Optional.** Playwright is a dependency of this package only. |
+| `tool:browser` | `pi-extension` | navigate / snapshot / click | **Optional.** Playwright is an internal product dependency used only by this ability. |
 | `tool:mcp` | `pi-extension` | MCP client: list servers/tools, call | **Optional.** Filtered stdio env. Not a marketplace. |
 | `tool:process` | `pi-extension` | start / list / poll / wait / log / kill | **Optional.** Complements `tool:execution`. |
 | `tool:scheduler` | `pi-extension` | create / list / pause / resume / run / remove | **Optional.** Requires `interface:schedule`. |
@@ -109,14 +109,14 @@ Skill components supply structured instructions, prompt templates, and best prac
 
 Interfaces translate external communication protocols into Host tasks and conversation turns.
 
-| ID | Package | Status |
+| ID | Runtime | Status |
 | :--- | :--- | :--- |
-| `interface:terminal` | `@useagentsio/interface-terminal` | **Shipped.** Stdio CLI and interactive terminal. |
-| `interface:http` | `@useagentsio/interface-http` | **Optional.** Loopback HTTP for programmatic turns. Token: `VIBEKIT_HTTP_TOKEN`. |
-| `interface:webhook` | `@useagentsio/interface-webhook` | **Optional.** Signed inbound callbacks become Tasks. Secret: `VIBEKIT_WEBHOOK_SECRET`. |
-| `interface:schedule` | `@useagentsio/interface-schedule` | **Optional.** Cron/interval fires become fresh Worker Runs. |
-| `interface:slack` | `@useagentsio/interface-slack` | **Optional.** Socket Mode. Pairing/allowlist. Secrets: `SLACK_BOT_TOKEN`, `SLACK_APP_TOKEN`. |
-| `interface:telegram` | `@useagentsio/interface-telegram` | **Optional.** Bot API. Pairing/allowlist. Secret: `TELEGRAM_BOT_TOKEN`. |
+| `interface:terminal` | Internal `vibekit:interface-terminal` | **Shipped.** Stdio CLI and interactive terminal. |
+| `interface:http` | Internal `vibekit:interface-http` | **Optional.** Loopback HTTP for programmatic turns. Token: `VIBEKIT_HTTP_TOKEN`. |
+| `interface:webhook` | Internal `vibekit:interface-webhook` | **Optional.** Signed inbound callbacks become Tasks. Secret: `VIBEKIT_WEBHOOK_SECRET`. |
+| `interface:schedule` | Internal `vibekit:interface-schedule` | **Optional.** Cron/interval fires become fresh Worker Runs. |
+| `interface:slack` | Internal `vibekit:interface-slack` | **Optional.** Socket Mode. Pairing/allowlist. Secrets: `SLACK_BOT_TOKEN`, `SLACK_APP_TOKEN`. |
+| `interface:telegram` | Internal `vibekit:interface-telegram` | **Optional.** Bot API. Pairing/allowlist. Secret: `TELEGRAM_BOT_TOKEN`. |
 
 ---
 

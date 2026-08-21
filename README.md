@@ -28,7 +28,7 @@ $$\textbf{Components} \longrightarrow \textbf{Agents} \longrightarrow \textbf{Pr
 * **The Host** is the always-running product daemon that coordinates interfaces, executes agent work, enforces permissions, and persists durable state.
 * **Pi** is the internal model and tool execution engine embedded underneath the Host.
 
-Registry Modules are VibeKit's composition and distribution abstraction. npm packages are optional implementation artifacts referenced by Module `runtime.package` / `runtime.export`. Canonical identity is the registry ID (`tool:browser`, `interface:telegram`), not `@useagentsio/tool-browser`.
+Registry Modules are VibeKit's composition and distribution abstraction. Their canonical identity is a registry ID such as `tool:browser` or `interface:telegram`. Internal built-ins resolve inside the product; independently distributed Components may use npm runtime metadata.
 
 The official registry is the default curated registry. Independently authored Modules can conform to the same runtime, compatibility, ownership, permission, and security rules. Local/custom registry paths are supported now; hosted registries and a marketplace are not.
 
@@ -49,57 +49,68 @@ Model + Tools
 ```
 
 > [!NOTE]
-> **Users interact with VibeKit through Interfaces—never directly with Pi.** Sessions are managed and isolated internally by the Host.
+> **Users interact with VibeKit through connections—never directly with Pi.** Sessions are managed and isolated internally by the Host.
 >
-> **Package Scope:** All official packages are published under the **`@useagentsio`** scope (e.g., `@useagentsio/cli`, `@useagentsio/host`, `@useagentsio/core`). The CLI binary is **`vibekit`**, and the Host binary is **`vibekit-host`**.
+> **Product package:** The consolidated release will be published as **`@useagentsio/vibekit`** and leaves the **`vibekit`** command on `PATH`. It is not published yet; the local tarball flow in [the contributor guide](docs/contributing/guide.md#local-product-tarball) is the current release proof.
 
 ---
 
-## ⚡ 30-Second Quickstart
+## ⚡ Start with VibeKit
 
-The primary user journey is simple: **Create Project → Choose Agent & Provider → Talk to Agent**.
-
-```bash
-# 1. Set your provider API key
-export OPENAI_API_KEY="sk-proj-..."
-
-# 2. Create a runnable Agent Project (scaffolds agent, provider, interface, and host wiring)
-npx --yes @useagentsio/cli@latest create my-agent --agent chief --provider openai --interface terminal --yes
-
-# 3. Message your agent through the Host
-cd my-agent
-vibekit msg "Hello! What can you help me with?"
-```
-
-To enter an interactive multi-turn session with the Host running in the foreground:
+The public release path is one install, one product command, and one first conversation. The package is not published yet, so do not run this npm command until the release is explicitly available:
 
 ```bash
-vibekit start
+# Install the product once; this leaves the durable vibekit command on PATH.
+npm install --global --ignore-scripts @useagentsio/vibekit@latest
+
+# Let VibeKit set up the assistant, model, abilities, memory, and connection.
+vibekit
 ```
+
+Choose a model and provide its authentication when setup asks. Keep the useful defaults, then send a real request when the terminal connection opens:
+
+```text
+Help me plan the next three things I should finish today.
+```
+
+The first reply proves the model, Host, abilities, memory, and connection are ready. For the current unpublished source checkout, build the local product tarball and run the clean-home proof described in [Local product tarball](docs/contributing/guide.md#local-product-tarball).
+
+### Useful next actions
+
+After the first conversation, use the commands that match what you want to do:
+
+```bash
+vibekit status                 # See readiness, model sign-in, connections, and Host health
+vibekit model                  # Change the model
+vibekit config                 # Review user-facing choices
+vibekit connect telegram       # Add a guided channel connection
+vibekit add tool browser       # Give the assistant another ability
+vibekit doctor                 # Check and safely repair mechanical issues
+```
+
+The [Quickstart](docs/getting-started/quickstart.md) has the short user path. Architecture, registry, and contributor material comes after it.
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ Architecture (optional reading)
 
 ```text
                           Human Operator
                                 │
           ┌─────────────────────┴─────────────────────┐
           ▼                                           ▼
-     vibekit CLI                              terminal Interface
-  (@useagentsio/cli)                  (@useagentsio/interface-terminal)
-  (create / msg / start)                      (I/O Adapter Only)
+     vibekit product                         terminal connection
+  (install once per machine)                 (I/O adapter only)
+  (setup / msg / start)
           │                                           │
           └─────────────────────┬─────────────────────┘
                                 ▼
                             AGENT HOST
-                        (@useagentsio/host)
                       (Always-Running Daemon)
                                 │
         ┌───────────────────────┼───────────────────────┐
         ▼                       ▼                       ▼
    PROJECT CONTRACT       STATE BACKEND           EMBEDDED PI
-  (@useagentsio/core)  (@useagentsio/core)     (@useagentsio/pi)
   - project.yaml       - .vibekit/state/      - Session Factory
   - installed.json     - Tasks & Results      - Tool Bindings
   - Agent Recipes      - Conversations        - Worktree Sandboxes
@@ -110,8 +121,8 @@ vibekit start
 
 ## 🔑 Key Concepts
 
-### 1. Components (Atomic Building Blocks)
-Components are atomic, reusable modules installed from the official registry into your project:
+### 1. Abilities (the things your assistant can do)
+Abilities are the user-facing selection of reusable Components installed from the official registry into your Project:
 - **Providers**: Model vendor configurations (e.g., `provider:openai`, `provider:openai-codex`, `provider:opencode-go`, `provider:xai`, `provider:openrouter`).
 - **Tools**: Toolsets for system interactions (e.g., `tool:filesystem`, `tool:execution`, `tool:github`).
 - **Skills**: Structured domain guidelines and prompt instructions (e.g., `skill:software-development`, `skill:research`).
@@ -123,11 +134,11 @@ Components are atomic, reusable modules installed from the official registry int
 ### 2. Agents (Compositions as Ordinary Peers)
 An Agent is a configured composition of Components defining instructions, capabilities, permissions, and delegation targets. **Agents are ordinary peers**—there is no separate orchestrator or subagent type. A Chief is simply an Agent with permission to delegate. A Coder is an Agent configured for implementation.
 
-### 3. Projects (The Composition Boundary)
-Represented by `.vibekit/project.yaml`, the Project defines which Agents exist, which Components are installed, default provider/model routing, delegation permissions, execution limits, and state storage.
+### 3. Projects (The durable workspace)
+Represented by `.vibekit/project.yaml`, the Project defines which assistants exist, which abilities are available, the selected model, connection routing, delegation permissions, execution limits, and memory/state storage.
 
-### 4. The Host (The Running Product)
-The Host (`vibekit-host`) is the runtime process. It loads the Project, starts Interfaces, routes messages, creates isolated Pi worker sessions, tracks delegation, and persists Project State.
+### 4. The Host (the running product)
+The Host is VibeKit's internal runtime. It loads the Project, starts connections, routes messages, creates isolated worker sessions, tracks delegation, and persists Project State. You do not launch Pi separately.
 
 ### 5. Persistent Conversations vs. Worker Runs
 - **Persistent Conversation**: Long-lived interaction context across multiple turns between a user and an agent.
@@ -181,16 +192,20 @@ Human ──→ Research Task ──→ Researcher (Cited Analysis) ──→ Re
 
 ## 💻 CLI Commands Tour
 
-The CLI binary is **`vibekit`** (`@useagentsio/cli`).
+The product command is **`vibekit`**. The published product package will be **`@useagentsio/vibekit`**.
 
 ### Primary Runtime Commands
 The primary front door is the running agent system:
 ```bash
-vibekit create [dir]     # Scaffold a runnable Agent Project
-vibekit msg <text>       # Send one turn through the Host to the Agent
-vibekit start            # Run Host + terminal Interface in the foreground
+vibekit create [dir]     # Advanced Project builder
+vibekit msg <text>       # Send one turn through the Host to the assistant
+vibekit start            # Start the Project Host in the background
+vibekit stop             # Gracefully stop the Project Host
 vibekit status           # Inspect Host and Interface daemon health
 vibekit model            # Inspect or switch active model from Pi's live catalog
+vibekit projects list    # List machine-local registered Projects
+vibekit gateway install # Install the local dashboard login service
+vibekit dashboard        # Open the Project Dashboard
 ```
 
 ### Composition & Lifecycle Commands
@@ -273,28 +288,11 @@ Optional Components bind with `vibekit add <family> <name>`. `create` / `init` d
 
 ---
 
-## 🧩 Monorepo Packages
+## 🧩 Product internals
 
-| Package | Version | Description |
-| :--- | :--- | :--- |
-| **[`@useagentsio/cli`](packages/cli)** | `0.3.2` | CLI binary (`vibekit`): `create`, `msg`, `start`, `add`, `doctor`, etc. |
-| **[`@useagentsio/host`](packages/host)** | `0.2.1` | Always-running Agent Host daemon (`vibekit-host`) |
-| **[`@useagentsio/core`](packages/core)** | `0.2.1` | JSON schemas, typed IDs, state drivers, and three-way diff engine |
-| **[`@useagentsio/pi`](packages/pi)** | `0.2.2` | Embedded Pi adapter, worktree isolation manager, and delegation runtime |
-| **[`@useagentsio/interface-sdk`](packages/interface-sdk)** | `0.1.0` | Interface protocol and lifecycle contract |
-| **[`@useagentsio/interface-terminal`](packages/interface-terminal)** | `0.1.0` | Official Terminal interface implementation |
-| **[`@useagentsio/interface-http`](packages/interface-http)** | `0.1.1` | Optional loopback HTTP Interface |
-| **[`@useagentsio/interface-webhook`](packages/interface-webhook)** | `0.1.0` | Optional signed webhook Interface |
-| **[`@useagentsio/interface-schedule`](packages/interface-schedule)** | `0.1.0` | Optional schedule Interface + scheduler tool |
-| **[`@useagentsio/interface-slack`](packages/interface-slack)** | `0.1.1` | Optional Slack Interface |
-| **[`@useagentsio/interface-telegram`](packages/interface-telegram)** | `0.1.1` | Optional Telegram Interface |
-| **[`@useagentsio/state-memory`](packages/state-memory)** | `0.1.0` | Optional SQLite+FTS5 memory store and tool |
-| **[`@useagentsio/tool-web`](packages/tool-web)** | `0.1.0` | Optional web fetch/search tool |
-| **[`@useagentsio/tool-browser`](packages/tool-browser)** | `0.1.0` | Optional isolated browser tool |
-| **[`@useagentsio/tool-github`](packages/tool-github)** | `0.1.0` | Optional GitHub API tool |
-| **[`@useagentsio/tool-mcp`](packages/tool-mcp)** | `0.1.0` | Optional MCP client tool |
-| **[`@useagentsio/tool-process`](packages/tool-process)** | `0.1.0` | Optional background process tool |
-| **[`@useagentsio/verifier-schema`](packages/verifier-schema)** | `0.1.0` | Optional JSON Schema verifier |
+The published product is one package, **`@useagentsio/vibekit`**, with the `vibekit` command. Core contracts, Host lifecycle, Pi integration, connections, abilities, memory, scheduling, verification, schemas, and the official registry are internal product areas, not separate packages that a Project installs.
+
+The [Architecture Overview](docs/architecture/overview.md) explains those boundaries. The [Development Guide](docs/contributing/guide.md) explains the source checkout and the local tarball workflow. Independently distributed third-party Components may still use their own npm package when a Module declares that runtime explicitly.
 
 ---
 
@@ -325,11 +323,11 @@ Explore comprehensive documentation and guides in the **[`docs/`](docs/)** direc
   - [Official Agents](docs/catalog/agents.md)
   - [Official Components](docs/catalog/components.md)
 - **API & SDK Reference**:
-  - [API Overview](docs/api/overview.md)
-  - [@useagentsio/host](docs/api/host.md)
-  - [@useagentsio/core](docs/api/core.md)
-  - [@useagentsio/pi](docs/api/pi.md)
-  - [@useagentsio/interface-sdk](docs/api/interface-sdk.md)
+  - [Runtime API Overview](docs/api/overview.md)
+  - [Host runtime reference](docs/api/host.md)
+  - [Core runtime reference](docs/api/core.md)
+  - [Pi runtime reference](docs/api/pi.md)
+  - [Interface contract reference](docs/api/interface-sdk.md)
 - **Multi-Agent Patterns**:
   - [Patterns Index](docs/patterns/README.md)
   - [Chief → Coder → Reviewer](docs/patterns/chief-coder-reviewer.md)
@@ -354,30 +352,14 @@ Explore comprehensive documentation and guides in the **[`docs/`](docs/)** direc
 
 ---
 
-## 🛠️ Local Development
+## 🛠️ Local development
 
-```bash
-# Clone the repository
-git clone https://github.com/UseAgentsIO/vibekit.git
-cd vibekit
+The source checkout is for contributors, not the ordinary user path. Keep intermediate builds local, run the focused checks for the area you changed, and use the single-product tarball flow before claiming a release candidate. The [Development Guide](docs/contributing/guide.md) is the source of truth for linking, registry generation, packaging, and clean-home validation.
 
-# Install dependencies
-pnpm install
-
-# Run test suites (Vitest)
-pnpm test
-
-# Run TypeScript typechecks
-pnpm typecheck
-
-# Rebuild official registry index
-pnpm registry:index
-```
-
-To add official Agents or Components, or to change Host/CLI packages, follow **[CONTRIBUTING.md](CONTRIBUTING.md)**.
+Do not publish or install an unpublished package name from npm. The public package name is reserved for the explicitly approved release boundary.
 
 ---
 
 ## 📄 License
 
-Published packages are `UNLICENSED`. All rights reserved.
+The published product is `UNLICENSED`. All rights reserved.

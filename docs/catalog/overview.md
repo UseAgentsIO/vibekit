@@ -8,7 +8,7 @@ VibeKit ships with an **official, curated registry** of Agents and Components. C
 
 - **Official is the default, not the definition of a Module**: V1 ships a vetted official catalog in the monorepo. Independently authored conforming Modules can be installed from a local/custom registry path (`--registry`). Hosted discovery, ratings, and a marketplace are not implemented.
 - **Honesty in Declarations**: Modules must honestly declare their runtime capabilities. A module cannot pretend to be an executable tool if it is only a configuration template.
-- **Embedded in CLI**: The official registry is packaged directly inside `@useagentsio/cli`, allowing instant offline installations.
+- **Shipped with the product**: The official registry is bundled into `@useagentsio/vibekit`, allowing instant offline installations. First-party runtime implementations resolve inside that product.
 
 ---
 
@@ -39,11 +39,10 @@ runtime:
   kind: pi-builtin
   tools: [read, grep, find, ls, write, edit]
 
-files:
-  - source: payload/index.ts
-    target: .pi/extensions/filesystem/index.ts
-    ownership: exclusive
+files: []
 ```
+
+This built-in Tool has no extension file. A Module with `runtime.kind: pi-builtin` must not install a placeholder under `.pi/extensions/`, because Pi treats every file there as a loadable extension.
 
 ---
 
@@ -53,10 +52,10 @@ Modules declare how they execute or attach at runtime using the `runtime.kind` p
 
 | `kind` | Description | Example |
 | :--- | :--- | :--- |
-| `interface` | Loaded into the Host process via package import and factory function. | `interface:terminal` (`@useagentsio/interface-terminal`) |
+| `interface` | Loaded into the Host process through a built-in runtime or an independently distributed package. | `interface:terminal` (internal `vibekit:interface-terminal`) |
 | `pi-builtin` | Maps to Pi's native built-in tools (`read`, `write`, `bash`). | `tool:filesystem`, `tool:execution` |
-| `pi-extension` | Loads an external Pi extension. | Extension modules |
-| `package` | Standard Node.js package dependency. | Host adapter modules |
+| `pi-extension` | Loads an extension supplied by the product or an external Module. | Extension Modules |
+| `package` | Standard npm-backed runtime dependency. | Third-party adapter Modules |
 | `config-only` | Configuration and metadata only; set `available: false`. | Older `tool:github@1.0.0` (configures `GITHUB_TOKEN`). `1.1.0` is `pi-extension`. |
 
 ---

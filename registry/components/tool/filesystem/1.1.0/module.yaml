@@ -1,0 +1,50 @@
+schemaVersion: 1
+
+id: tool:filesystem
+type: tool
+name: filesystem
+displayName: Filesystem Tool
+version: 1.1.0
+description: Gives authorized Agents scoped read and write access to Project files through Pi's built-in filesystem tools. This release removes the invalid Pi extension stub from 1.0.0.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.1.0"
+
+license: MIT
+
+providesCapabilities:
+  - source.read
+  - source.write
+
+requires:
+  required: []
+  optional: []
+  recommended:
+    - policy:least-privilege
+  conflicts: []
+
+requestsPermissions:
+  - capability: source.read
+  - capability: source.write
+
+secrets: []
+
+files: []
+
+configuration:
+  target: .vibekit/config/tools/filesystem.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-tool
+  name: filesystem
+
+runtime:
+  kind: pi-builtin
+  tools: [read, grep, find, ls, write, edit]

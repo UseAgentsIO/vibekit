@@ -1,0 +1,54 @@
+schemaVersion: 1
+
+id: verifier:schema
+type: verifier
+name: schema
+displayName: Schema Verifier
+version: 1.2.0
+description: Validate a Result, Decision, or declared artifact against a JSON Schema. Schema paths must stay relative to the Project root.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.2.0"
+
+license: MIT
+
+providesCapabilities:
+  - verification.schema
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets: []
+
+files:
+  - source: payload/verifier.yaml
+    target: .vibekit/components/verifiers/schema.yaml
+    ownership: exclusive
+  - source: payload/index.ts
+    target: .vibekit/components/verifiers/schema/index.ts
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/verifiers/schema.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: schema
+  name: schema
+
+runtime:
+  kind: package
+  package: vibekit:verifier-schema
+  export: runSchemaVerification
+

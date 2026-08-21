@@ -9,7 +9,7 @@ import {
   DEFAULT_DB_RELATIVE_PATH,
   isSqliteAvailable,
   type MemoryStore,
-} from "../../packages/state-memory/src/index.js";
+} from "../../packages/cli/src/internal/state/memory/index.js";
 
 import { makeTempDir } from "../helpers.js";
 

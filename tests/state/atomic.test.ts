@@ -7,7 +7,7 @@ import {
   atomicWriteFile,
   cleanupPartialWrites,
   createRepositoryState,
-} from "../../packages/core/src/state/index.js";
+} from "../../packages/cli/src/internal/core/state/index.js";
 
 import { taskDoc, tempProject } from "./helpers.js";
 

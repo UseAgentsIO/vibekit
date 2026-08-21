@@ -1,7 +1,7 @@
 {
   "name": "vibekit",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.2.1",
   "description": "VibeKit Agents monorepo",
   "type": "module",
   "packageManager": "pnpm@11.18.0",
@@ -10,14 +10,18 @@
   },
   "scripts": {
     "test": "vitest run",
-    "typecheck": "tsc -b",
+    "typecheck": "node scripts/clean-product-dist.mjs && tsc -b",
     "registry:index": "tsx scripts/build-registry-index.ts",
+    "pack:product": "node scripts/pack-product.mjs",
+    "release:smoke": "node scripts/release-smoke.mjs",
+    "version:packages": "node scripts/package-versions.mjs",
+    "version:check": "node scripts/package-versions.mjs --check",
+    "publish:check": "node scripts/publish-packages.mjs --check",
     "publish:packages": "node scripts/publish-packages.mjs"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
-    "@useagentsio/core": "workspace:*",
-    "@useagentsio/pi": "workspace:*",
+    "@types/semver": "^7.7.0",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"

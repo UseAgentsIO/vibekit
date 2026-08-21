@@ -1,8 +1,8 @@
 # Architecture Overview
 
-This document describes the runtime architecture, subsystem boundaries, and lifecycle execution model of **VibeKit Agents**.
+This document describes the runtime architecture, subsystem boundaries, and lifecycle execution model of **VibeKit Agents**. It is advanced reading after the [Quickstart](../getting-started/quickstart.md), not a prerequisite for using the assistant.
 
-Registry Modules are VibeKit's composition and distribution abstraction. npm packages (`@useagentsio/tool-web`, `@useagentsio/interface-telegram`, or a third-party package) are optional implementation artifacts referenced by Module `runtime.package` / `runtime.export`. They are not the product taxonomy.
+Registry Modules are VibeKit's composition and distribution abstraction. A registry ID such as `tool:web` or `interface:telegram` is the identity users and Projects keep. The consolidated product resolves first-party runtime implementations internally; an independently distributed Component may still declare an npm package and export. Package names are implementation details, not the product taxonomy.
 
 The official registry is the default curated registry. Independently authored Modules can conform to the same runtime, compatibility, ownership, permission, and security rules via a local/custom registry path. Hosted discovery, ratings, and a marketplace are out of scope.
 
@@ -17,19 +17,16 @@ VibeKit operates as an always-running Host that bridges human communication inte
                                 │
           ┌─────────────────────┴─────────────────────┐
           ▼                                           ▼
-   vibekit CLI (`msg`)                       Terminal Interface
-   @useagentsio/cli                   @useagentsio/interface-terminal
+   vibekit product (`msg`)                  Terminal connection
           │                                           │
           └─────────────────────┬─────────────────────┘
                                 ▼
                          AGENT HOST
-                      @useagentsio/host
                    (Always-Running Daemon)
                                 │
         ┌───────────────────────┼───────────────────────┐
         ▼                       ▼                       ▼
    PROJECT CONTRACT       STATE BACKEND           EMBEDDED PI
-   @useagentsio/core    @useagentsio/core      @useagentsio/pi
   - project.yaml       - .vibekit/state/      - Session Factory
   - installed.json     - Tasks & Results      - Tool Binding
   - Agent Recipes      - Conversations        - Worktree Isolation
@@ -40,7 +37,7 @@ VibeKit operates as an always-running Host that bridges human communication inte
 
 ## Core Subsystems
 
-### 1. The Agent Host (`@useagentsio/host`)
+### 1. The Agent Host
 The Host is the central process manager. It performs the following roles:
 - **Project Loader**: Loads `.vibekit/project.yaml` and `installed.json` on startup.
 - **Interface Manager**: Initializes configured Interfaces (`interface:terminal` plus any optional bindings), binds inbound/outbound event channels, and monitors connection health.
@@ -49,14 +46,14 @@ The Host is the central process manager. It performs the following roles:
 - **State Coordinator**: Atomically writes turn state, task results, approvals, and events to the repository state backend.
 - **Graceful Shutdown**: Intercepts process signals (`SIGINT`, `SIGTERM`), halts active worker runs cleanly, releases worktree locks, and closes interfaces.
 
-### 2. Embedded Pi Adapter (`@useagentsio/pi`)
+### 2. Embedded Pi Adapter
 Pi is the internal execution engine that translates agent directives into LLM API calls and tool invocations:
 - **Isolation Layers**: Supports process isolation and Git worktree isolation for mutation tasks.
 - **Tool Adapter**: Binds Pi built-in tools (`read`, `grep`, `find`, `ls`, `write`, `edit`, `bash`) under strict host-enforced capability rules.
 - **Delegation Runtime**: Implements `agent_delegate` tool enabling parent agents to dispatch child tasks with bounded context and explicit depth limits.
 - **Event Streaming**: Streams fine-grained execution events (token deltas, tool calls, tool results) back to the Host.
 
-### 3. Core Engine (`@useagentsio/core`)
+### 3. Core Engine
 The foundation library for contracts and State:
 - **JSON Schema Validation**: Validates all project contracts, agent definitions, component manifests, and state records against draft-07 schemas.
 - **Typed IDs**: Strongly-typed parsers and stringifiers for module IDs (`agent:coder`, `tool:filesystem`), task IDs (`task_*`), and run IDs (`run_*`).
@@ -64,7 +61,7 @@ The foundation library for contracts and State:
 - **Three-Way Engine**: Performs three-way diffing and non-destructive updates between base registry versions, local project files, and upstream releases.
 - **State Repository**: Local file-system implementation of state storage.
 
-### 4. Interface SDK (`@useagentsio/interface-sdk`)
+### 4. Interface contract
 A decoupled contract defining the bidirectional interface protocol:
 - **Inbound Events**: `message`, `cancel`, `approval`, `disconnect`.
 - **Outbound Events**: `progress`, `result`, `ask-approval`, `error`, `idle`.

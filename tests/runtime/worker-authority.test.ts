@@ -64,4 +64,37 @@ describe("Worker Run authority", () => {
     expect(prepared.configuration.capabilities).not.toContain("schedule.write");
     expect(prepared.configuration.authority.toolModuleIds).not.toContain("tool:scheduler");
   });
+
+  it("binds filesystem and execution through Pi built-ins while retaining task scopes", () => {
+    const fixture = writeRuntimeFixture({
+      project: {
+        authorization: {
+          default: "deny",
+          actions: {
+            "source.read": "standing",
+            "source.write": "standing",
+            "command.execute": "standing",
+          },
+        },
+      },
+    });
+    const prepared = prepareIsolatedRun({
+      projectRoot: fixture.root,
+      bindingName: fixture.bindingName,
+      project: fixture.project,
+      task: {
+        ...fixture.task,
+        scope: { paths: ["src/**"], resources: [] },
+        requiredCapabilities: ["source.read", "source.write", "command.execute"],
+      },
+    });
+
+    expect(prepared.configuration.authority.builtinTools).toEqual(
+      expect.arrayContaining(["read", "grep", "find", "ls", "write", "edit", "bash"]),
+    );
+    expect(prepared.configuration.authority.toolModuleIds).not.toContain("tool:filesystem");
+    expect(prepared.configuration.authority.toolModuleIds).not.toContain("tool:execution");
+    expect(prepared.configuration.authority.grants["source.read"]?.scope.paths).toEqual(["src/**"]);
+    expect(prepared.configuration.authority.grants["source.write"]?.scope.paths).toEqual(["src/**"]);
+  });
 });

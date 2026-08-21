@@ -45,6 +45,7 @@ export async function resolveProjectAgents(input: {
       interactive: input.interactive,
       searchable: true,
       min: input.required ? 1 : 0,
+      initial: items.some((item) => item.id === "assistant") ? ["assistant"] : undefined,
       hintBelow: true,
       options,
     });
@@ -95,6 +96,8 @@ export async function resolveProjectAgents(input: {
 
 function defaultAgentHint(id: string): string | undefined {
   switch (id) {
+    case "assistant":
+      return "Handles everyday research, planning, and project work in one useful default Agent";
     case "chief":
       return "Coordinates requests and delegates work to specialists";
     case "coder":

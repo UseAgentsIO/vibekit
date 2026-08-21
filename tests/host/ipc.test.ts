@@ -7,6 +7,7 @@ import {
   hostSocketPath,
   isHostIpcAvailable,
   submitViaIpc,
+  shutdownViaIpc,
   type RunTurn,
 } from "@useagentsio/host";
 import { conversationKeyOf } from "@useagentsio/interface-sdk";
@@ -139,6 +140,31 @@ describe("Host IPC", () => {
       expect(result.stderr).not.toContain("host_already_running");
       expect(result.exitCode).toBe(0);
       expect(result.stdout).toContain("echo:hello");
+    } finally {
+      await host.stop();
+    }
+  });
+
+  it("shuts down the Host when receiving an IPC shutdown request", async () => {
+    const dir = makeTempDir("vibekit-host-ipc-shutdown-");
+    writeProject(dir);
+    const host = await VibeKitHost.start({
+      projectRoot: dir,
+      startInterfaces: false,
+      runTurn: echoTurn,
+    });
+    try {
+      expect(await isHostIpcAvailable(dir)).toBe(true);
+      const stopped = await shutdownViaIpc(dir);
+      expect(stopped).toBe(true);
+      const deadline = Date.now() + 3_000;
+      while (Date.now() < deadline) {
+        if (!(await isHostIpcAvailable(dir))) {
+          break;
+        }
+        await new Promise((r) => setTimeout(r, 50));
+      }
+      expect(await isHostIpcAvailable(dir)).toBe(false);
     } finally {
       await host.stop();
     }

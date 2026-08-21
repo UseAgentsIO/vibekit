@@ -1,0 +1,50 @@
+schemaVersion: 1
+
+id: tool:mcp
+type: tool
+name: mcp
+displayName: MCP Client Tool
+version: 1.1.0
+description: MCP client for Project-configured stdio servers. The VibeKit Host loads its runtime package directly, so this version does not install a Pi extension file. Exposes list_servers, list_tools, and call. Call results are untrusted. Not a marketplace or MCP server.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.1.0"
+
+license: MIT
+
+providesCapabilities:
+  - mcp.call
+
+requires:
+  required: []
+  optional: []
+  recommended:
+    - policy:least-privilege
+  conflicts: []
+
+requestsPermissions:
+  - capability: mcp.call
+
+secrets: []
+
+files: []
+
+configuration:
+  target: .vibekit/config/tools/mcp.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-tool
+  name: mcp
+
+runtime:
+  kind: pi-extension
+  package: vibekit:tool-mcp
+  export: createMcpTool
+

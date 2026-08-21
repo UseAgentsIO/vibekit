@@ -8,7 +8,7 @@ import {
   DEFAULT_STATE_TRACKING,
   STATE_BACKEND_ID,
   createRepositoryState,
-} from "../../packages/core/src/state/index.js";
+} from "../../packages/cli/src/internal/core/state/index.js";
 
 import {
   approvalDoc,

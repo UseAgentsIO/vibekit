@@ -1,119 +1,56 @@
-# Installation & Requirements
+# Installation
 
-This guide details the system requirements, installation methods, and environment configuration for **VibeKit Agents**.
+VibeKit is designed to be installed once per machine. The installed product owns the Host, embedded model engine, official catalog, built-in abilities, memory, and connection adapters, so an ordinary Project does not need its own VibeKit package tree.
 
----
+## Requirements
 
-## System Requirements
+- Node.js `>=20.0.0`
+- macOS, Linux, or Windows (WSL2 is recommended on Windows)
+- A model service account or API credential for the model you select during setup
 
-- **Node.js**: `>= 20.0.0` (LTS recommended)
-- **Operating System**: macOS, Linux, or Windows (WSL2 recommended for Windows)
-- **Package Manager**: `pnpm` (version `11.x` pinned for repository development) or `npm` / `yarn` for consuming packages.
-- **Git**: Required for worktree-based mutation isolation and version tracking.
+## Install the product
 
----
-
-## Package Scope Notice
-
-> [!IMPORTANT]
-> The unscoped npm package name `vibekit` is taken by an unrelated legacy project on npm.
-> All official VibeKit packages are published under the **`@useagentsio`** scope:
-> - CLI package: `@useagentsio/cli` (provides the `vibekit` binary)
-> - Host package: `@useagentsio/host` (provides the `vibekit-host` binary)
-> - Core libraries: `@useagentsio/core`, `@useagentsio/pi`, `@useagentsio/interface-sdk`, `@useagentsio/interface-terminal`
-> - Optional packages: `@useagentsio/interface-http`, `@useagentsio/interface-webhook`, `@useagentsio/interface-schedule`, `@useagentsio/interface-slack`, `@useagentsio/interface-telegram`, `@useagentsio/tool-web`, `@useagentsio/tool-browser`, `@useagentsio/tool-github`, `@useagentsio/tool-mcp`, `@useagentsio/tool-process`, `@useagentsio/state-memory`, `@useagentsio/verifier-schema`
-
----
-
-## Installation Methods
-
-### Method 1: Global CLI Installation (Recommended for General Use)
-
-Install `@useagentsio/cli` globally to have the `vibekit` command available everywhere:
+The public release path has one package and one command:
 
 ```bash
-npm install -g --ignore-scripts @useagentsio/cli@latest
-```
-
-Verify the installation:
-
-```bash
+npm install --global --ignore-scripts @useagentsio/vibekit@latest
 vibekit --version
-vibekit --help
+vibekit
 ```
 
-### Method 2: On-Demand Execution with `npx`
+`@useagentsio/vibekit` is the planned product package and is not published yet. Do not run this public-install command against npm until the release has been explicitly published. For the current source checkout, build and test the local product tarball using the [contributor workflow](../contributing/guide.md#local-product-tarball).
 
-If you prefer not to install the CLI globally, invoke it directly with `npx`:
+On first launch, VibeKit asks for the model service and model authentication it needs, selects the General Assistant with bounded file, command, web-search, and memory abilities, checks a real conversation, and opens the configured connection. Choose **Customize setup** only when you need different abilities, a different workspace, or another connection.
+
+Credentials are kept outside Project YAML, JSON, State, logs, and manifests. If you provide credentials interactively, VibeKit stores them in the owner-only local deployment store. If you use an environment variable instead, keep the value in your shell or secret manager and expose only its name to the Project.
+
+## Connections and background availability
+
+The terminal connection works immediately in the first path. To connect a channel later, use the guided command from inside the Project:
 
 ```bash
-npx --yes @useagentsio/cli@latest create my-agent --agent chief --provider openai --interface terminal --yes
+vibekit connect telegram
 ```
 
-Once inside a project directory initialized by VibeKit, local tools and scripts can resolve the local installation.
-
-### Method 3: Library Packages for TypeScript / Node.js Applications
-
-If you are building custom agents, embedding the Host in an application, or building an interface adapter:
+If a connection needs to receive messages while you are logged out, VibeKit can install its local Gateway service after setup:
 
 ```bash
-npm install @useagentsio/core @useagentsio/host @useagentsio/pi @useagentsio/interface-sdk @useagentsio/interface-terminal
+vibekit gateway install
+vibekit dashboard
 ```
 
-Or with `pnpm`:
+The Gateway is loopback-only and reads health and configuration metadata. Each Project keeps its own Host, assistant, model, abilities, memory, sessions, State, and credentials. Gateway service actions never delete or stop Project data.
+
+## Troubleshooting
+
+Start with the user-facing checks:
 
 ```bash
-pnpm add @useagentsio/core @useagentsio/host @useagentsio/pi @useagentsio/interface-sdk @useagentsio/interface-terminal
+vibekit status
+vibekit doctor
+vibekit setup
 ```
 
----
+`status` summarizes readiness, `doctor` explains a broken dependency or file, and rerunning `setup` preserves existing choices while repairing missing setup steps. Use the [CLI reference](../cli/commands.md) for advanced Project and Module operations.
 
-## Environment Variables & Provider Credentials
-
-VibeKit enforces strict credential isolation: **API secrets are never stored in project files, manifests, logs, or state snapshots**.
-
-Instead, project files reference environment variable names, which the Host resolves dynamically at runtime.
-
-Set the appropriate environment variables for your chosen provider(s):
-
-### OpenAI (`provider:openai`)
-```bash
-export OPENAI_API_KEY="sk-proj-..."
-```
-
-### OpenCode Go (`provider:opencode-go`)
-```bash
-export OPENCODE_API_KEY="opencode_..."
-```
-
-### xAI (`provider:xai`)
-```bash
-export XAI_API_KEY="xai-..."
-```
-
-### OpenRouter (`provider:openrouter`)
-```bash
-export OPENROUTER_API_KEY="sk-or-..."
-```
-
-### Local / unpublished registry path (development)
-
-By default the CLI uses the official registry bundled inside `@useagentsio/cli`. Independently authored Modules can be installed from a local/custom registry path (`--registry <path>`). That path is recorded as `registrySource: "local:<absolute-path>"`. Hosted registries, search/discovery, and a marketplace are not implemented.
-
-```bash
-export VIBEKIT_REGISTRY="/path/to/vibekit/registry"
-```
-
-To add official modules, see [CONTRIBUTING.md](../../CONTRIBUTING.md) and [Module authoring](../contributing/module-authoring.md).
-
----
-
-## Verifying Your Setup
-
-Run the following sanity check to confirm your environment is ready:
-
-```bash
-node -v      # Must be >= 20.0.0
-git --version # Must be present
-echo $OPENAI_API_KEY # Should output your key reference or value
-```
+Contributors working from a source checkout should use the [Development Guide](../contributing/guide.md), which keeps local linking, registry generation, packaging, and release checks separate from this user installation path.

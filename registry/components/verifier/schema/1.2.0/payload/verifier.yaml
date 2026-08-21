@@ -1,0 +1,13 @@
+id: verifier:schema
+type: schema
+description: Validate a Result, Decision, or declared artifact against a JSON Schema.
+records:
+  - passed
+  - errors
+  - candidateRevision
+doesNotSatisfy:
+  - independentReview
+notes: Agent completion is not Verification. A later revision change invalidates the record. Schema paths must be relative to the Project root. Absolute paths and '..' are rejected.
+runtime:
+  package: "@useagentsio/verifier-schema"
+  export: runSchemaVerification

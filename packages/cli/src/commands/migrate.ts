@@ -2,7 +2,7 @@ import {
   createDefaultProject,
   readProjectDocument,
   writeProjectDocument,
-} from "@useagentsio/core";
+} from "../internal/core/index.js";
 
 import type { GlobalFlags } from "../args.js";
 import type { OutputBuffer } from "../output.js";
@@ -46,8 +46,8 @@ export function runMigrate(
     ...current,
     schemaVersion: 2 as const,
     runtime: {
-      adapter: current.runtime?.adapter ?? "@useagentsio/pi",
-      host: current.runtime?.host ?? "@useagentsio/host",
+      adapter: current.runtime?.adapter ?? "vibekit:pi",
+      host: current.runtime?.host ?? "vibekit:host",
     },
     host: current.host ?? defaults.host,
     interfaceBindings,

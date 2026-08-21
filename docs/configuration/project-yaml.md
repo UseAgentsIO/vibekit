@@ -15,8 +15,8 @@ name: my-agent
 root: .
 
 runtime:
-  adapter: "@useagentsio/pi"
-  host: "@useagentsio/host"
+  adapter: "vibekit:pi"
+  host: "vibekit:host"
 
 defaultAgent: chief
 

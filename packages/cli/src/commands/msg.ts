@@ -1,15 +1,17 @@
-import { conversationKeyOf, type InboundMessage } from "@useagentsio/interface-sdk";
+import { conversationKeyOf, type InboundMessage } from "../internal/interfaces/sdk/index.js";
 import {
   VibeKitHost,
   isHostIpcAvailable,
   submitViaIpc,
   type SubmitResult,
-} from "@useagentsio/host";
-import { readProjectDocument } from "@useagentsio/core";
+} from "../internal/host/index.js";
+import { readProjectDocument } from "../internal/core/index.js";
 
 import type { GlobalFlags } from "../args.js";
 import type { OutputBuffer } from "../output.js";
 import { resolveProjectDir } from "../paths.js";
+import { registerProject } from "../project-registry.js";
+import { ensurePersistentAvailability, projectRequiresPersistentAvailability } from "../host-control.js";
 
 export async function runMsg(
   positionals: readonly string[],
@@ -23,15 +25,26 @@ export async function runMsg(
   }
 
   const projectRoot = resolveProjectDir(flags.dir);
+  registerProject(projectRoot);
   const project = readProjectDocument(projectRoot);
   if (project.defaults?.model !== undefined) {
     out.log(`Using ${project.defaults.model.provider} / ${project.defaults.model.id}`);
   }
 
   const message = inboundFromCli(text);
-  const result = (await isHostIpcAvailable(projectRoot))
-    ? await submitViaIpc(projectRoot, message)
-    : await submitInProcess(projectRoot, message);
+  let result: SubmitResult;
+  if (await isHostIpcAvailable(projectRoot)) {
+    result = await submitViaIpc(projectRoot, message);
+  } else if (projectRequiresPersistentAvailability(project)) {
+    const started = await ensurePersistentAvailability(projectRoot, { ensureGateway: true });
+    if (!started.ok) {
+      out.error(started.error ?? "VibeKit could not stay available for its enabled connection.");
+      return 1;
+    }
+    result = await submitViaIpc(projectRoot, message);
+  } else {
+    result = await submitInProcess(projectRoot, message);
+  }
   return printSubmitResult(result, out);
 }
 

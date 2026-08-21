@@ -8,6 +8,19 @@ import { runCli } from "./cli.js";
 
 export { runCli } from "./cli.js";
 export type { CliResult } from "./cli.js";
+export type {
+  GatewayStatus,
+  ProjectDashboardProject,
+  ProjectDashboardSnapshot,
+  ProjectDashboardState,
+  ProjectLifecycleResult,
+  ProjectRegistryEntry,
+} from "./contracts.js";
+export {
+  ensurePersistentAvailability,
+  projectRequiresPersistentAvailability,
+  type PersistentAvailabilityOptions,
+} from "./host-control.js";
 
 function isDirectCliInvocation(): boolean {
   const entry = process.argv[1];

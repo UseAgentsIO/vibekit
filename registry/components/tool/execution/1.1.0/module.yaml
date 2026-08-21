@@ -1,0 +1,48 @@
+schemaVersion: 1
+
+id: tool:execution
+type: tool
+name: execution
+displayName: Execution Tool
+version: 1.1.0
+description: Gives authorized Agents scoped command execution through Pi's built-in bash tool. This release removes the invalid Pi extension stub from 1.0.0.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.1.0"
+
+license: MIT
+
+providesCapabilities:
+  - command.execute
+
+requires:
+  required: []
+  optional: []
+  recommended:
+    - policy:least-privilege
+  conflicts: []
+
+requestsPermissions:
+  - capability: command.execute
+
+secrets: []
+
+files: []
+
+configuration:
+  target: .vibekit/config/tools/execution.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-tool
+  name: execution
+
+runtime:
+  kind: pi-builtin
+  tools: [bash]

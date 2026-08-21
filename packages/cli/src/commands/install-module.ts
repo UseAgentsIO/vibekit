@@ -6,7 +6,7 @@ import {
   readInstalledManifest,
   readProjectDocument,
   type ModuleType,
-} from "@useagentsio/core";
+} from "../internal/core/index.js";
 
 import { resolveRegistrySelection } from "../paths.js";
 

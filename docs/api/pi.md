@@ -1,21 +1,19 @@
-# `@useagentsio/pi` API Reference
+# Pi Runtime Reference
 
-Embedded adapter for Pi sessions: Worker Runs, worktrees, delegation, and persistent conversations. Users do not launch the Pi TUI.
+Embedded adapter for Pi sessions: Worker Runs, worktrees, delegation, and persistent conversations. It is an internal runtime area of `@useagentsio/vibekit`; users do not launch the Pi TUI or install Pi separately.
 
 ---
 
-## Installation
+## Source location
 
-```bash
-pnpm add @useagentsio/pi @useagentsio/core
-```
+The current source lives under `packages/cli/src/internal/pi/`. The product owns the Pi adapter and keeps Project State in the Host.
 
 ---
 
 ## Worker Runs
 
 ```ts
-import { prepareIsolatedRun, runIsolated, runManaged } from "@useagentsio/pi";
+import { prepareIsolatedRun, runIsolated, runManaged } from "./packages/cli/src/internal/pi/index.js";
 
 const prepared = await prepareIsolatedRun({
   projectRoot,
@@ -42,7 +40,7 @@ Inject `createSession` only in unit tests.
 ## Worktrees
 
 ```ts
-import { createWorktree, removeWorktree, shouldUseWorktree } from "@useagentsio/pi";
+import { createWorktree, removeWorktree, shouldUseWorktree } from "./packages/cli/src/internal/pi/index.js";
 
 if (shouldUseWorktree({ project, task })) {
   const worktree = createWorktree({ projectRoot, runId });
@@ -73,7 +71,7 @@ The Host uses `runConversationTurn` (and related session helpers) for Interface 
 ## Model catalog
 
 ```ts
-import { OFFICIAL_PROVIDERS, openModelCatalog } from "@useagentsio/pi";
+import { OFFICIAL_PROVIDERS, openModelCatalog } from "./packages/cli/src/internal/pi/index.js";
 
 const catalog = await openModelCatalog({ allowNetwork: true });
 const models = await catalog.listModels("openai");

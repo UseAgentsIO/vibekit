@@ -83,6 +83,67 @@ describe("install package dependencies", () => {
     ).toThrow(/Conflicting package dependency/);
   });
 
+  it("preserves an existing compatible package range", () => {
+    const registryRoot = buildTempRegistry([{ type: "tool", name: "compatible", packages: { dependencies: { leftpad: "^1.2.0" } } }]);
+    const dir = makeTempDir("vibekit-pkg-compatible-");
+    fs.writeFileSync(path.join(dir, "package.json"), `${JSON.stringify({ name: "compatible", dependencies: { leftpad: "^1.2.1" } }, null, 2)}\n`);
+    const project = createDefaultProject({ slug: "compatible", name: "compatible" });
+    writeProjectDocument(dir, project);
+    writeInstalledManifest(dir, emptyInstalledManifest());
+    const plan = planInstall({
+      projectRoot: dir,
+      registry: loadRegistry(registryRoot),
+      roots: ["tool:compatible"],
+      project,
+      manifest: emptyInstalledManifest(),
+    });
+
+    applyInstall({ projectRoot: dir, plan });
+    const pkg = JSON.parse(fs.readFileSync(path.join(dir, "package.json"), "utf8")) as { dependencies: Record<string, string> };
+    expect(pkg.dependencies.leftpad).toBe("^1.2.1");
+  });
+
+  it("treats workspace package declarations as compatible with registry ranges", () => {
+    const registryRoot = buildTempRegistry([
+      {
+        type: "tool",
+        name: "workspace-compatible",
+        packages: { dependencies: { "@useagentsio/example-runtime": "^1.2.0" } },
+      },
+    ]);
+    const dir = makeTempDir("vibekit-pkg-workspace-");
+    fs.writeFileSync(
+      path.join(dir, "package.json"),
+      `${JSON.stringify(
+        { name: "workspace-compatible", dependencies: { "@useagentsio/example-runtime": "workspace:*" } },
+        null,
+        2,
+      )}\n`,
+    );
+    const project = createDefaultProject({ slug: "workspace-compatible", name: "workspace-compatible" });
+    writeProjectDocument(dir, project);
+    writeInstalledManifest(dir, emptyInstalledManifest());
+    const previous = process.env.VIBEKIT_SKIP_PACKAGE_INSTALL;
+    process.env.VIBEKIT_SKIP_PACKAGE_INSTALL = "1";
+    try {
+      const plan = planInstall({
+        projectRoot: dir,
+        registry: loadRegistry(registryRoot),
+        roots: ["tool:workspace-compatible"],
+        project,
+        manifest: emptyInstalledManifest(),
+      });
+      expect(() => applyInstall({ projectRoot: dir, plan })).not.toThrow();
+      const pkg = JSON.parse(fs.readFileSync(path.join(dir, "package.json"), "utf8")) as {
+        dependencies: Record<string, string>;
+      };
+      expect(pkg.dependencies["@useagentsio/example-runtime"]).toBe("workspace:*");
+    } finally {
+      if (previous === undefined) delete process.env.VIBEKIT_SKIP_PACKAGE_INSTALL;
+      else process.env.VIBEKIT_SKIP_PACKAGE_INSTALL = previous;
+    }
+  });
+
   it("does not execute file: package lifecycle scripts", () => {
     const impl = makeTempDir("vibekit-impl-scripts-");
     fs.writeFileSync(

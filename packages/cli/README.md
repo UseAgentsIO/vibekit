@@ -3,12 +3,18 @@
 CLI for initializing Projects, installing Modules, and validating composition. The binary name is `vibekit`.
 
 ```bash
-npm install -g --ignore-scripts @useagentsio/cli@0.3.1
+npm install --global --ignore-scripts @useagentsio/cli@latest
 vibekit --help
 vibekit add --help
 ```
 
-Install **0.1.2 or later** for per-command help. `0.1.0` does not run when invoked through the global `vibekit` shim.
+The canonical first run creates the default Project without a second Project-local runtime install:
+
+```bash
+vibekit create my-agent --provider openai --model gpt-5 --yes
+cd my-agent
+vibekit msg "Hello! What can you help me with?"
+```
 
 ```text
 Usage: vibekit [options] [command]

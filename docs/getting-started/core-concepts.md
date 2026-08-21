@@ -1,6 +1,6 @@
 # Core Concepts
 
-This document introduces the fundamental architecture and mental model behind **VibeKit Agents**.
+This document explains what the assistant, Project, abilities, memory, connections, and Host do after you complete the [Quickstart](quickstart.md). It is useful context, not prerequisite setup reading.
 
 ---
 
@@ -32,11 +32,11 @@ VibeKit structures autonomous agent systems around four distinct primitives:
 ```
 
 ### Components (The Pieces)
-Components are atomic registry Modules. Identity is `type:name` (for example `tool:web`, `interface:telegram`), not an npm package name. Implementations may be referenced through `runtime.package` / `runtime.export`. The official registry is the default curated catalog; independently authored Modules can use a local/custom registry path.
+Components are atomic registry Modules. Their identity is a stable `type:name` such as `tool:web` or `interface:telegram`; users normally encounter these as abilities or connections, not as package names. The official registry is the default curated catalog, and independently authored Modules can use a local/custom registry path.
 - **Providers**: Connection configs for model vendors (e.g., `provider:openai`, `provider:openai-codex`, `provider:xai`).
 - **Tools**: Executable toolsets (e.g., `tool:filesystem`, `tool:execution`; optional `tool:web`, `tool:github`, …).
 - **Skills**: Structured instructions for Pi (e.g., `skill:software-development`, `skill:research`).
-- **Interfaces**: I/O adapters (V1 ships `interface:terminal`; HTTP, webhook, schedule, Slack, and Telegram are optional).
+- **Connections**: I/O adapters (V1 ships `interface:terminal`; HTTP, webhook, schedule, Slack, and Telegram are optional).
 - **Policies**: Invariant governance rules (e.g., `policy:least-privilege`, `policy:require-verification`).
 - **Verifiers**: Deterministic check runners (e.g., `verifier:command`, optional `verifier:schema`).
 - **State Backends**: Storage drivers (`state:repository`; optional `state:memory` is curated notes, not Project truth).
@@ -53,7 +53,7 @@ Agents are useful recipes composed of Components. An agent definition (`agent.ya
 A Project is defined by `.vibekit/project.yaml`. It unites agents, components, delegation rules, permission matrices, and verification requirements into a cohesive system working against shared Project State.
 
 ### The Agent Host (The Product)
-The **Host** (`@useagentsio/host` / `vibekit-host`) is the runtime process that executes the Project. It loads project contracts, coordinates Interface adapters, schedules Tasks, and manages Pi execution sessions.
+The **Host** is the internal runtime process that executes the Project. It loads project contracts, coordinates connection adapters, schedules Tasks, and manages Pi execution sessions. Users run `vibekit`; they do not launch Pi or a separate Host package.
 
 ---
 
@@ -67,12 +67,12 @@ VibeKit embeds [Pi](https://github.com/earendil-works/pi) as its internal model 
 
 ---
 
-## 3. Human Interaction via Interfaces
+## 3. Human Interaction via Connections
 
-Users communicate with a Project through **Interfaces**:
-- **`interface:terminal`** is the Interface that ships on the first path (`vibekit msg` / `vibekit start`). Optional Interfaces (HTTP, webhook, schedule, Slack, Telegram) attach the same Host without changing Agents.
-- Interfaces are strictly **I/O adapters**. They translate inbound text into Host Tasks or conversation turns, and render outbound Progress, Results, and Approval requests.
-- Interfaces **never** own project state, permissions, or agent definitions.
+Users communicate with a Project through **connections**. In the technical registry these are Interface Components:
+- **`interface:terminal`** is the connection that ships on the first path (`vibekit` / `vibekit msg`). Optional connections (HTTP, webhook, schedule, Slack, Telegram) attach to the same Host without changing assistants.
+- Connections are strictly **I/O adapters**. They translate inbound text into Host Tasks or conversation turns, and render outbound progress, Results, and Approval requests.
+- Connections never own Project State, permissions, or assistant definitions.
 
 ---
 

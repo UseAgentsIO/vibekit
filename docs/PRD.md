@@ -16,7 +16,7 @@ Its core model is:
 
 The user interacts with VibeKit, not directly with Pi.
 
-Registry Modules are VibeKit's composition and distribution abstraction. npm packages are optional implementation artifacts referenced by Module `runtime.package` / `runtime.export`. Canonical identity is the registry ID (`tool:browser`), not `@useagentsio/tool-browser`.
+Registry Modules are VibeKit's composition and distribution abstraction. Canonical identity is the registry ID (`tool:browser`), not an implementation package name. The consolidated product resolves first-party runtime identifiers internally; independently distributed Modules may use npm `runtime.package` / `runtime.export` artifacts.
 
 The official registry is the default curated registry. Independently authored Modules can conform to the same runtime, compatibility, ownership, permission, and security rules via a local/custom registry path. This is not a marketplace.
 

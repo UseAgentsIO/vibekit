@@ -1,23 +1,19 @@
-# `@useagentsio/core` API Reference
+# Core Runtime Reference
 
-Schemas, typed IDs, repository State, install/update/remove, and three-way diff.
+Schemas, typed IDs, repository State, install/update/remove, and three-way diff inside the consolidated product. This is an internal maintainer reference, not a separately installable package.
 
 ---
 
-## Installation
+## Source location
 
-```bash
-pnpm add @useagentsio/core
-```
-
-JSON Schema sources live in `schemas/` and are copied into this package on publish.
+The current source lives under `packages/cli/src/internal/core/`. JSON Schema sources live in `schemas/`. Projects receive the product runtime once and do not install Core separately.
 
 ---
 
 ## Schema validation
 
 ```ts
-import { parseAndValidateYaml, type AgentDocument } from "@useagentsio/core";
+import { parseAndValidateYaml, type AgentDocument } from "./packages/cli/src/internal/core/index.js";
 
 const parsed = parseAndValidateYaml("agent", yamlContent);
 if (!parsed.valid || parsed.data === undefined) {
@@ -35,7 +31,7 @@ Document kinds include `project`, `agent`, `component`, `task`, `result`, `decis
 Module IDs are `type:name` (no `@version` in the ID itself). Version is a separate field.
 
 ```ts
-import { parseModuleId, formatModuleId, isModuleId } from "@useagentsio/core";
+import { parseModuleId, formatModuleId, isModuleId } from "./packages/cli/src/internal/core/index.js";
 
 const parsed = parseModuleId("agent:chief");
 // { type: "agent", name: "chief" }
@@ -51,7 +47,7 @@ Runtime IDs are `kind_<uuid>` (`task_`, `run_`, `result_`, `approval_`, …) via
 ## Repository State
 
 ```ts
-import { createRepositoryState, readProjectDocument } from "@useagentsio/core";
+import { createRepositoryState, readProjectDocument } from "./packages/cli/src/internal/core/index.js";
 
 const project = readProjectDocument(projectRoot);
 const state = createRepositoryState({
@@ -76,7 +72,7 @@ import {
   applyUpdate,
   readInstalledManifest,
   loadRegistry,
-} from "@useagentsio/core";
+} from "./packages/cli/src/internal/core/index.js";
 
 const registry = loadRegistry(registryRoot);
 const manifest = readInstalledManifest(projectRoot);

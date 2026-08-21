@@ -63,6 +63,10 @@ describe("maintained example Projects", () => {
     expect(ids).toEqual(
       expect.arrayContaining([
         "agent:chief",
+        "agent:coder",
+        "agent:project-manager",
+        "agent:reviewer",
+        "agent:researcher",
         "agent:personal",
         "provider:openai",
         "interface:telegram",
@@ -87,7 +91,13 @@ describe("maintained example Projects", () => {
     expect(project.agentBindings.personal?.definition).toBe("agent:personal");
     expect(fs.existsSync(path.join(dir, ".vibekit/agents/chief/agent.yaml"))).toBe(true);
     expect(fs.existsSync(path.join(dir, ".vibekit/agents/personal/agent.yaml"))).toBe(true);
-    expect(project.delegation.chief).toEqual(["personal"]);
+    expect(project.delegation.chief).toEqual([
+      "project-manager",
+      "coder",
+      "reviewer",
+      "researcher",
+      "personal",
+    ]);
 
     const telegram = project.interfaceBindings?.["telegram-main"];
     expect(telegram?.enabled).toBe(true);
@@ -96,14 +106,11 @@ describe("maintained example Projects", () => {
     expect(telegramRecord).toBeDefined();
     const telegramRuntime = resolveInstalledModuleRuntime(telegramRecord!);
     expect(telegramRuntime?.kind).toBe("interface");
-    expect(telegramRuntime?.package).toBe("@useagentsio/interface-telegram");
+    expect(telegramRuntime?.package).toBe("vibekit:interface-telegram");
     expect(telegramRuntime?.export).toBe("createTelegramInterface");
 
-    const pkg = JSON.parse(fs.readFileSync(path.join(dir, "package.json"), "utf8")) as {
-      dependencies: Record<string, string>;
-    };
-    expect(pkg.dependencies["@useagentsio/interface-telegram"]).toBeDefined();
-    expect(pkg.dependencies["@useagentsio/interface-terminal"]).toBeUndefined();
+    expect(fs.existsSync(path.join(dir, "package.json"))).toBe(false);
+    expect(fs.existsSync(path.join(dir, "node_modules"))).toBe(false);
 
     for (const relative of [
       ".vibekit/project.yaml",
@@ -118,9 +125,9 @@ describe("maintained example Projects", () => {
     }
 
     const readme = fs.readFileSync(HQ_README, "utf8");
-    expect(readme).toContain("agent:chief");
-    expect(readme).toContain("agent:personal");
-    expect(readme).toContain("interface:telegram");
+    expect(readme).toContain("Chief");
+    expect(readme).toContain("Personal");
+    expect(readme).toContain("Telegram");
     expect(readme).not.toMatch(/file:\/\//);
     expect(readme).not.toContain("orchestrator");
     expect(readme).not.toContain("subagent");
@@ -190,6 +197,7 @@ describe("maintained example Projects", () => {
   it("checked-in Headquarters Project validates against the official registry", () => {
     const source = path.resolve("docs/examples/headquarters");
     const dir = makeTempDir("vibekit-example-hq-checked-in-");
+    expect(fs.existsSync(path.join(source, "package.json"))).toBe(false);
     fs.cpSync(source, dir, {
       recursive: true,
       filter: (entry) => !entry.includes(`${path.sep}node_modules${path.sep}`),
@@ -203,13 +211,28 @@ describe("maintained example Projects", () => {
 
     const manifest = readInstalledManifest(dir);
     expect(manifest.modules.every((module) => module.registrySource === "official")).toBe(true);
+    const expectedVersions = new Map([
+      ["state:memory", "1.2.0"],
+      ["tool:filesystem", "1.1.0"],
+      ["tool:memory", "1.3.0"],
+      ["tool:scheduler", "1.1.0"],
+      ["tool:web", "1.1.0"],
+    ]);
+    for (const [id, version] of expectedVersions) {
+      expect(manifest.modules.find((module) => module.id === id)?.version, id).toBe(version);
+    }
     const doctor = runDoctor({
       projectRoot: dir,
       registry: loadRegistry(officialRegistryDir, OFFICIAL_REGISTRY_SOURCE),
     });
     expect(doctor.errorCount, JSON.stringify(doctor.findings, null, 2)).toBe(0);
-    const scheduler = fs.readFileSync(path.join(dir, ".pi/extensions/scheduler/index.ts"), "utf8");
-    expect(scheduler).toContain("@useagentsio/tool-scheduler");
-    expect(scheduler).not.toContain("@useagentsio/interface-schedule");
+    for (const relative of [
+      ".pi/extensions/filesystem/index.ts",
+      ".pi/extensions/memory/index.ts",
+      ".pi/extensions/scheduler/index.ts",
+      ".pi/extensions/web/index.ts",
+    ]) {
+      expect(fs.existsSync(path.join(dir, relative)), relative).toBe(false);
+    }
   });
 });

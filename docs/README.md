@@ -2,9 +2,9 @@
 
 Welcome to the official documentation for **VibeKit Agents**.
 
-VibeKit is an always-running **Agent Host** built on top of [Pi](https://github.com/earendil-works/pi). In VibeKit, **Components** are the pieces, **Agents** are useful compositions of those pieces, **Projects** are systems of Agents working against shared State, and the **Agent Host** executes them continuously.
+Start with the product, not the implementation: once published, install the VibeKit product, run bare `vibekit`, choose a model, and have a conversation with the default assistant. The [Quickstart](getting-started/quickstart.md) keeps that path short. VibeKit owns the Host, embedded Pi engine, built-in abilities, memory, and connections; a Project is the durable workspace where your choices and conversations live.
 
-Registry Modules are the composition and distribution abstraction. npm packages are optional implementation artifacts referenced by Module runtime metadata. The official registry is the default curated source, not the definition of a valid Module. Independently authored Modules can use a local/custom registry path; this is not a marketplace.
+Registry Modules, Component families, and runtime identifiers are authoring concepts. They matter when you are extending the catalog or debugging a Project, not when you are trying VibeKit for the first time. The official registry is the default curated source, and independently authored Modules can use a local/custom registry path; this is not a marketplace.
 
 ---
 
@@ -17,7 +17,7 @@ docs/
 ├── cli/                   # Complete CLI manual and 3-way lifecycle guide
 ├── configuration/         # project.yaml, workspace layout, and installed manifest
 ├── catalog/               # Official agents and component reference
-├── api/                   # TypeScript SDK docs for @useagentsio/* packages
+├── api/                   # Advanced internal runtime reference
 ├── patterns/              # Verified multi-agent collaboration patterns
 ├── contributing/          # Dev workflow + registry authoring (see also /CONTRIBUTING.md)
 ├── phases/                # Historical V1 build briefs (not current catalog)
@@ -30,9 +30,9 @@ docs/
 
 New to VibeKit? Start here:
 
-- **[Quickstart Guide](getting-started/quickstart.md)**: Create and run your first Agent project in under 2 minutes.
-- **[Installation & Requirements](getting-started/installation.md)**: Node.js requirements, package manager setup, and provider API keys.
-- **[Core Concepts](getting-started/core-concepts.md)**: Understand the Taxonomy (Components, Agents, Projects, Host) and the boundary-enforced architecture.
+- **[Quickstart Guide](getting-started/quickstart.md)**: Install VibeKit, run bare `vibekit`, and have the first successful conversation.
+- **[Installation & Requirements](getting-started/installation.md)**: Product installation, model authentication, connections, and troubleshooting.
+- **[Core Concepts](getting-started/core-concepts.md)**: Understand assistants, Projects, abilities, memory, connections, and the Host boundary.
 
 ---
 
@@ -41,6 +41,7 @@ New to VibeKit? Start here:
 Deep-dive into how VibeKit executes and safeguards agentic workflows:
 
 - **[System Overview](architecture/overview.md)**: The Agent Host, Interface adapter layer, and embedded Pi engine.
+- **[Local Gateway Specification](spec/Local-Gateway-Specification.md)**: Normative Project registry, isolation, lifecycle API, dashboard, and login-service behavior.
 - **[Persistent Sessions vs. Worker Runs](architecture/sessions-and-runs.md)**: Human-to-Agent interactive conversations vs. isolated, worktree-backed worker Runs.
 - **[State & Persistence](architecture/state-and-persistence.md)**: Structured records (`tasks`, `results`, `decisions`, `approvals`, `verifications`, `events`, `conversations`).
 - **[Security & Runtime Boundary](architecture/security-and-permissions.md)**: The permission intersection formula, secret reference models, and untrusted data handling.
@@ -52,7 +53,7 @@ Deep-dive into how VibeKit executes and safeguards agentic workflows:
 Master the `vibekit` CLI commands:
 
 - **[CLI Overview & Flags](cli/overview.md)**: Global options, exit codes, non-interactive mode (`--yes`), and environment controls.
-- **[Command Reference](cli/commands.md)**: `create` (including `--example headquarters`), `msg`, `start`, `approve-pairing`, composition commands, and `doctor`.
+- **[Command Reference](cli/commands.md)**: Project runtime, registry, Gateway/dashboard, composition, pairing, and diagnostics commands.
 - **[Project Lifecycle & Diagnostics](cli/project-lifecycle.md)**: Three-way diffs, atomic updates without `--force`, conflict handling, and `vibekit doctor`.
 
 ---
@@ -77,15 +78,15 @@ Explore the official modules shipped with VibeKit:
 
 ---
 
-## 🛠️ SDK & Developer Reference
+## 🛠️ Runtime & Developer Reference
 
-Embed VibeKit packages into your TypeScript applications:
+Inspect the internal runtime only when you are contributing or building a deliberately controlled integration. The supported user boundary remains the `vibekit` command:
 
-- **[Packages Overview](api/overview.md)**: Monorepo architecture and package dependencies.
-- **[@useagentsio/host](api/host.md)**: Running the `VibeKitHost` in Node.js processes.
-- **[@useagentsio/core](api/core.md)**: Schemas, repository state backend, validation, and diff engine.
-- **[@useagentsio/pi](api/pi.md)**: Embedded Pi adapter, isolated runs, and worktree execution.
-- **[@useagentsio/interface-sdk](api/interface-sdk.md)**: Contract for building custom Interface adapters.
+- **[Runtime API Overview](api/overview.md)**: Internal runtime boundaries and the supported product entry point.
+- **[Host runtime reference](api/host.md)**: Running the internal `VibeKitHost` in controlled processes.
+- **[Core runtime reference](api/core.md)**: Schemas, repository State, validation, and update engine.
+- **[Pi runtime reference](api/pi.md)**: Embedded Pi adapter, isolated Runs, and worktree execution.
+- **[Interface contract reference](api/interface-sdk.md)**: Internal contract for building connection adapters.
 
 ---
 

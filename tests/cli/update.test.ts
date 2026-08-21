@@ -139,6 +139,62 @@ describe("acceptance 8-9: update", () => {
     expect(fs.readFileSync(path.join(dir, ".vibekit/installed.json"), "utf8")).toBe(installedBefore);
   });
 
+  it("updates multiple selected Modules in one transaction", async () => {
+    const registry = buildTempRegistry([
+      {
+        type: "policy",
+        name: "first",
+        version: "1.0.0",
+        payload: "first-v1\n",
+      },
+      {
+        type: "policy",
+        name: "second",
+        version: "1.0.0",
+        payload: "second-v1\n",
+      },
+    ]);
+    const dir = makeTempDir("vibekit-update-batch-");
+    expect((await runCli(["init", dir, "--registry", registry])).exitCode).toBe(0);
+    expect(
+      (await runCli(["add", "policy", "first", "--yes", "--dir", dir, "--registry", registry])).exitCode,
+    ).toBe(0);
+    expect(
+      (await runCli(["add", "policy", "second", "--yes", "--dir", dir, "--registry", registry])).exitCode,
+    ).toBe(0);
+
+    publishVersion(registry, {
+      type: "policy",
+      name: "first",
+      version: "1.1.0",
+      payload: "first-v2\n",
+    });
+    publishVersion(registry, {
+      type: "policy",
+      name: "second",
+      version: "1.1.0",
+      payload: "second-v2\n",
+    });
+
+    const result = await runCli([
+      "update",
+      "policy:first",
+      "policy:second",
+      "--yes",
+      "--dir",
+      dir,
+      "--registry",
+      registry,
+    ]);
+    expect(result.exitCode, result.stderr + result.stdout).toBe(0);
+    expect(result.stdout).toContain("Update policy:first 1.0.0 → 1.1.0");
+    expect(result.stdout).toContain("Update policy:second 1.0.0 → 1.1.0");
+    expect(result.stdout).toContain("Updated policy:first to 1.1.0");
+    expect(result.stdout).toContain("Updated policy:second to 1.1.0");
+    expect(fs.readFileSync(path.join(dir, ".vibekit/components/policy/first.txt"), "utf8")).toBe("first-v2\n");
+    expect(fs.readFileSync(path.join(dir, ".vibekit/components/policy/second.txt"), "utf8")).toBe("second-v2\n");
+  });
+
   it("refuses an incompatible requested version", async () => {
     const registry = buildTempRegistry([
       {

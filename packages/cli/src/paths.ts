@@ -7,7 +7,7 @@ import {
   loadRegistry,
   OFFICIAL_REGISTRY_SOURCE,
   type Registry,
-} from "@useagentsio/core";
+} from "./internal/core/index.js";
 
 export function resolveProjectDir(dir?: string): string {
   return path.resolve(dir ?? process.cwd());
@@ -72,6 +72,6 @@ export function slugify(value: string): string {
 export function isWorkspaceRoot(dir: string): boolean {
   return (
     fs.existsSync(path.join(dir, "pnpm-workspace.yaml")) &&
-    fs.existsSync(path.join(dir, "packages/core/package.json"))
+    fs.existsSync(path.join(dir, "packages/cli/package.json"))
   );
 }

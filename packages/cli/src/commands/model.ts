@@ -1,9 +1,10 @@
-import { readProjectDocument, VibeKitError, writeProjectDocument } from "@useagentsio/core";
+import { readProjectDocument, VibeKitError, writeProjectDocument } from "../internal/core/index.js";
 
 import type { GlobalFlags } from "../args.js";
 import { formatSelectedModel, selectProviderAndModel } from "../model-select.js";
 import type { OutputBuffer } from "../output.js";
 import { resolveProjectDir } from "../paths.js";
+import { registerProject } from "../project-registry.js";
 
 export async function runModel(
   positionals: readonly string[],
@@ -11,6 +12,7 @@ export async function runModel(
   out: OutputBuffer,
 ): Promise<number> {
   const projectRoot = resolveProjectDir(flags.dir);
+  registerProject(projectRoot);
   const project = readProjectDocument(projectRoot);
   const current = project.defaults?.model;
   if (current !== undefined) {

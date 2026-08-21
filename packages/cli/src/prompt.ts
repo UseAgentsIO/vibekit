@@ -1,7 +1,7 @@
 import { isatty } from "node:tty";
 import { stdin, stdout } from "node:process";
 
-import { VibeKitError } from "@useagentsio/core";
+import { VibeKitError } from "./internal/core/index.js";
 
 import { select, text } from "./ui/index.js";
 import type { MenuOption } from "./ui/options.js";

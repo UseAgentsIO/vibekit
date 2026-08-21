@@ -4,7 +4,7 @@ import {
   resolveModule,
   type ModuleType,
   type Registry,
-} from "@useagentsio/core";
+} from "./internal/core/index.js";
 
 import type { MenuOption } from "./ui/options.js";
 
@@ -19,6 +19,8 @@ export interface SetupItem {
  * Registry module.yaml remains authoritative.
  */
 const WIZARD_COPY: Readonly<Record<string, string>> = {
+  assistant:
+    "Handles everyday research, planning, and project work with bounded file, command, web, and memory access.",
   chief: "Coordinates user intent, decomposes work, and delegates to specialized agents.",
   coder: "Implements bounded code changes in isolated Git worktrees and returns evidence.",
   reviewer: "Independently reviews candidate changes without source-write permission.",
@@ -33,6 +35,7 @@ const WIZARD_COPY: Readonly<Record<string, string>> = {
 
 /** Order-only fallback. Identity and copy come from the registry. */
 export const SETUP_AGENTS: readonly SetupItem[] = [
+  { id: "assistant", label: "General Assistant" },
   { id: "chief", label: "Chief" },
   { id: "coder", label: "Coder" },
   { id: "reviewer", label: "Reviewer" },
@@ -220,6 +223,31 @@ export function delegationContractsFromRegistry(
     }
   }
   return contracts;
+}
+
+/**
+ * A delegation Agent is useful only when the Agents named by its contract are
+ * present in the Project. Expand the selected recipes before planning the
+ * install so a Chief-led Project cannot be created with a broken front door.
+ */
+export function expandDelegationAgents(
+  registry: Registry,
+  selected: readonly string[],
+): string[] {
+  const agents = [...selected];
+  for (let index = 0; index < agents.length; index += 1) {
+    const name = agents[index];
+    if (name === undefined) {
+      continue;
+    }
+    const targets = delegationContractsFromRegistry(registry, [name])[name] ?? [];
+    for (const target of targets) {
+      if (!agents.includes(target)) {
+        agents.push(target);
+      }
+    }
+  }
+  return agents;
 }
 
 export function labelFor(items: readonly SetupItem[], id: string | undefined): string {

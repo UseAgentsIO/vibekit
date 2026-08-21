@@ -11,12 +11,13 @@ import {
   runDoctor,
   type ModuleType,
   type PlannedPermission,
-} from "@useagentsio/core";
+} from "../internal/core/index.js";
 
 import type { GlobalFlags } from "../args.js";
 import type { OutputBuffer } from "../output.js";
 import { resolveProjectDir, resolveRegistrySelection } from "../paths.js";
 import { ensureInstalledSecrets } from "../secrets.js";
+import { registerProject } from "../project-registry.js";
 import { printDoctor } from "./doctor.js";
 
 export async function runAdd(
@@ -50,6 +51,7 @@ export async function runAdd(
   }
 
   const projectRoot = resolveProjectDir(flags.dir);
+  registerProject(projectRoot);
   const { registry, source } = resolveRegistrySelection(flags.registry);
   const project = readProjectDocument(projectRoot);
   const manifest = readInstalledManifest(projectRoot);

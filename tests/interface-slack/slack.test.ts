@@ -18,7 +18,7 @@ import {
   SlackInterface,
   type SlackInbound,
   type SlackTransport,
-} from "../../packages/interface-slack/src/index.js";
+} from "../../packages/cli/src/internal/interfaces/slack/index.js";
 
 interface ApprovalCall {
   readonly approvalId: string;
@@ -497,18 +497,15 @@ describe("interface:slack registry", () => {
 
 describe("interface:slack independence", () => {
   it("does not import the telegram package", () => {
-    const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../packages/interface-slack/src");
+    const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../packages/cli/src/internal/interfaces/slack");
     for (const file of listTs(root)) {
       const text = fs.readFileSync(file, "utf8");
       expect(text).not.toMatch(/interface-telegram|@useagentsio\/interface-telegram/);
     }
-    const pkg = JSON.parse(
-      fs.readFileSync(
-        path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../packages/interface-slack/package.json"),
-        "utf8",
-      ),
-    ) as { dependencies?: Record<string, string> };
-    expect(pkg.dependencies?.["@useagentsio/interface-telegram"]).toBeUndefined();
+    expect(fs.existsSync(path.resolve(
+      path.dirname(fileURLToPath(import.meta.url)),
+      "../../packages/interface-slack/package.json",
+    ))).toBe(false);
   });
 });
 

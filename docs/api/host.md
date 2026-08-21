@@ -1,14 +1,12 @@
-# `@useagentsio/host` API Reference
+# Host Runtime Reference
 
-The `@useagentsio/host` package implements the always-running VibeKit Agent Host daemon (`vibekit-host`).
+The Host is an internal runtime area of `@useagentsio/vibekit`. It implements the always-running VibeKit Agent Host; users run `vibekit` and do not install or launch a separate Host package.
 
 ---
 
-## Installation
+## Source location
 
-```bash
-pnpm add @useagentsio/host @useagentsio/core
-```
+The current source lives under `packages/cli/src/internal/host/`. The product owns this runtime and its internal Core and Pi dependencies.
 
 ---
 
@@ -17,7 +15,7 @@ pnpm add @useagentsio/host @useagentsio/core
 There is no public constructor. Boot with `VibeKitHost.start` (acquires `.vibekit/runtime/host.lock`, starts IPC, optionally starts Interfaces).
 
 ```ts
-import { VibeKitHost, type HostOptions } from "@useagentsio/host";
+import { VibeKitHost, type HostOptions } from "./packages/cli/src/internal/host/index.js";
 
 const host = await VibeKitHost.start({
   projectRoot: "/path/to/project",
@@ -59,7 +57,7 @@ A second start on the same Project throws `host_already_running`.
 ### `host.submit(message: InboundMessage): Promise<SubmitResult>`
 
 ```ts
-import { conversationKeyOf } from "@useagentsio/interface-sdk";
+import { conversationKeyOf } from "./packages/cli/src/internal/interfaces/sdk/index.js";
 
 const conversationKey = conversationKeyOf({
   interfaceBinding: "terminal-main",
@@ -105,7 +103,7 @@ Stops Interfaces, closes IPC (unlinks `.vibekit/runtime/host.sock`), releases th
 While a Host is running, clients can submit turns without starting a second process:
 
 ```ts
-import { isHostIpcAvailable, submitViaIpc } from "@useagentsio/host";
+import { isHostIpcAvailable, submitViaIpc } from "./packages/cli/src/internal/host/index.js";
 
 if (await isHostIpcAvailable(projectRoot)) {
   await submitViaIpc(projectRoot, message);

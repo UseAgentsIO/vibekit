@@ -15,8 +15,10 @@ import {
 } from "@useagentsio/core";
 import { conversationKeyOf } from "@useagentsio/interface-sdk";
 import { VibeKitHost } from "@useagentsio/host";
+import type { CreatePiSession, PiSessionEvent } from "@useagentsio/pi";
 import { describe, expect, it } from "vitest";
 
+import { runCli } from "vibekit";
 import { makeTempDir, officialRegistryDir } from "../helpers.js";
 
 function writeProject(dir: string) {
@@ -217,6 +219,55 @@ describe("VibeKitHost", () => {
       detail: "terminal",
     });
     await host.stop();
+  });
+
+  it("attaches Chief's delegation tool to the default Host turn", async () => {
+    const dir = makeTempDir("vibekit-host-delegate-");
+    const initialized = await runCli([
+      "init", dir,
+      "--provider", "openai",
+      "--model", "gpt-5",
+      "--agent", "chief",
+      "--agent", "coder",
+      "--interface", "terminal",
+      "--registry", officialRegistryDir,
+      "--yes",
+    ]);
+    expect(initialized.exitCode, initialized.stderr).toBe(0);
+
+    const seen: string[][] = [];
+    const createSession: CreatePiSession = async (options) => {
+      seen.push((options.customTools ?? []).map((tool) => tool.name));
+      let listener: ((event: PiSessionEvent) => void) | undefined;
+      return {
+        async prompt() {
+          listener?.({
+            type: "message_update",
+            assistantMessageEvent: { type: "text_delta", delta: "ok" },
+          });
+        },
+        subscribe(next) { listener = next; return () => { listener = undefined; }; },
+        async abort() {},
+        dispose() {},
+      };
+    };
+    const host = await VibeKitHost.start({ projectRoot: dir, startInterfaces: false, createSession });
+    try {
+      await host.submit({
+        eventId: "evt-delegate",
+        interfaceBinding: "terminal-main",
+        accountId: "local",
+        conversationId: "cli",
+        conversationKey: conversationKeyOf({ interfaceBinding: "terminal-main", accountId: "local", conversationId: "cli" }),
+        sender: { id: "local", trusted: true },
+        text: "delegate a hello-world task",
+        attachments: [],
+        timestamp: "2026-08-20T22:00:00.000Z",
+      });
+      expect(seen[0]).toContain("agent_delegate");
+    } finally {
+      await host.stop();
+    }
   });
 });
 

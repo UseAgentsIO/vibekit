@@ -45,6 +45,7 @@ export interface SyntheticComponentOptions {
     readonly available?: boolean;
   };
   readonly packages?: { readonly dependencies?: Readonly<Record<string, string>> };
+  readonly secrets?: ReadonlyArray<{ readonly name: string; readonly source: "environment" | "deployment"; readonly required?: boolean }>;
 }
 
 export function writeSyntheticComponent(
@@ -87,7 +88,7 @@ export function writeSyntheticComponent(
       conflicts: options.conflicts ?? [],
     },
     requestsPermissions: (options.permissions ?? []).map((capability) => ({ capability })),
-    secrets: [],
+    secrets: options.secrets ?? [],
     files: files.map((file) => ({
       source: file.source,
       target: file.target,

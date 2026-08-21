@@ -11,13 +11,14 @@ import {
   approvePairing,
   createDefaultTelegramTransport,
   createTelegramInterface,
+  issuePairingCode,
   listPairings,
   pairingStorePath,
   revokePairing,
   TelegramInterface,
   type TelegramTransport,
   type TelegramUpdate,
-} from "../../packages/interface-telegram/src/index.js";
+} from "../../packages/cli/src/internal/interfaces/telegram/index.js";
 
 interface ApprovalCall {
   readonly approvalId: string;
@@ -195,6 +196,10 @@ describe("interface:telegram pairing", () => {
         conversationId: "42",
       }),
     );
+    expect(listPairings(projectRoot).owner).toMatchObject({
+      userId: "42",
+      displayName: "Ada",
+    });
     await iface.stop();
   });
 
@@ -225,6 +230,15 @@ describe("interface:telegram pairing", () => {
     await transport.emit(textUpdate(2, 7, 7, "again"));
     expect(submissions).toEqual([]);
     await iface.stop();
+  });
+
+  it("hides expired pending codes and refuses to approve them", () => {
+    const projectRoot = tempProject();
+    const issuedAt = new Date("2026-01-01T00:00:00.000Z");
+    const pending = issuePairingCode(projectRoot, "8", "Expired", issuedAt);
+    const expiredAt = new Date("2026-01-01T01:00:00.001Z");
+    expect(listPairings(projectRoot, expiredAt).pending).toEqual([]);
+    expect(() => approvePairing(projectRoot, pending.code, expiredAt)).toThrow(/expired/);
   });
 });
 
@@ -400,22 +414,16 @@ describe("interface:telegram independence", () => {
   it("does not import the slack package", () => {
     const root = path.resolve(
       path.dirname(fileURLToPath(import.meta.url)),
-      "../../packages/interface-telegram/src",
+      "../../packages/cli/src/internal/interfaces/telegram",
     );
     for (const file of listTs(root)) {
       const text = fs.readFileSync(file, "utf8");
       expect(text).not.toMatch(/interface-slack|@useagentsio\/interface-slack/);
     }
-    const pkg = JSON.parse(
-      fs.readFileSync(
-        path.resolve(
-          path.dirname(fileURLToPath(import.meta.url)),
-          "../../packages/interface-telegram/package.json",
-        ),
-        "utf8",
-      ),
-    ) as { dependencies?: Record<string, string> };
-    expect(pkg.dependencies?.["@useagentsio/interface-slack"]).toBeUndefined();
+    expect(fs.existsSync(path.resolve(
+      path.dirname(fileURLToPath(import.meta.url)),
+      "../../packages/interface-telegram/package.json",
+    ))).toBe(false);
   });
 });
 

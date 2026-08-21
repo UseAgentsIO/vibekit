@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "interface:webhook configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "host": {
+      "type": "string",
+      "minLength": 1
+    },
+    "port": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 65535
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "interfaceBinding": {
+      "type": "string",
+      "minLength": 1
+    },
+    "accountId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "secretName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "signatureHeader": {
+      "type": "string",
+      "minLength": 1
+    },
+    "eventIdHeader": {
+      "type": "string",
+      "minLength": 1
+    },
+    "conversationId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "allowNonLoopback": {
+      "type": "boolean"
+    }
+  }
+}

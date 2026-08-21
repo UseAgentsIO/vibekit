@@ -6,7 +6,7 @@ import {
   parseModuleId,
   readInstalledManifest,
   type ModuleId,
-} from "@useagentsio/core";
+} from "../internal/core/index.js";
 
 import type { GlobalFlags } from "../args.js";
 import type { OutputBuffer } from "../output.js";

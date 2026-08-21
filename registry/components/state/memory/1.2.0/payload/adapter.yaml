@@ -1,0 +1,4 @@
+id: state:memory
+backend: sqlite
+path: .vibekit/state/memory.sqlite
+description: Local SQLite+FTS5 memory for notes and preferences. Memory is NOT Project truth. Tasks, Results, Decisions, and Approvals remain on state:repository.

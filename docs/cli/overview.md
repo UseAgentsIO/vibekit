@@ -1,6 +1,6 @@
 # CLI Overview & Global Flags
 
-The `vibekit` CLI (`@useagentsio/cli`) provides tools for creating, executing, managing, and diagnosing VibeKit Agent Projects.
+The `vibekit` product command provides tools for creating, executing, managing, and diagnosing VibeKit Projects. The public product package will be `@useagentsio/vibekit`; users do not install the internal runtime areas separately.
 
 ---
 

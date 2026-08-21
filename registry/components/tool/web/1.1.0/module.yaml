@@ -1,0 +1,58 @@
+schemaVersion: 1
+
+id: tool:web
+type: tool
+name: web
+displayName: Web Tool
+version: 1.1.0
+description: Fetches HTTP(S) pages as readable text. The VibeKit Host loads its runtime package directly, so this version does not install a Pi extension file. Optional web search when a Tavily or Brave secret reference is present. Fetched content is untrusted.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.1.0"
+
+license: MIT
+
+providesCapabilities:
+  - web.fetch
+  - web.search
+
+requires:
+  required: []
+  optional: []
+  recommended:
+    - policy:least-privilege
+  conflicts: []
+
+requestsPermissions:
+  - capability: web.fetch
+  - capability: web.search
+
+secrets:
+  - name: TAVILY_API_KEY
+    required: false
+    source: environment
+  - name: BRAVE_API_KEY
+    required: false
+    source: environment
+
+files: []
+
+configuration:
+  target: .vibekit/config/tools/web.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-tool
+  name: web
+
+runtime:
+  kind: pi-extension
+  package: vibekit:tool-web
+  export: createWebTool
+

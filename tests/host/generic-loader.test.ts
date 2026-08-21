@@ -29,11 +29,11 @@ import {
 import { createFakeInterface } from "@useagentsio/interface-sdk";
 import { describe, expect, it } from "vitest";
 
-import { buildTempRegistry, makeTempDir } from "../helpers.js";
+import { buildTempRegistry, makeTempDir, officialRegistryDir } from "../helpers.js";
 
 const hostSrc = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
-  "../../packages/host/src",
+  "../../packages/cli/src/internal/host",
 );
 const cliStartSrc = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -90,6 +90,27 @@ describe("generic Host runtime loader", () => {
       allowedModuleIds: [],
     });
     expect(denied).toEqual([]);
+  });
+
+  it("loads a product-owned runtime from its internal identifier without a Project package", async () => {
+    const projectRoot = makeTempDir("vibekit-loader-internal-runtime-");
+    writeProjectDocument(projectRoot, createDefaultProject({ slug: "internal", name: "Internal" }));
+    writeInstalledManifest(projectRoot, emptyInstalledManifest());
+    const registry = loadRegistry(officialRegistryDir, OFFICIAL_REGISTRY_SOURCE);
+    const plan = planInstall({
+      projectRoot,
+      registry,
+      roots: ["tool:web"],
+      project: readProjectDocument(projectRoot),
+      manifest: readInstalledManifest(projectRoot),
+    });
+    expect(plan.packageDependencies).toEqual({});
+    applyInstall({ projectRoot, plan });
+    expect(fs.existsSync(path.join(projectRoot, "package.json"))).toBe(false);
+
+    const tools = await bindInstalledTools(projectRoot, { resolveSecret: () => "" });
+    expect(tools.length).toBeGreaterThan(0);
+    expect(tools.map((tool) => tool.moduleId)).toContain("tool:web");
   });
 
   it("loads a non-UseAgentsIO interface through installed runtime metadata", async () => {

@@ -1,0 +1,47 @@
+schemaVersion: 1
+
+id: state:memory
+type: state
+name: memory
+displayName: Memory State
+version: 1.2.0
+description: Local SQLite+FTS5 memory for notes and preferences. Memory is not Project truth.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.2.0"
+
+license: MIT
+
+providesCapabilities:
+  - state.memory
+
+requires:
+  required: []
+  optional: []
+  recommended: []
+  conflicts: []
+
+requestsPermissions: []
+
+secrets: []
+
+files:
+  - source: payload/adapter.yaml
+    target: .vibekit/components/state/memory.yaml
+    ownership: exclusive
+
+configuration:
+  target: .vibekit/config/state/memory.yaml
+  schema: config.schema.json
+
+runtime:
+  kind: package
+  package: vibekit:state-memory
+  export: createStateMemoryAdapter
+

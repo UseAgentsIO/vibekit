@@ -2,7 +2,7 @@ import http from "node:http";
 
 import { conversationKeyOf, type InboundMessage, type InterfaceServices } from "@useagentsio/interface-sdk";
 
-import { createHttpInterface, HttpInterface } from "../../packages/interface-http/src/index.js";
+import { createHttpInterface, HttpInterface } from "../../packages/cli/src/internal/interfaces/http/index.js";
 import { afterEach, describe, expect, it } from "vitest";
 
 interface ApprovalCall {

@@ -9,7 +9,7 @@ import {
   createScheduleInterface,
   createSchedulerStore,
   ScheduleInterface,
-} from "../../packages/interface-schedule/src/index.js";
+} from "../../packages/cli/src/internal/interfaces/schedule/index.js";
 
 const temps: string[] = [];
 const running: ScheduleInterface[] = [];

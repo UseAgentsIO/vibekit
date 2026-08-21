@@ -1,7 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { writeRegistryIndex } from "@useagentsio/core";
+import { writeRegistryIndex } from "../packages/cli/src/internal/core/index.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const registryRoot = path.resolve(here, "../registry");

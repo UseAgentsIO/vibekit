@@ -1,7 +1,7 @@
 import { VibeKitError } from "@useagentsio/core";
 import { describe, expect, it } from "vitest";
 
-import { createRepositoryState } from "../../packages/core/src/state/index.js";
+import { createRepositoryState } from "../../packages/cli/src/internal/core/state/index.js";
 
 import {
   approvalDoc,

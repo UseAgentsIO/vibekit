@@ -1,0 +1,141 @@
+schemaVersion: 1
+
+id: agent:assistant
+type: agent
+name: assistant
+displayName: General Assistant
+version: 1.0.0
+description: Handles everyday research, planning, and project work with bounded file, command, web, and memory access.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.0.0"
+
+license: MIT
+
+instructions: payload/instructions.md
+
+model:
+  provider: inherit
+  id: inherit
+  allowProjectOverride: true
+  allowTaskOverride: false
+
+components:
+  required:
+    - state:repository
+    - state:memory
+    - tool:filesystem
+    - tool:execution
+    - tool:web
+    - tool:memory
+  optional: []
+  recommended:
+    - policy:least-privilege
+
+capabilities:
+  requires:
+    - source.read
+    - source.write
+    - command.execute
+    - web.search
+    - memory.read
+    - memory.write
+
+inputs:
+  required:
+    - objective
+    - constraints
+  optional:
+    - acceptanceCriteria
+
+outputs:
+  required:
+    - summary
+    - artifacts
+    - evidence
+    - unresolvedIssues
+
+permissions:
+  allow:
+    - capability: source.read
+      scope:
+        paths:
+          - "**"
+    - capability: source.write
+      scope:
+        paths:
+          - "**"
+    - capability: command.execute
+      scope:
+        commands:
+          - project-verification
+          - git status
+          - git diff
+          - git log
+    - capability: web.search
+      scope:
+        resources:
+          - "*"
+    - capability: memory.read
+      scope:
+        resources:
+          - "*"
+    - capability: memory.write
+      scope:
+        resources:
+          - "*"
+  deny:
+    - capability: project.configure
+    - capability: module.install
+    - capability: deploy.apply
+    - capability: destructive.delete
+
+delegation:
+  allowed: false
+  targets: []
+  maxDepth: 0
+  maxParallelChildren: 0
+
+state:
+  read:
+    - project
+    - tasks
+    - decisions
+    - results
+  write:
+    - results
+    - events
+
+execution:
+  isolation: process
+  timeoutMs: 600000
+  cleanupRequired: true
+
+verification:
+  required: []
+  independentReview: false
+
+completion:
+  requires:
+    - result-recorded
+
+escalation:
+  on:
+    - permission-denied
+    - conflicting-project-state
+    - missing-acceptance-criteria
+    - verification-failed
+
+files:
+  - source: payload/agent.yaml
+    target: .vibekit/agents/assistant/agent.yaml
+    ownership: exclusive
+  - source: payload/instructions.md
+    target: .vibekit/agents/assistant/instructions.md
+    ownership: exclusive

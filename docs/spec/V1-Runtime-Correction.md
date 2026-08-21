@@ -16,21 +16,20 @@ Normative terms match the V1 specification: **MUST**, **MUST NOT**, **SHOULD**, 
 
 VibeKit is an always-running **Agent Host**.
 
-The first user path in this implementation is:
+The first user path is one product install followed by bare `vibekit` and the first conversation. Once the consolidated package is explicitly published, it is:
 
 ```bash
-npx --yes @useagentsio/cli@latest create my-agent --agent chief --provider openai --interface terminal --yes
-cd my-agent
-vibekit msg "Hello"
+npm install --global --ignore-scripts @useagentsio/vibekit@latest
+vibekit
 ```
 
-`create` writes a runnable Agent Project. `msg` sends one turn through the Host to the configured provider. `start` runs the Host and the terminal Interface in the foreground.
+The package is not published during the current local consolidation. The clean-machine proof uses the packed local artifact, as described in the contributor guide. `vibekit` creates or opens the Project, checks a real conversation, and opens the terminal connection. `msg` remains the scripting path and `start` remains the explicit lifecycle command.
 
 Pi is an **internal engine**. Users MUST NOT be instructed to launch the Pi TUI. Composition commands (`init`, `add`, `list`, `diff`, `update`, `remove`, `doctor`) remain, but they are not the product.
 
 Taxonomy is unchanged: **Components → Agents → Project → Host**. Pi is embedded. Canonical identity is the registry Module ID (`tool:browser`, `interface:telegram`). npm packages are optional `runtime.package` / `runtime.export` implementation artifacts.
 
-Slack and Telegram **are implemented** as optional Interfaces (`packages/interface-slack`, `packages/interface-telegram`, registry modules `interface:slack` and `interface:telegram`). Terminal is the default first-run Interface.
+Slack and Telegram **are implemented** as optional connection Modules (`interface:slack` and `interface:telegram`) inside the product runtime. Terminal is the default first-run connection.
 
 ---
 
@@ -46,8 +45,8 @@ That front door is wrong for this implementation:
 | Users run Pi themselves | The Host embeds Pi. Users do not launch the Pi TUI. |
 | Live Pi is optional | Live Pi is how the Host talks to a provider. Mocked sessions remain valid as unit tests only. |
 | Slack later is the V1 story | Slack and Telegram are optional shipped Interfaces. Terminal is the default first-run Interface. |
-| `tool:github` is an executable Tool | `tool:github` 1.1.0 is executable (`pi-extension`, `@useagentsio/tool-github`). 1.0.0 remains config-only. |
-| Four implementation units (CLI, core, Pi, registry) | Add Host, Interface SDK, and Interface packages (terminal default; Slack and Telegram optional). |
+| `tool:github` is an executable Tool | `tool:github` 1.1.0 is executable (`pi-extension`, internal `vibekit:tool-github`). 1.0.0 remains config-only. |
+| Many separately published implementation units | The product owns the Host, connection contract, built-in connections, abilities, memory, scheduling, verification, Pi adapter, registry, and schemas in one package. |
 
 The Component / Agent / Project model is unchanged.
 
@@ -60,8 +59,8 @@ The Component / Agent / Project model is unchanged.
                            │
            ┌───────────────┼────────────────┐
            ▼                                ▼
-    vibekit CLI                      terminal Interface
-    create / msg / start             @useagentsio/interface-terminal
+    vibekit product                  terminal connection
+    setup / msg / start               internal runtime
            │                                │
            └───────────────┬────────────────┘
                            ▼
@@ -87,18 +86,16 @@ The Component / Agent / Project model is unchanged.
 
 There is one Host per Project process. Interfaces attach to the Host. The Host loads the Project, resolves authority, owns conversations, and starts Pi worker Runs. Pi does not own Project State. Production loads Interfaces from installed Module `runtime` metadata. `factories` on the Host are a testing seam, not the production load path.
 
-Package names:
+Product runtime areas:
 
-| Package | Binary | Role |
+| Area | Binary | Role |
 | --- | --- | --- |
-| `@useagentsio/cli` | `vibekit` | Create/manage Projects; `msg` to a running or on-demand Host |
-| `@useagentsio/host` | `vibekit-host` | Always-running Agent Host |
-| `@useagentsio/core` | — | Schemas, IDs, graph, install, ownership, State |
-| `@useagentsio/pi` | — | Embedded Pi adapter |
-| `@useagentsio/interface-sdk` | — | Interface contract |
-| `@useagentsio/interface-terminal` | — | Default first-run terminal Interface |
-| `@useagentsio/interface-slack` | — | Optional Slack Interface |
-| `@useagentsio/interface-telegram` | — | Optional Telegram Interface |
+| Product CLI | `vibekit` | Create/manage Projects; `msg` to a running or on-demand Host |
+| Host runtime | internal | Always-running Agent Host |
+| Core runtime | — | Schemas, IDs, graph, install, ownership, State |
+| Pi runtime | — | Embedded Pi adapter |
+| Connection contract | — | Host-facing connection protocol |
+| Built-in connections | — | Default terminal plus optional Slack and Telegram connections |
 
 CLI binary remains `vibekit`. Host binary is `vibekit-host`.
 
@@ -129,7 +126,7 @@ The Host MUST NOT:
 * let an Interface own Project State, permissions, or Agent definitions
 * claim a completed Run is verified, accepted, or applied
 
-`@useagentsio/core` remains Interface-independent. `@useagentsio/pi` remains the adapter that prepares an isolated Run. The Host is the process that calls them.
+Core remains connection-independent. Pi remains the adapter that prepares an isolated Run. The Host is the process that calls them.
 
 ---
 
@@ -137,12 +134,12 @@ The Host MUST NOT:
 
 Interfaces are Components. They translate I/O. They do not own Project State.
 
-`@useagentsio/interface-sdk` is the Host-facing contract. An Interface module declares how the Host loads it:
+The connection contract is the Host-facing internal contract. A connection Module declares how the Host loads it:
 
 ```yaml
 runtime:
   kind: interface
-  package: "@useagentsio/interface-terminal"
+  package: "vibekit:interface-terminal"
   export: createTerminalInterface
   lifecycle: singleton
 ```
@@ -219,7 +216,7 @@ Persistent sessions are how a human talks to an Agent. They are not how a child 
 
 A worker session is an isolated Pi Run for a Task.
 
-The Host (or a parent Agent via `agent_delegate`) starts a worker through `@useagentsio/pi`. The worker receives:
+The Host (or a parent Agent via `agent_delegate`) starts a worker through the embedded Pi runtime. The worker receives:
 
 * Task objective, constraints, acceptance criteria
 * granted tools and scoped paths
@@ -260,7 +257,7 @@ vibekit start
 
 # 7. CLI surface
 
-Binary: `vibekit` (`@useagentsio/cli`).
+Binary: `vibekit` from the consolidated `@useagentsio/vibekit` product package after publication.
 
 ## 7.1 First path
 
@@ -315,7 +312,7 @@ Registry Modules that execute or attach at runtime MUST declare `runtime`. Hones
 ```yaml
 runtime:
   kind: interface
-  package: "@useagentsio/interface-terminal"
+  package: "vibekit:interface-terminal"
   export: createTerminalInterface
   lifecycle: singleton
 ```
@@ -341,7 +338,7 @@ runtime:
 ```yaml
 runtime:
   kind: interface
-  package: "@useagentsio/interface-slack"   # or @useagentsio/interface-telegram
+  package: "vibekit:interface-slack"   # or vibekit:interface-telegram
   export: createSlackInterface              # or createTelegramInterface
   lifecycle: singleton
 ```
@@ -359,7 +356,7 @@ runtime:
 ```yaml
 runtime:
   kind: pi-extension
-  package: "@useagentsio/tool-github"
+  package: "vibekit:tool-github"
   export: createGithubTool
   available: true
 ```

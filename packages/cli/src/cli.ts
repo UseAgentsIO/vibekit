@@ -1,8 +1,13 @@
-import { VibeKitError, isVibeKitError } from "@useagentsio/core";
+import fs from "node:fs";
+import path from "node:path";
+
+import { VibeKitError, isVibeKitError } from "./internal/core/index.js";
 
 import { parseCliArgs } from "./args.js";
 import { runAdd } from "./commands/add.js";
 import { runCreate } from "./commands/create.js";
+import { runConfig } from "./commands/config.js";
+import { runConnect } from "./commands/connect.js";
 import { runDiff } from "./commands/diff.js";
 import { runDoctorCommand } from "./commands/doctor.js";
 import { runInit } from "./commands/init.js";
@@ -14,7 +19,11 @@ import { runRemove } from "./commands/remove.js";
 import { runApprovePairing } from "./commands/approve-pairing.js";
 import { runStart } from "./commands/start.js";
 import { runStatus } from "./commands/status.js";
+import { runStop } from "./commands/stop.js";
+import { openPrimaryInterface, runSetup } from "./commands/setup.js";
 import { runUpdate } from "./commands/update.js";
+import { runProjects } from "./commands/projects.js";
+import { runDashboard, runGateway } from "./commands/gateway.js";
 import {
   cliVersion,
   findCommand,
@@ -23,6 +32,7 @@ import {
   formatUnknownCommand,
 } from "./help.js";
 import { OutputBuffer, type CliResult } from "./output.js";
+import { resolveProjectDir } from "./paths.js";
 import { releaseTerminal } from "./ui/keys.js";
 
 export type { CliResult } from "./output.js";
@@ -58,14 +68,37 @@ export async function runCli(argv: string[]): Promise<CliResult> {
       return { exitCode, stdout: out.stdout, stderr: out.stderr };
     }
     if (parsed.command === undefined) {
-      out.log(formatRootHelp());
-      return { exitCode: 1, stdout: out.stdout, stderr: out.stderr };
+      const projectRoot = resolveProjectDir(parsed.flags.dir);
+      const hasProject = fs.existsSync(path.join(projectRoot, ".vibekit", "project.yaml"));
+      const exitCode = hasProject
+        ? await openPrimaryInterface(projectRoot, parsed.flags, out)
+        : await runSetup([], parsed.flags, out, { openInterface: true });
+      return { exitCode, stdout: out.stdout, stderr: out.stderr };
     }
 
     let exitCode = 0;
     switch (parsed.command) {
       case "create":
         exitCode = await runCreate(parsed.positionals, parsed.flags, out);
+        break;
+      case "project":
+        if (parsed.positionals[0] !== "create") {
+          throw new VibeKitError({
+            category: "invalid_input",
+            code: "project_command_invalid",
+            message: "Use `vibekit project create [options] [dir]` for the advanced Project builder.",
+          });
+        }
+        exitCode = await runCreate(parsed.positionals.slice(1), parsed.flags, out);
+        break;
+      case "setup":
+        exitCode = await runSetup(parsed.positionals, parsed.flags, out, { openInterface: true });
+        break;
+      case "config":
+        exitCode = await runConfig(parsed.positionals, parsed.flags, out);
+        break;
+      case "connect":
+        exitCode = await runConnect(parsed.positionals, parsed.flags, out);
         break;
       case "model":
         exitCode = await runModel(parsed.positionals, parsed.flags, out);
@@ -77,7 +110,19 @@ export async function runCli(argv: string[]): Promise<CliResult> {
         exitCode = await runStart(parsed.positionals, parsed.flags, out);
         break;
       case "status":
-        exitCode = runStatus(parsed.positionals, parsed.flags, out);
+        exitCode = await runStatus(parsed.positionals, parsed.flags, out);
+        break;
+      case "stop":
+        exitCode = await runStop(parsed.positionals, parsed.flags, out);
+        break;
+      case "projects":
+        exitCode = await runProjects(parsed.positionals, parsed.flags, out);
+        break;
+      case "gateway":
+        exitCode = await runGateway(parsed.positionals, parsed.flags, out);
+        break;
+      case "dashboard":
+        exitCode = await runDashboard(parsed.positionals, parsed.flags, out);
         break;
       case "migrate":
         exitCode = runMigrate(parsed.positionals, parsed.flags, out);
@@ -104,7 +149,7 @@ export async function runCli(argv: string[]): Promise<CliResult> {
         exitCode = runRemove(parsed.positionals, parsed.flags, out);
         break;
       case "doctor":
-        exitCode = runDoctorCommand(parsed.flags, out);
+        exitCode = await runDoctorCommand(parsed.flags, out);
         break;
       default:
         throw new VibeKitError({

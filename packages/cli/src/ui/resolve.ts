@@ -1,4 +1,4 @@
-import { VibeKitError } from "@useagentsio/core";
+import { VibeKitError } from "../internal/core/index.js";
 
 import { canPrompt } from "../prompt.js";
 import { multiselect } from "./multiselect.js";

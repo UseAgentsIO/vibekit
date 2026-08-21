@@ -5,8 +5,8 @@ import {
   nextRunAt,
   parseSchedule,
   ScheduleParseError,
-} from "../../packages/interface-schedule/src/index.js";
-import type { ScheduleJob } from "../../packages/interface-schedule/src/index.js";
+} from "../../packages/cli/src/internal/interfaces/schedule/index.js";
+import type { ScheduleJob } from "../../packages/cli/src/internal/interfaces/schedule/index.js";
 
 describe("parseSchedule", () => {
   it("parses one-shot delays", () => {

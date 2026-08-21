@@ -68,6 +68,7 @@ describe("cli ui kit", () => {
       "filesystem",
       "--verbose",
       "--show-files",
+      "--customize",
     ]);
     expect(parsed.command).toBe("init");
     expect(parsed.flags.provider).toBe("openai");
@@ -75,6 +76,7 @@ describe("cli ui kit", () => {
     expect(parsed.flags.tools).toEqual(["filesystem"]);
     expect(parsed.flags.verbose).toBe(true);
     expect(parsed.flags.showFiles).toBe(true);
+    expect(parsed.flags.customize).toBe(true);
   });
 
   it("parses repeatable --agent flags and infers the default Agent", () => {
@@ -125,6 +127,7 @@ describe("cli ui kit", () => {
     const registry = loadRegistry(officialRegistryDir);
     const agents = setupItemsFromRegistry(SETUP_AGENTS, registry, "agent");
     expect(agents.map((item) => item.id)).toEqual([
+      "assistant",
       "chief",
       "coder",
       "reviewer",

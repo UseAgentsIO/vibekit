@@ -1,4 +1,4 @@
-import { VibeKitError } from "@useagentsio/core";
+import { VibeKitError } from "../internal/core/index.js";
 
 import { canPrompt } from "../prompt.js";
 import { ansi, clearRenderedLines, cyan, dim, green, symbols, write, writeln } from "./theme.js";

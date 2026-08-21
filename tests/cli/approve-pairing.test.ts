@@ -11,6 +11,7 @@ describe("approve-pairing", () => {
     const result = await runCli(["approve-pairing", pending.code, "--dir", dir]);
     expect(result.exitCode, result.stderr).toBe(0);
     expect(result.stdout).toMatch(/Paired Telegram user 42/);
+    expect(result.stdout).toContain("Owner identity: Ada.");
     expect(listPairings(dir).paired.map((entry) => entry.userId)).toEqual(["42"]);
   });
 

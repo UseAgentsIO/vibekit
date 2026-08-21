@@ -18,7 +18,7 @@ Writes a schemaVersion 2 Project, installs `agent:<name>`, `provider:<id>`, and 
 
 ### Options
 - `[dir]`: Target directory (default: current directory).
-- `--agent <name>`: Starter Agent to install (default: `chief`).
+- `--agent <name>`: Starter Agent to install (default: `assistant`; use `--example headquarters` or an explicit Agent selection for a Chief-led Project).
 - `--provider <name>`: Provider ID (default: `openai`).
 - `--model <id>`: Model ID. Interactive create can pick from Pi’s catalog. With `--yes` and no `--model`, the CLI uses the first catalog model or a known-provider default (`openai` → `gpt-4.1`).
 - `--interface <name>`: Interface component to bind (default: `terminal`; headquarters example defaults to `telegram`).
@@ -63,7 +63,7 @@ vibekit msg --dir ./my-agent "Check for uncommitted files"
 
 ## 3. `vibekit start`
 
-Starts the Agent Host in the foreground with the interactive terminal Interface.
+Starts the Agent Host service daemon in the background (or attached with `--foreground`).
 
 ### Usage
 ```bash
@@ -71,11 +71,14 @@ vibekit start [options]
 ```
 
 ### Description
-Runs the Host in the foreground and attaches the terminal Interface. Type a message at the `>` prompt. Type `exit` or `/exit` to quit, or press `Ctrl+C`. Approval gates prompt `y` / `n`. While this process is up, `vibekit msg` in another terminal uses local IPC instead of starting a second Host.
+Starts the Host daemon detached in the background. Missing required secrets are prompted and persisted securely in the local deployment store (`~/.config/vibekit/<project>/env`, mode `0600`) so subsequent launches run without re-exporting credentials. Once healthy, `vibekit start` returns while the Host service continues running.
+
+To run attached in the current terminal, pass `--foreground` (`-f`).
 
 ### Examples
 ```bash
 vibekit start
+vibekit start --foreground
 vibekit start --dir ./my-agent
 ```
 
@@ -91,11 +94,32 @@ vibekit status [options]
 ```
 
 ### Description
-Checks `.vibekit/project.yaml`, active conversation records, running worker locks, and configured Interface adapters.
+Checks `.vibekit/project.yaml`, active conversation records, running worker locks, configured Interface adapters, and verifies Host daemon health over local IPC.
 
 ### Examples
 ```bash
 vibekit status
+vibekit status --dir ./my-agent
+```
+
+---
+
+## 5. `vibekit stop`
+
+Gracefully shuts down the running Host service daemon and its Interfaces.
+
+### Usage
+```bash
+vibekit stop [options]
+```
+
+### Description
+Sends a graceful shutdown request to the running Host daemon over local IPC, shuts down all attached Interfaces, releases locks, and removes runtime status/socket files.
+
+### Examples
+```bash
+vibekit stop
+vibekit stop --dir ./my-agent
 ```
 
 ---
@@ -348,3 +372,35 @@ vibekit help [command]
 vibekit help
 vibekit help create
 ```
+
+---
+
+## 16. `vibekit projects`
+
+Maintains the owner-only machine registry used to keep Project identities and Project-scoped secrets isolated.
+
+```bash
+vibekit projects add /absolute/path/to/project
+vibekit projects list
+vibekit projects remove project:example
+vibekit projects locate project:example /new/absolute/path
+```
+
+Paths are canonicalized. A Project ID can belong to only one path, relocation is allowed only after the old path is missing and unregistering never removes Project files, State, sessions or secrets.
+
+---
+
+## 17. `vibekit gateway` and `vibekit dashboard`
+
+Runs one loopback-only Project Dashboard while every registered Project continues to execute in its own Host process.
+
+```bash
+vibekit gateway install [--port 9467]
+vibekit gateway start|stop|restart|status|uninstall
+vibekit gateway run [--port 9467]
+vibekit dashboard [--port 9467]
+```
+
+`install` explicitly creates a per-user login service: launchd on macOS, systemd user service on Linux and WSL2, or Task Scheduler on native Windows. Gateway service changes never start, stop or restart Project Hosts. The dashboard can add existing Projects and control lifecycle, but cannot create Projects, send messages or edit Agent, model, permission or Interface configuration.
+
+Gateway-launched Hosts do not inherit provider keys from the Gateway process. Run `vibekit start --dir /path/to/project` once to enter any missing credentials into that Project's owner-only deployment store, then stop it before managing it from the dashboard.

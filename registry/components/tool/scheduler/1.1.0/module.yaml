@@ -1,0 +1,54 @@
+schemaVersion: 1
+
+id: tool:scheduler
+type: tool
+name: scheduler
+displayName: Scheduler Tool
+version: 1.1.0
+description: Agent-facing create, list, pause, resume, run, update, and remove against interface:schedule jobs. The VibeKit Host loads its runtime package directly, so this version does not install a Pi extension file. Mutating actions are denied on scheduled Runs unless Project config explicitly allows it.
+
+compatibility:
+  vibekit: "^1.0.0"
+  pi: ">=0.50.0"
+  node: ">=20"
+
+source:
+  repository: "https://github.com/UseAgentsIO/vibekit"
+  revision: "v1.1.0"
+
+license: MIT
+
+providesCapabilities:
+  - schedule.read
+  - schedule.write
+
+requires:
+  required:
+    - interface:schedule
+  optional: []
+  recommended:
+    - policy:schedule-no-recurse
+    - skill:scheduler
+  conflicts: []
+
+requestsPermissions:
+  - capability: schedule.read
+  - capability: schedule.write
+
+secrets: []
+
+files: []
+
+configuration:
+  target: .vibekit/config/tools/scheduler.yaml
+  schema: config.schema.json
+
+healthCheck:
+  type: pi-tool
+  name: scheduler
+
+runtime:
+  kind: pi-extension
+  package: vibekit:tool-scheduler
+  export: createSchedulerTool
+

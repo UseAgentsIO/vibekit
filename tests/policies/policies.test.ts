@@ -6,12 +6,11 @@ import { fileURLToPath } from "node:url";
 import { isSafeFileTarget, parseAndValidateYaml } from "@useagentsio/core";
 import { describe, expect, it } from "vitest";
 
+const registryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../registry");
 const require = createRequire(
-  path.join(path.dirname(fileURLToPath(import.meta.url)), "../../packages/core/package.json"),
+  path.join(path.dirname(fileURLToPath(import.meta.url)), "../../packages/cli/package.json"),
 );
 const { parse } = require("yaml") as { parse: (text: string) => unknown };
-
-const registryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../registry");
 
 const POLICIES = [
   {

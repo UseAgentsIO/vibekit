@@ -7,12 +7,18 @@ import {
   loadRegistry,
   localRegistrySource,
   runDoctor,
+  sha256File,
   writeInstalledManifest,
   writeProjectDocument,
 } from "@useagentsio/core";
 import { describe, expect, it } from "vitest";
 
-import { buildTempRegistry, makeTempDir, writeUncheckedRegistryIndex } from "../helpers.js";
+import {
+  buildTempRegistry,
+  makeTempDir,
+  officialRegistryDir,
+  writeUncheckedRegistryIndex,
+} from "../helpers.js";
 
 const DUMMY_CHECKSUM = "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 
@@ -156,6 +162,106 @@ describe("runDoctor diagnostics", () => {
     );
     expect(exportError).toBeDefined();
     expect(exportError?.message).toContain("does not export expectedToolExport");
+  });
+
+  it("identifies the released invalid Pi built-in extension and its safe update", () => {
+    const registry = loadRegistry(officialRegistryDir);
+    const dir = makeTempDir("vibekit-doctor-pi-stub-");
+    writeProjectDocument(dir, createDefaultProject({ slug: "test", name: "Test" }));
+
+    const relative = ".pi/extensions/execution/index.ts";
+    const absolute = path.join(dir, relative);
+    fs.mkdirSync(path.dirname(absolute), { recursive: true });
+    fs.copyFileSync(
+      path.join(officialRegistryDir, "components/tool/execution/1.0.0/payload/index.ts"),
+      absolute,
+    );
+    const entry = registry.index.modules.find(
+      (item) => item.id === "tool:execution" && item.version === "1.0.0",
+    );
+    expect(entry).toBeDefined();
+    writeInstalledManifest(dir, {
+      ...emptyInstalledManifest(),
+      modules: [
+        {
+          schemaVersion: 1,
+          id: "tool:execution",
+          version: "1.0.0",
+          registrySource: officialRegistryDir === registry.root ? "official" : localRegistrySource(registry.root),
+          sourceRevision: "v1.0.0",
+          integrityChecksum: entry!.checksum,
+          installedAt: "2026-08-20T00:00:00.000Z",
+          dependencies: [],
+          files: [{ path: relative, hash: sha256File(absolute), ownership: "exclusive" }],
+          configurationPaths: [".vibekit/config/tools/execution.yaml"],
+          compatibility: { vibekit: "^1.0.0", pi: ">=0.50.0" },
+        },
+      ],
+    });
+
+    const report = runDoctor({ projectRoot: dir, registry });
+    const finding = report.findings.find((item) => item.code === "pi_builtin_extension_stub");
+    expect(finding?.severity).toBe("error");
+    expect(finding?.message).toContain("tool:execution@1.0.0");
+    expect(finding?.message).toContain(relative);
+    expect(finding?.message).toContain("vibekit update tool:execution");
+  });
+
+  it("identifies other released registry extension stubs and their corrected updates", () => {
+    const registry = loadRegistry(officialRegistryDir);
+    const dir = makeTempDir("vibekit-doctor-pi-extension-stubs-");
+    writeProjectDocument(dir, createDefaultProject({ slug: "test", name: "Test" }));
+    const cases = [
+      {
+        id: "tool:web" as const,
+        version: "1.0.0",
+        source: "components/tool/web/1.0.0/payload/index.ts",
+        target: ".pi/extensions/web/index.ts",
+        config: ".vibekit/config/tools/web.yaml",
+      },
+      {
+        id: "tool:memory" as const,
+        version: "1.2.0",
+        source: "components/tool/memory/1.2.0/payload/index.ts",
+        target: ".pi/extensions/memory/index.ts",
+        config: ".vibekit/config/tools/memory.yaml",
+      },
+    ];
+
+    const modules = cases.map((item) => {
+      const absolute = path.join(dir, item.target);
+      fs.mkdirSync(path.dirname(absolute), { recursive: true });
+      fs.copyFileSync(path.join(officialRegistryDir, item.source), absolute);
+      const entry = registry.index.modules.find(
+        (candidate) => candidate.id === item.id && candidate.version === item.version,
+      );
+      expect(entry).toBeDefined();
+      return {
+        schemaVersion: 1 as const,
+        id: item.id,
+        version: item.version,
+        registrySource: "official",
+        sourceRevision: `v${item.version}`,
+        integrityChecksum: entry!.checksum,
+        installedAt: "2026-08-20T00:00:00.000Z",
+        dependencies: [],
+        files: [{ path: item.target, hash: sha256File(absolute), ownership: "exclusive" as const }],
+        configurationPaths: [item.config],
+        compatibility: { vibekit: "^1.0.0", pi: ">=0.50.0" },
+      };
+    });
+    writeInstalledManifest(dir, { ...emptyInstalledManifest(), modules });
+
+    const report = runDoctor({ projectRoot: dir, registry });
+    for (const item of cases) {
+      const finding = report.findings.find(
+        (candidate) => candidate.code === "pi_extension_stub" && candidate.path === item.target,
+      );
+      expect(finding?.severity).toBe("error");
+      expect(finding?.message).toContain(`${item.id}@${item.version}`);
+      expect(finding?.message).toContain(`vibekit update ${item.id}`);
+      expect(finding?.message).toContain(item.target);
+    }
   });
 
   it("detects unsafe path patterns, commands, and branch scopes in Agent permissions", () => {

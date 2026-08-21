@@ -1,26 +1,16 @@
 schemaVersion: 2
-
 id: project:headquarters
 name: Headquarters Life Coordinator
 root: .
-
 runtime:
-  adapter: "@useagentsio/pi"
-  host: "@useagentsio/host"
-
-defaults:
-  model:
-    provider: openai
-    id: gpt-4.1
-
+  adapter: "vibekit:pi"
+  host: "vibekit:host"
 defaultAgent: chief
-
 host:
   retainedConversations: 20
   maxParallelConversations: 4
   sameConversationPolicy: serialize
   shutdownGraceMs: 30000
-
 interfaceBindings:
   telegram-main:
     definition: interface:telegram
@@ -32,53 +22,12 @@ interfaceBindings:
     enabled: true
     defaultAgent: chief
     config: .vibekit/config/interfaces/terminal.yaml
-
-agentBindings:
-  chief:
-    definition: agent:chief
-  personal:
-    definition: agent:personal
-
-delegation:
-  chief:
-    - personal
-  personal: []
-
-capabilityBindings:
-  source.read: tool:filesystem
-  source.write: tool:filesystem
-  memory.read: tool:memory
-  memory.write: tool:memory
-  schedule.read: tool:scheduler
-  schedule.write: tool:scheduler
-  web.fetch: tool:web
-
-policies:
-  - policy:least-privilege
-  - policy:schedule-no-recurse
-
-execution:
-  maxParallelRuns: 4
-  defaultIsolation: process
-  mutationIsolation: worktree
-  defaultTimeoutMs: 600000
-  maxDelegationDepth: 2
-
-authorization:
-  default: deny
-  actions:
-    source.read: standing
-    source.write: standing
-    deploy.apply: explicit
-    destructive.delete: explicit
-    project.configure: explicit
-
-verification:
-  default: []
-
 pi:
   compatibility: ">=0.50.0"
-
+defaults:
+  model:
+    provider: openai
+    id: gpt-4.1
 state:
   backend: state:repository
   path: .vibekit/state
@@ -91,7 +40,42 @@ state:
     verifications: local
     events: local
     runtime: ephemeral
-
+agentBindings:
+  chief:
+    definition: agent:chief
+  personal:
+    definition: agent:personal
+delegation:
+  chief:
+    - personal
+  personal: []
+capabilityBindings:
+  source.read: tool:filesystem
+  source.write: tool:filesystem
+  memory.read: tool:memory
+  memory.write: tool:memory
+  schedule.read: tool:scheduler
+  schedule.write: tool:scheduler
+  web.fetch: tool:web
+policies:
+  - policy:least-privilege
+  - policy:schedule-no-recurse
+execution:
+  maxParallelRuns: 4
+  defaultIsolation: process
+  mutationIsolation: worktree
+  defaultTimeoutMs: 600000
+  maxDelegationDepth: 2
+authorization:
+  default: deny
+  actions:
+    source.read: standing
+    source.write: standing
+    deploy.apply: explicit
+    destructive.delete: explicit
+    project.configure: explicit
+verification:
+  default: []
 sources:
   canonical:
     - .vibekit/project.yaml

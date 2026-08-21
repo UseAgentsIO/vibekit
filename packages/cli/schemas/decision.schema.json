@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "decision.schema.json",
+  "title": "VibeKit Decision",
+  "description": "Decision record stored under .vibekit/state/decisions/.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "question",
+    "decision",
+    "status",
+    "reason",
+    "evidence",
+    "authority",
+    "producedBy",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": { "$ref": "module.schema.json#/definitions/schemaVersion" },
+    "id": { "$ref": "module.schema.json#/definitions/decisionId" },
+    "projectId": { "$ref": "module.schema.json#/definitions/projectId" },
+    "question": { "type": "string", "minLength": 1 },
+    "decision": { "type": "string", "minLength": 1 },
+    "status": { "$ref": "module.schema.json#/definitions/decisionStatus" },
+    "reason": { "type": "string", "minLength": 1 },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "module.schema.json#/definitions/evidenceItem" }
+    },
+    "authority": { "type": "string", "minLength": 1 },
+    "producedBy": { "type": "string", "minLength": 1 },
+    "createdAt": { "$ref": "module.schema.json#/definitions/isoDateTime" },
+    "updatedAt": { "$ref": "module.schema.json#/definitions/isoDateTime" },
+    "supersedes": {
+      "anyOf": [
+        { "type": "null" },
+        { "$ref": "module.schema.json#/definitions/decisionId" }
+      ]
+    }
+  },
+  "if": {
+    "properties": { "status": { "const": "superseded" } },
+    "required": ["status"]
+  },
+  "then": {
+    "required": ["supersedes"],
+    "properties": {
+      "supersedes": { "$ref": "module.schema.json#/definitions/decisionId" }
+    }
+  }
+}

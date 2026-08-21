@@ -29,7 +29,7 @@ describe("acceptance 1: init", () => {
     expect(project.valid).toBe(true);
     expect(project.data?.agentBindings).toEqual({});
     expect(project.data?.schemaVersion).toBe(2);
-    expect(project.data?.runtime?.host).toBe("@useagentsio/host");
+    expect(project.data?.runtime?.host).toBe("vibekit:host");
 
     const installed = parseAndValidateJson(
       "installed",
@@ -92,6 +92,32 @@ describe("acceptance 1: init", () => {
     expect(fs.existsSync(path.join(dir, ".vibekit/agents/reviewer/agent.yaml"))).toBe(true);
     expect(fs.existsSync(path.join(dir, ".vibekit/components/providers/openai.yaml"))).toBe(true);
     expect(fs.existsSync(path.join(dir, ".vibekit/config/tools/filesystem.yaml"))).toBe(true);
+  });
+
+  it("uses the useful general Agent when non-interactive setup omits --agent", async () => {
+    const dir = makeTempDir("vibekit-init-useful-default-");
+    const result = await runCli([
+      "init",
+      dir,
+      "--provider",
+      "openai",
+      "--model",
+      "gpt-5",
+      "--interface",
+      "terminal",
+      "--registry",
+      officialRegistryDir,
+    ]);
+    expect(result.exitCode, result.stderr).toBe(0);
+
+    const project = parseAndValidateYaml(
+      "project",
+      fs.readFileSync(path.join(dir, ".vibekit/project.yaml"), "utf8"),
+    );
+    expect(project.data?.defaultAgent).toBe("assistant");
+    expect(project.data?.agentBindings?.assistant?.definition).toBe("agent:assistant");
+    expect(fs.existsSync(path.join(dir, ".vibekit/config/state/memory.yaml"))).toBe(true);
+    expect(fs.existsSync(path.join(dir, ".vibekit/config/tools/memory.yaml"))).toBe(true);
   });
 
   it("installs an Agent's required Components without a Skills or Tools picker", async () => {
@@ -162,9 +188,18 @@ describe("acceptance 1: init", () => {
     expect(Object.keys(project.data?.agentBindings ?? {}).sort()).toEqual([
       "chief",
       "coder",
+      "personal",
+      "project-manager",
+      "researcher",
       "reviewer",
     ]);
-    expect(project.data?.delegation?.chief).toEqual(["coder", "reviewer"]);
+    expect(project.data?.delegation?.chief).toEqual([
+      "project-manager",
+      "coder",
+      "reviewer",
+      "researcher",
+      "personal",
+    ]);
     expect(project.data?.interfaceBindings?.["terminal-main"]?.defaultAgent).toBe("chief");
     expect(fs.existsSync(path.join(dir, ".vibekit/agents/chief/agent.yaml"))).toBe(true);
     expect(fs.existsSync(path.join(dir, ".vibekit/agents/coder/agent.yaml"))).toBe(true);
@@ -198,5 +233,30 @@ describe("acceptance 1: init", () => {
     ]);
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toMatch(/--provider|provider_required/);
+  });
+
+  it("does not partially install setup modules when a later file conflicts", async () => {
+    const dir = makeTempDir("vibekit-init-atomic-");
+    expect((await runCli(["init", dir, "--defaults", "--registry", officialRegistryDir])).exitCode).toBe(0);
+    const conflict = path.join(dir, ".vibekit/agents/reviewer/agent.yaml");
+    fs.mkdirSync(path.dirname(conflict), { recursive: true });
+    fs.writeFileSync(conflict, "owned by user\n", "utf8");
+
+    const result = await runCli([
+      "init", dir,
+      "--provider", "openai",
+      "--model", "gpt-5",
+      "--agent", "reviewer",
+      "--registry", officialRegistryDir,
+    ]);
+
+    expect(result.exitCode).toBe(1);
+    const installed = parseAndValidateJson(
+      "installed",
+      fs.readFileSync(path.join(dir, ".vibekit/installed.json"), "utf8"),
+    );
+    expect(installed.data?.modules).toEqual([]);
+    expect(fs.existsSync(path.join(dir, ".vibekit/components/providers/openai.yaml"))).toBe(false);
+    expect(fs.readFileSync(conflict, "utf8")).toBe("owned by user\n");
   });
 });

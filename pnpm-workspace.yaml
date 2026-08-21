@@ -1,7 +1,11 @@
 packages:
-  - "packages/*"
+  - "packages/cli"
+
+minimumReleaseAgeExclude:
+  - "@useagentsio/*"
 
 allowBuilds:
   esbuild: true
   "@google/genai": false
   protobufjs: false
+  better-sqlite3: true

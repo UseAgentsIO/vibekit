@@ -1,5 +1,5 @@
-import { VibeKitError } from "@useagentsio/core";
-import { approvePairing as approveTelegramPairing } from "@useagentsio/interface-telegram";
+import { VibeKitError } from "../internal/core/index.js";
+import { approvePairing as approveTelegramPairing, listPairings } from "../internal/interfaces/telegram/index.js";
 
 import type { GlobalFlags } from "../args.js";
 import type { OutputBuffer } from "../output.js";
@@ -22,6 +22,10 @@ export function runApprovePairing(
   try {
     const paired = approveTelegramPairing(projectRoot, code);
     out.log(`Paired Telegram user ${paired.userId}${paired.displayName ? ` (${paired.displayName})` : ""}.`);
+    const owner = listPairings(projectRoot).owner;
+    if (owner?.userId === paired.userId) {
+      out.log(`Owner identity: ${owner.displayName ?? `Telegram user ${owner.userId}`}.`);
+    }
     return 0;
   } catch (error) {
     throw new VibeKitError({
